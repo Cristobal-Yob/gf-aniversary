@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function BackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -54,57 +55,83 @@ export default function BackgroundMusic() {
       />
 
       {/* Control Flotante */}
-      <div className="fixed bottom-8 right-8 z-50">
+      <AnimatePresence>
         {isVisible ? (
-          <div className="flex items-center space-x-3 rounded-full bg-gradient-to-r from-pink-600 to-orange-600 px-6 py-3 shadow-2xl transition-all hover:scale-105 hover:shadow-pink-500/70">
-            <button
-              onClick={togglePlay}
-              className="text-2xl text-white transition-transform hover:scale-125"
-              title={isPlaying ? 'Pausar música' : 'Reproducir música'}
-            >
-              {isPlaying ? '⏸️' : '▶️'}
-            </button>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed bottom-8 right-8 z-50"
+          >
+            <div className="flex items-center space-x-3 rounded-full bg-gradient-to-r from-pink-600 to-orange-600 px-6 py-3 shadow-2xl transition-all hover:scale-105 hover:shadow-pink-500/70">
+              <button
+                onClick={togglePlay}
+                className="text-2xl text-white transition-transform hover:scale-125"
+                title={isPlaying ? 'Pausar música' : 'Reproducir música'}
+              >
+                {isPlaying ? '⏸️' : '▶️'}
+              </button>
 
-            <div className="flex items-center space-x-2">
               <span className="text-sm font-semibold text-white">
                 {isPlaying ? '🎵 Sonando...' : '🎵 Pausada'}
               </span>
+
               {isPlaying && (
                 <div className="flex space-x-1">
-                  <div
-                    className="h-3 w-1 animate-pulse rounded-full bg-white"
-                    style={{ animationDelay: '0s' }}
-                  ></div>
-                  <div
-                    className="h-3 w-1 animate-pulse rounded-full bg-white"
-                    style={{ animationDelay: '0.2s' }}
-                  ></div>
-                  <div
-                    className="h-3 w-1 animate-pulse rounded-full bg-white"
-                    style={{ animationDelay: '0.4s' }}
-                  ></div>
+                  <motion.div
+                    animate={{ scaleY: [1, 1.5, 1] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                    className="h-3 w-1 rounded-full bg-white"
+                  />
+                  <motion.div
+                    animate={{ scaleY: [1, 1.8, 1] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: 0.1,
+                    }}
+                    className="h-3 w-1 rounded-full bg-white"
+                  />
+                  <motion.div
+                    animate={{ scaleY: [1, 1.5, 1] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: 0.2,
+                    }}
+                    className="h-3 w-1 rounded-full bg-white"
+                  />
                 </div>
               )}
-            </div>
 
-            <button
-              onClick={toggleVisibility}
-              className="text-white transition-transform hover:scale-125"
-              title="Minimizar"
-            >
-              ➖
-            </button>
-          </div>
+              <button
+                onClick={toggleVisibility}
+                className="text-white transition-transform hover:scale-125"
+                title="Minimizar"
+              >
+                ➖
+              </button>
+            </div>
+          </motion.div>
         ) : (
-          <button
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             onClick={toggleVisibility}
-            className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-pink-600 to-orange-600 text-3xl shadow-2xl transition-all hover:scale-110 hover:shadow-pink-500/70"
+            className="fixed bottom-8 right-8 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-pink-600 to-orange-600 text-3xl shadow-2xl transition-all hover:scale-110 hover:shadow-pink-500/70"
             title="Mostrar reproductor"
           >
             {isPlaying ? '🎵' : '🎵'}
-          </button>
+          </motion.button>
         )}
-      </div>
+      </AnimatePresence>
     </>
   )
 }

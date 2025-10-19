@@ -28,14 +28,11 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
           className="animate-gradient absolute inset-0 bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50"
-        />
-
+        />{' '}
         {/* Partículas flotantes de corazones */}
         <FloatingHearts />
-
         {/* Intro cinematográfica con imágenes flotantes */}
         <CinematicIntro />
-
         <div className="relative">
           <Navbar />
 
