@@ -14,7 +14,11 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-pink-100/50 bg-white/80 shadow-lg backdrop-blur-lg backdrop-saturate-150">
       <div className="flex w-full items-center justify-between px-4 py-3 md:px-8">
         {/* 🩷 Logo - Izquierda */}
-        <div className="flex shrink-0 items-center lg:min-w-[280px]">
+        <div
+          className={`flex shrink-0 items-center ${
+            isAuthenticated ? 'lg:min-w-[300px]' : ''
+          }`}
+        >
           <Link href="/" className="flex items-center">
             <img
               src="/photos/icon/J&C.png"

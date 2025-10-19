@@ -40,4 +40,43 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Animación de gradiente flotante en el fondo */
+  .animate-gradient {
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  /* Efecto de brillo animado en el texto */
+  .animate-shimmer {
+    animation: shimmer 3s linear infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  /* Flotación suave */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(-8px);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
 }
