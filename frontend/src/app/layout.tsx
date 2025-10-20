@@ -1,7 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/contexts/AuthContext'
-import BackgroundMusic from '@/components/BackgroundMusic'
+import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext'
+import GlobalMusicPlayer from '@/components/GlobalMusicPlayer'
 
 export const metadata: Metadata = {
   title: 'Cristóbal y Josefa - Aniversario Número 8 💕',
@@ -22,8 +23,10 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <AuthProvider>
-          {children}
-          <BackgroundMusic />
+          <MusicPlayerProvider>
+            {children}
+            <GlobalMusicPlayer />
+          </MusicPlayerProvider>
         </AuthProvider>
       </body>
     </html>

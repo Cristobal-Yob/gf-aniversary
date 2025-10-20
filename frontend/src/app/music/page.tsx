@@ -1,47 +1,27 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useState } from 'react'
 import Link from 'next/link'
-import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/contexts/AuthContext'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Navbar from '@/components/Navbar'
 
 export default function MusicPage() {
   const { isAuthenticated } = useAuth()
-  const [currentSong, setCurrentSong] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const {
+    currentTrack,
+    isPlaying,
+    progress,
+    duration,
+    playTrack,
+    togglePlayPause,
+    seekTo,
+    playlist, // Obtenemos la playlist del contexto
+  } = useMusicPlayer()
 
-  // Controlar reproducción
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play()
-      } else {
-        audioRef.current.pause()
-      }
-    }
-  }, [isPlaying, currentSong])
+  const [hoveredTrack, setHoveredTrack] = useState<string | null>(null)
 
-  // Actualizar tiempo
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime)
-      setDuration(audioRef.current.duration)
-    }
-  }
-
-  // Cambiar posición
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value)
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime
-      setCurrentTime(newTime)
-    }
-  }
-
-  // Formatear tiempo
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00'
     const minutes = Math.floor(time / 60)
@@ -49,33 +29,7 @@ export default function MusicPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
-  // Reproducir/pausar
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying)
-  }
-
-  // Canción anterior
-  const previousSong = () => {
-    const newIndex = Math.max(0, currentSong - 1)
-    setCurrentSong(newIndex)
-    setIsPlaying(true)
-  }
-
-  // Siguiente canción
-  const nextSong = () => {
-    const newIndex = Math.min(ourSongs.length - 1, currentSong + 1)
-    setCurrentSong(newIndex)
-    setIsPlaying(true)
-  }
-
-  // Auto-play siguiente canción
-  const handleSongEnd = () => {
-    if (currentSong < ourSongs.length - 1) {
-      nextSong()
-    } else {
-      setIsPlaying(false)
-    }
-  }
+  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0
 
   if (!isAuthenticated) {
     return (
@@ -102,190 +56,265 @@ export default function MusicPage() {
     )
   }
 
+  const currentGradient = currentTrack?.color || 'from-pink-600 to-orange-600'
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+    <motion.div
+      className="min-h-screen transition-all duration-1000"
+      style={{
+        background: `linear-gradient(135deg, 
+          ${currentTrack ? 'rgba(252, 231, 243, 0.5)' : 'rgb(254, 242, 242)'}, 
+          ${currentTrack ? 'rgba(254, 243, 199, 0.5)' : 'rgb(255, 251, 235)'})`,
+      }}
+    >
       <Navbar />
       <div className="container mx-auto px-6 py-20">
-        <div className="mb-12 text-center">
-          <div className="mb-4 text-6xl">🎵</div>
-          <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-12 text-center"
+        >
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 10, -10, 0],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="mb-4 text-7xl"
+          >
+            🎵
+          </motion.div>
+
+          <motion.h1
+            className="font-cursive mb-4 text-4xl font-bold md:text-6xl"
+            animate={{
+              textShadow:
+                currentTrack && isPlaying
+                  ? [
+                      '0 0 20px rgba(236, 72, 153, 0.3)',
+                      '0 0 40px rgba(236, 72, 153, 0.5)',
+                      '0 0 20px rgba(236, 72, 153, 0.3)',
+                    ]
+                  : '0 0 0 rgba(236, 72, 153, 0)',
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <span
+              className={`bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent transition-all duration-1000`}
+            >
               Nuestra Música
             </span>
-          </h1>
-          <p className="mx-auto max-w-2xl text-xl text-gray-600">
-            Las canciones que definen nuestro amor
-          </p>
-        </div>
+          </motion.h1>
 
-        {/* Music Player */}
-        <div className="mx-auto mb-12 max-w-2xl">
-          <div className="rounded-xl border border-gray-100 bg-white p-8 shadow-lg">
-            {/* Audio Element (oculto) */}
-            <audio
-              ref={audioRef}
-              src={ourSongs[currentSong].src}
-              onTimeUpdate={handleTimeUpdate}
-              onLoadedMetadata={handleTimeUpdate}
-              onEnded={handleSongEnd}
-            />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mx-auto max-w-2xl text-xl text-gray-600"
+          >
+            Las canciones que cuentan nuestra historia de amor 💕
+          </motion.p>
 
-            <div className="mb-6 text-center">
-              <div className="mx-auto mb-4 flex h-48 w-48 items-center justify-center rounded-lg bg-gradient-to-br from-pink-200 to-orange-200">
-                <span className="text-6xl">{ourSongs[currentSong].emoji}</span>
-              </div>
-              <h3 className="mb-2 text-xl font-bold text-gray-800">
-                {ourSongs[currentSong].title}
-              </h3>
-              <p className="mb-1 text-gray-600">
-                {ourSongs[currentSong].artist}
-              </p>
-              <p className="text-sm text-pink-600">
-                {ourSongs[currentSong].memory}
-              </p>
-            </div>
-
-            <div className="mb-6 flex items-center justify-center space-x-4">
-              <button
-                onClick={previousSong}
-                disabled={currentSong === 0}
-                className="rounded-full bg-gray-100 p-3 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+          <AnimatePresence mode="wait">
+            {currentTrack && (
+              <motion.div
+                key={currentTrack.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6 }}
+                className="mt-6"
               >
-                ⏮️
-              </button>
-              <button
-                onClick={togglePlayPause}
-                className="rounded-full bg-pink-600 p-4 text-white transition-colors hover:bg-pink-700"
+                <p className="font-cursive text-lg text-pink-600">
+                  "Cada vez que suena esta canción, pienso en ti 💕"
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="mx-auto mb-16 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-8 text-center"
+          >
+            <h2 className="font-cursive mb-3 text-3xl font-bold text-gray-800 md:text-4xl">
+              <span
+                className={`bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent transition-all duration-1000`}
               >
-                {isPlaying ? '⏸️' : '▶️'}
-              </button>
-              <button
-                onClick={nextSong}
-                disabled={currentSong === ourSongs.length - 1}
-                className="rounded-full bg-gray-100 p-3 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                ⏭️
-              </button>
-            </div>
+                Nuestra Playlist
+              </span>{' '}
+              del Corazón
+            </h2>
+            <p className="text-gray-600">
+              {playlist.length} canciones que cuentan nuestra historia 💕
+            </p>
+          </motion.div>
 
-            {/* Progress Bar */}
-            <div className="mb-4">
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-pink-600"
-                style={{
-                  background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${(currentTime / duration) * 100}%, #e5e7eb ${(currentTime / duration) * 100}%, #e5e7eb 100%)`
-                }}
-              />
-            </div>
-
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Playlist */}
-        <div className="mx-auto mb-12 max-w-4xl">
-          <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
-            Nuestra Playlist del Corazón
-          </h2>
-          <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg">
-            {ourSongs.map((song, index) => (
-              <div
-                key={index}
-                onClick={() => setCurrentSong(index)}
-                className={`cursor-pointer border-b border-gray-100 p-4 transition-colors last:border-b-0 ${
-                  index === currentSong ? 'bg-pink-50' : 'hover:bg-gray-50'
+          <div className="space-y-3">
+            {playlist.map((track, index) => (
+              <motion.div
+                key={track.id}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
+                whileHover={{ scale: 1.02, x: 5 }}
+                onClick={() => playTrack(track)}
+                onMouseEnter={() => setHoveredTrack(track.id)}
+                onMouseLeave={() => setHoveredTrack(null)}
+                className={`group relative cursor-pointer overflow-hidden rounded-2xl p-5 shadow-lg transition-all duration-300 ${
+                  currentTrack?.id === track.id
+                    ? `bg-gradient-to-r ${track.color} bg-opacity-20 shadow-2xl`
+                    : 'bg-white/90 hover:bg-pink-50/50 hover:shadow-xl'
                 }`}
               >
-                <div className="flex items-center space-x-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-pink-200 to-orange-200">
-                    <span>{song.emoji}</span>
-                  </div>
+                {currentTrack?.id === track.id && isPlaying && (
+                  <motion.div
+                    className={`absolute inset-0 -z-10 bg-gradient-to-r ${track.color} opacity-30 blur-2xl`}
+                    animate={{
+                      opacity: [0.2, 0.4, 0.2],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                )}
+
+                <div className="flex items-center gap-4">
+                  <motion.div
+                    animate={{
+                      rotate:
+                        currentTrack?.id === track.id && isPlaying ? 360 : 0,
+                      scale: hoveredTrack === track.id ? 1.1 : 1,
+                    }}
+                    transition={{
+                      rotate: {
+                        duration: 10,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      },
+                      scale: { duration: 0.2 },
+                    }}
+                    className={`flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${track.color} text-3xl shadow-lg`}
+                  >
+                    {track.emoji}
+                  </motion.div>
+
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">
-                      {song.title}
+                    <h3 className="mb-1 font-semibold text-gray-800">
+                      {track.title}
                     </h3>
-                    <p className="text-gray-600">{song.artist}</p>
+                    <p className="mb-1 text-sm text-gray-600">{track.artist}</p>
+                    <motion.p
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{
+                        opacity: hoveredTrack === track.id ? 1 : 0.7,
+                        y: 0,
+                      }}
+                      className="font-cursive text-xs text-pink-600"
+                    >
+                      {track.memory}
+                    </motion.p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-pink-600">
-                      {song.memory}
-                    </p>
-                    <p className="text-sm text-gray-500">{song.duration}</p>
+
+                  <div className="flex items-center gap-3">
+                    {track.icon && (
+                      <motion.div
+                        animate={{
+                          rotate:
+                            hoveredTrack === track.id ? [0, 10, -10, 0] : 0,
+                          scale: hoveredTrack === track.id ? [1, 1.2, 1] : 1,
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          repeat: hoveredTrack === track.id ? Infinity : 0,
+                        }}
+                        className="text-2xl"
+                      >
+                        {track.icon}
+                      </motion.div>
+                    )}
+
+                    {currentTrack?.id === track.id && isPlaying ? (
+                      <div className="flex gap-0.5">
+                        {[...Array(3)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className={`w-1 rounded-full bg-gradient-to-t ${track.color}`}
+                            animate={{
+                              height: ['12px', '24px', '12px'],
+                            }}
+                            transition={{
+                              duration: 0.8,
+                              repeat: Infinity,
+                              delay: i * 0.15,
+                              ease: 'easeInOut',
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{
+                          opacity: hoveredTrack === track.id ? 1 : 0,
+                          scale: hoveredTrack === track.id ? 1 : 0,
+                        }}
+                        className="text-2xl"
+                      >
+                        ▶️
+                      </motion.div>
+                    )}
+
+                    <span className="text-sm text-gray-500">
+                      {track.duration}
+                    </span>
                   </div>
+
+                  {index < 2 && (
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.3, 1],
+                        rotate: [0, 10, -10, 0],
+                      }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                      className="absolute right-4 top-4 text-xl"
+                    >
+                      💕
+                    </motion.div>
+                  )}
                 </div>
-              </div>
+
+                <AnimatePresence>
+                  {hoveredTrack === track.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-white shadow-lg"
+                    >
+                      {track.memory}
+                      <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-800" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             ))}
           </div>
         </div>
-
-        {/* Spotify Integration Info */}
-        <div className="rounded-xl border border-gray-100 bg-white p-8 text-center shadow-lg">
-          <div className="mb-4 text-4xl">🎧</div>
-          <h2 className="mb-4 text-2xl font-bold text-gray-800">
-            Próximamente: Integración con Spotify
-          </h2>
-          <p className="mb-6 text-gray-600">
-            Pronto podrás controlar directamente nuestra música de Spotify desde
-            aquí
-          </p>
-          <div className="rounded-lg bg-green-50 p-4">
-            <p className="text-sm text-green-700">
-              🎵 Spotify Web API integration coming soon...
-            </p>
-          </div>
-        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
-
-const ourSongs = [
-  {
-    emoji: '�',
-    title: 'El Perro Duque - Doggy Style',
-    artist: '31 Minutos',
-    memory: 'Nuestra canción favorita 🎵',
-    duration: '3:24',
-    src: '/music/31 minutos - El perro Duque - Doggy style.mp3',
-  },
-  {
-    emoji: '�💕',
-    title: 'Perfect',
-    artist: 'Ed Sheeran',
-    memory: 'Nuestra canción',
-    duration: '4:23',
-    src: '/music/perfect.mp3', // Agregar archivo si existe
-  },
-  {
-    emoji: '🌟',
-    title: 'All of Me',
-    artist: 'John Legend',
-    memory: 'Primera cita',
-    duration: '4:29',
-    src: '/music/all-of-me.mp3', // Agregar archivo si existe
-  },
-  {
-    emoji: '💖',
-    title: 'Thinking Out Loud',
-    artist: 'Ed Sheeran',
-    memory: 'Aniversario',
-    duration: '4:41',
-    src: '/music/thinking-out-loud.mp3', // Agregar archivo si existe
-  },
-  {
-    emoji: '🎵',
-    title: 'A Thousand Years',
-    artist: 'Christina Perri',
-    memory: 'Momento especial',
-    duration: '4:45',
-    src: '/music/a-thousand-years.mp3', // Agregar archivo si existe
-  },
-]
