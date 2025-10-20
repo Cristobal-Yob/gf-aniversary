@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Dancing+Script:wght@400;600;700&family=Caveat:wght@400;600;700&display=swap');
 
 @layer base {
   html {
@@ -34,33 +34,42 @@
   .glass-effect {
     @apply border border-white/20 bg-white/80 backdrop-blur-md;
   }
+
+  .font-cursive {
+    font-family: 'Dancing Script', cursive;
+  }
+
+  .font-handwriting {
+    font-family: 'Caveat', cursive;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   /* Animación de gradiente flotante en el fondo */
   .animate-gradient {
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
   }
-  
+
   @keyframes gradient {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% 50%;
     }
     50% {
       background-position: 100% 50%;
     }
   }
-  
+
   /* Efecto de brillo animado en el texto */
   .animate-shimmer {
     animation: shimmer 3s linear infinite;
   }
-  
+
   @keyframes shimmer {
     0% {
       background-position: -200% 0;
@@ -69,10 +78,11 @@
       background-position: 200% 0;
     }
   }
-  
+
   /* Flotación suave */
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(-8px);
     }
     50% {

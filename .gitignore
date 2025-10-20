@@ -57,7 +57,7 @@ out/
 # Database
 *.sqlite3
 *.db
-
+*.mp3
 # Temporary files
 .tmp/
 temp/
