@@ -91,24 +91,20 @@ export default function MusicPage() {
           </motion.div>
 
           <motion.h1
-            className="font-cursive mb-4 text-4xl font-bold md:text-6xl"
+            className="font-cursive mb-4 text-4xl font-bold text-pink-600 drop-shadow-lg md:text-6xl"
             animate={{
               textShadow:
                 currentTrack && isPlaying
                   ? [
-                      '0 0 20px rgba(236, 72, 153, 0.3)',
-                      '0 0 40px rgba(236, 72, 153, 0.5)',
-                      '0 0 20px rgba(236, 72, 153, 0.3)',
+                      '0 0 20px rgba(236, 72, 153, 0.5)',
+                      '0 0 40px rgba(236, 72, 153, 0.7)',
+                      '0 0 20px rgba(236, 72, 153, 0.5)',
                     ]
                   : '0 0 0 rgba(236, 72, 153, 0)',
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <span
-              className={`bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent transition-all duration-1000`}
-            >
-              Nuestra Música
-            </span>
+            <span className="transition-all duration-1000">Nuestra Música</span>
           </motion.h1>
 
           <motion.p
@@ -145,15 +141,13 @@ export default function MusicPage() {
             transition={{ delay: 0.3 }}
             className="mb-8 text-center"
           >
-            <h2 className="font-cursive mb-3 text-3xl font-bold text-gray-800 md:text-4xl">
-              <span
-                className={`bg-gradient-to-r ${currentGradient} bg-clip-text text-transparent transition-all duration-1000`}
-              >
+            <h2 className="font-cursive mb-3 text-3xl font-bold text-pink-600 drop-shadow-md md:text-4xl">
+              <span className="transition-all duration-1000">
                 Nuestra Playlist
               </span>{' '}
               del Corazón
             </h2>
-            <p className="text-gray-600">
+            <p className="font-medium text-gray-700 drop-shadow-sm">
               {playlist.length} canciones que cuentan nuestra historia 💕
             </p>
           </motion.div>
@@ -209,17 +203,19 @@ export default function MusicPage() {
                   </motion.div>
 
                   <div className="flex-1">
-                    <h3 className="mb-1 font-semibold text-gray-800">
+                    <h3 className="mb-1 font-semibold text-gray-900 drop-shadow-sm">
                       {track.title}
                     </h3>
-                    <p className="mb-1 text-sm text-gray-600">{track.artist}</p>
+                    <p className="mb-1 text-sm text-gray-700 drop-shadow-sm">
+                      {track.artist}
+                    </p>
                     <motion.p
                       initial={{ opacity: 0, y: 5 }}
                       animate={{
                         opacity: hoveredTrack === track.id ? 1 : 0.7,
                         y: 0,
                       }}
-                      className="font-cursive text-xs text-pink-600"
+                      className="font-cursive text-xs font-medium text-pink-700 drop-shadow-sm"
                     >
                       {track.memory}
                     </motion.p>

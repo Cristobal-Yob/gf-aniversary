@@ -85,7 +85,7 @@ export default function Navbar() {
                   <span>Chat IA</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/games"
                   className={`flex items-center space-x-2 transition-all duration-200 ease-in-out hover:scale-105 ${
@@ -97,7 +97,7 @@ export default function Navbar() {
                   <span className="text-lg">🎮</span>
                   <span>Juegos</span>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/about"

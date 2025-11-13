@@ -83,10 +83,10 @@ export default function GlobalMusicPlayer() {
 
               {/* Info */}
               <div className="flex-1 overflow-hidden">
-                <h3 className="truncate text-sm font-bold text-gray-800">
+                <h3 className="truncate text-sm font-bold text-gray-900 drop-shadow-sm">
                   {currentTrack.title}
                 </h3>
-                <p className="truncate text-xs text-gray-600">
+                <p className="truncate text-xs text-gray-700 drop-shadow-sm">
                   {currentTrack.artist}
                 </p>
               </div>
@@ -199,7 +199,7 @@ export default function GlobalMusicPlayer() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              className="mt-2 text-center text-xs italic text-pink-600"
+              className="mt-2 text-center text-xs font-medium italic text-pink-700 drop-shadow-sm"
             >
               {currentTrack.memory}
             </motion.div>

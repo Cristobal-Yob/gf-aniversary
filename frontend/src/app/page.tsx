@@ -311,13 +311,13 @@ const features = [
       'Pregúntale a nuestra IA sobre nuestros recuerdos y ella te responderá',
     href: '/chat',
   },
-  {
+  /* {
     icon: '🎮',
     title: 'Juegos Retro',
     description:
       'Juega conmigo a juegos clásicos Flash como en los viejos tiempos',
     href: '/games',
-  },
+  }, */
   {
     icon: '❤️',
     title: 'Sobre Nosotros',

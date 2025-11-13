@@ -177,6 +177,21 @@ const games = [
     height: 600,
   },
   {
+    emoji: '🎮',
+    title: 'KND Operation Startup (Web)',
+    description:
+      'Versión web del clásico juego de Codename Kids Next Door. ¡Acción y aventura!',
+    url: 'https://www.mariogames.be/Codename_Kids_Next_Door_Operation_Startup_Game',
+  },
+  {
+    emoji: '🌻',
+    title: 'Plants vs Zombies',
+    description:
+      '¡Defiende tu jardín de los zombies con plantas! Estrategia y diversión clásica.',
+    url: 'http://www.playgamesarcade.com/playgame/1488/plants-vs-zombies.html',
+    thumbnail: 'http://www.playgamesarcade.com/games/images/plants-vs-zombies.png',
+  },
+  {
     emoji: '🏃',
     title: 'Temple Run',
     description: 'Corre sin parar en este adictivo juego de aventuras.',

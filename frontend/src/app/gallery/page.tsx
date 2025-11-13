@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import PhotoLightbox from '@/components/PhotoLightbox'
@@ -8,12 +9,25 @@ import FloatingHearts from '@/components/FloatingHearts'
 import LoveStory from '@/components/LoveStory'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function GalleryPage() {
   const { isAuthenticated } = useAuth()
+  const { playlist, playTrack, currentTrack } = useMusicPlayer()
   const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
   const [activeCategory, setActiveCategory] = useState<string>('all')
+
+  // Reproducir automáticamente la canción de UP cuando se carga la galería
+  useEffect(() => {
+    if (isAuthenticated && playlist.length > 0) {
+      // Buscar la canción de UP (id: '2')
+      const upSong = playlist.find(track => track.id === '2')
+      // Solo cambiar si no es la canción actual
+      if (upSong && currentTrack?.id !== upSong.id) {
+        playTrack(upSong)
+      }
+    }
+  }, [isAuthenticated]) // Solo se ejecuta cuando cambia la autenticación
 
   if (!isAuthenticated) {
     return (
@@ -182,11 +196,7 @@ export default function GalleryPage() {
                         className="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                       >
                         <p className="mb-1 font-semibold">{photo.title}</p>
-                        {photo.date && (
-                          <p className="text-xs text-white/90">
-                            📅 {photo.date}
-                          </p>
-                        )}
+                        {/* date removed per user request */}
                       </motion.div>
 
                       {/* Ícono de corazón flotante */}
@@ -260,7 +270,6 @@ export default function GalleryPage() {
 // Categorías para filtrar
 const categories = [
   { id: 'all', label: 'Todas', icon: '💖' },
-  { id: 'viajes', label: 'Viajes', icon: '✈️' },
   { id: 'nieve', label: 'En la Nieve', icon: '☃️' },
   { id: 'templo', label: 'Templo', icon: '⛩️' },
   { id: 'ny', label: 'Nueva York', icon: '🗽' },
@@ -277,8 +286,7 @@ const photos = [
     src: '/photos/fotos/felizes en ny.jpeg',
     alt: 'Felices en Nueva York',
     title: 'Felices en NY',
-    caption: 'Nuestro amor en la gran manzana 🗽',
-    date: 'Invierno 2024',
+    caption: ' en la gran manzana 🗽',
     description: 'Explorando Nueva York juntos, un viaje inolvidable',
     category: 'ny',
     aspectRatio: 'aspect-[3/4]',
@@ -288,7 +296,6 @@ const photos = [
     alt: 'Sorprendidos en NY',
     title: 'Sorpresa en NY',
     caption: 'Ese momento cuando... 😮💕',
-    date: 'Diciembre 2024',
     description: 'Momento espontáneo en las calles de Nueva York',
     category: 'ny',
     aspectRatio: 'aspect-square',
@@ -300,7 +307,6 @@ const photos = [
     alt: 'Beso en la nieve',
     title: 'Beso bajo la nieve',
     caption: 'Un momento mágico ❄️💋',
-    date: 'Enero 2024',
     description: 'Nuestro primer beso en la nieve',
     category: 'nieve',
     aspectRatio: 'aspect-[4/5]',
@@ -310,7 +316,6 @@ const photos = [
     alt: 'Corazón de nieve',
     title: 'Corazón Nevado',
     caption: 'Amor en el frío ⛄💗',
-    date: 'Invierno 2024',
     description: 'Creando recuerdos en la nieve',
     category: 'nieve',
     aspectRatio: 'aspect-[3/4]',
@@ -320,7 +325,6 @@ const photos = [
     alt: 'Caras felices en la nieve',
     title: 'Sonrisas Nevadas',
     caption: 'Felicidad pura ☃️😊',
-    date: 'Enero 2024',
     description: 'No hay nada como vernos sonreír juntos',
     category: 'nieve',
     aspectRatio: 'aspect-[3/4]',
@@ -332,7 +336,6 @@ const photos = [
     alt: 'Corazón en el templo',
     title: 'Corazón en el Templo',
     caption: 'Amor sagrado ⛩️💖',
-    date: 'Otoño 2024',
     description: 'Momento especial en el templo',
     category: 'templo',
     aspectRatio: 'aspect-[4/5]',
@@ -342,7 +345,6 @@ const photos = [
     alt: 'Mirándonos en el templo',
     title: 'Miradas Eternas',
     caption: 'Solo nosotros dos 👀💕',
-    date: 'Otoño 2024',
     description: 'Perdidos en nuestros ojos',
     category: 'templo',
     aspectRatio: 'aspect-[4/5]',
@@ -354,7 +356,6 @@ const photos = [
     alt: 'Josefa comiendo',
     title: 'Mi Amor Comiendo',
     caption: 'Felicidad en cada bocado 😋💕',
-    date: '2024',
     description: 'Te ves hermosa hasta cuando comes',
     category: 'comida',
     aspectRatio: 'aspect-[3/4]',
@@ -364,7 +365,6 @@ const photos = [
     alt: 'Yo en la comida',
     title: 'Disfrutando Juntos',
     caption: 'Momentos deliciosos 🍴',
-    date: '2024',
     description: 'Compartiendo una comida especial',
     category: 'comida',
     aspectRatio: 'aspect-[3/4]',
@@ -374,7 +374,6 @@ const photos = [
     alt: 'Tú en la comida',
     title: 'Mi Princesa',
     caption: 'Radiante como siempre ✨',
-    date: '2024',
     description: 'Hermosa en cada momento',
     category: 'comida',
     aspectRatio: 'aspect-[3/4]',
@@ -384,7 +383,6 @@ const photos = [
     alt: 'Feliz comiendo en el 18',
     title: 'Fiestas Patrias',
     caption: 'Celebrando con sabor 🇨🇱🌭',
-    date: 'Septiembre 2024',
     description: 'Disfrutando las Fiestas Patrias juntos',
     category: 'comida',
     aspectRatio: 'aspect-square',
@@ -396,7 +394,6 @@ const photos = [
     alt: 'Tomando en el 18',
     title: 'Brindando por Nosotros',
     caption: 'Salud! 🍻🇨🇱',
-    date: 'Septiembre 2024',
     description: 'Celebrando las Fiestas Patrias',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
@@ -406,7 +403,6 @@ const photos = [
     alt: 'Ordenados y formales',
     title: 'Elegantes',
     caption: 'Cuando nos arreglamos bonito 👔👗',
-    date: '2024',
     description: 'Luciendo espectaculares',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
@@ -415,8 +411,7 @@ const photos = [
     src: '/photos/fotos/disfrazados yo de pallazo y ella tamb ien.jpeg',
     alt: 'Disfrazados de payasos',
     title: 'Payasos Enamorados',
-    caption: 'Locura total 🤡��',
-    date: '2024',
+    caption: 'Locura total 🤡',
     description: 'Cuando nos animamos a disfrazarnos',
     category: 'celebraciones',
     aspectRatio: 'aspect-square',
@@ -424,12 +419,20 @@ const photos = [
   {
     src: '/photos/fotos/esto es halloween en fantasilandia con jac .jpeg',
     alt: 'Halloween en Fantasilandia',
-    title: 'Halloween',
+    title: 'Halloween en Fantasilandia',
     caption: 'Esto es Halloween! 🎃👻',
-    date: 'Octubre 2024',
     description: 'Aventura terrorífica en Fantasilandia',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
+  },
+  {
+    src: '/photos/fotos/halloween.jpeg',
+    alt: 'Halloween - Catrina y Calavera Mexicana',
+    title: 'Noche de Brujas',
+    caption: 'Ella de Catrina, yo de Calavera Mexicana 💀👑',
+    description: 'Celebrando Halloween con estilo mexicano',
+    category: 'celebraciones',
+    aspectRatio: 'aspect-square',
   },
 
   // Con Animalitos
@@ -438,7 +441,6 @@ const photos = [
     alt: 'Josefa con Blue Berry',
     title: 'Con Blue Berry',
     caption: 'Amor de perrito 🐕💙',
-    date: '2024',
     description: 'La perrita que tanto amas',
     category: 'animales',
     aspectRatio: 'aspect-[3/4]',
@@ -448,7 +450,6 @@ const photos = [
     alt: 'Acariciando un caballo',
     title: 'Amor por los Caballos',
     caption: 'Momento tierno con el caballo 🐴💕',
-    date: 'Septiembre 2024',
     description: 'Tu conexión especial con los animales',
     category: 'animales',
     aspectRatio: 'aspect-square',
@@ -458,7 +459,6 @@ const photos = [
     alt: 'Con el señor en Buin Zoo',
     title: 'Visita al Zoo',
     caption: 'Aventura en el zoológico 🦁',
-    date: '2024',
     description: 'Descubriendo animales juntos',
     category: 'animales',
     aspectRatio: 'aspect-[3/4]',
@@ -470,7 +470,6 @@ const photos = [
     alt: 'En Pixar Up con el abuelito',
     title: 'Aventura UP',
     caption: 'Volando alto juntos 🎈🏠',
-    date: '2024',
     description: 'Recreando nuestra película favorita',
     category: 'diversión',
     aspectRatio: 'aspect-[4/3]',
@@ -480,7 +479,6 @@ const photos = [
     alt: 'Josefa feliz con Russell',
     title: 'Con Russell',
     caption: 'Felicidad pura 😊🎈',
-    date: '2024',
     description: 'Tu sonrisa lo dice todo',
     category: 'diversión',
     aspectRatio: 'aspect-square',
@@ -490,7 +488,6 @@ const photos = [
     alt: 'Triste en Pixar',
     title: 'Momento Dramático',
     caption: 'Actuando en Pixar 🎭',
-    date: '2024',
     description: 'Incluso triste te ves hermosa',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
@@ -500,7 +497,6 @@ const photos = [
     alt: 'Yo enojado en Pixar',
     title: 'Cara de Enojado',
     caption: 'Mi mejor actuación 😤',
-    date: '2024',
     description: 'Haciéndome el enojado',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
@@ -512,9 +508,8 @@ const photos = [
     alt: 'Beso en Cenco',
     title: 'Beso de Corazón',
     caption: 'Amor en cada rincón 💋💕',
-    date: '2024',
     description: 'Robándote besos donde sea',
-    category: 'viajes',
+    category: 'diversión',
     aspectRatio: 'aspect-square',
   },
   {
@@ -522,7 +517,6 @@ const photos = [
     alt: 'Caras chistosas esperando el boba',
     title: 'Espera Divertida',
     caption: 'Mientras esperamos el boba 🧋😝',
-    date: '2024',
     description: 'Haciendo el tonto contigo',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
@@ -532,9 +526,37 @@ const photos = [
     alt: 'Siendo feliz y brillando',
     title: 'Radiante',
     caption: 'Tu brillo natural ✨😊',
-    date: '2024',
     description: 'Iluminando mi vida',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
+  },
+
+  // Photos requested by user
+  {
+    src: '/photos/fotos/anillos de carino en w.png',
+    alt: 'Anillito de cariño',
+    title: 'Nuestro Anillito',
+    caption: 'La primera vez que le compré un anillito que representa nuestro amor 💍',
+    description: 'Recuerdo especial: mi primer anillo para ella',
+    category: 'celebraciones',
+    aspectRatio: 'aspect-[3/4]',
+  },
+  {
+    src: '/photos/fotos/cuando me da hambe.png',
+    alt: 'Cuando me da hambre (broma)',
+    title: 'Cuando me da Hambe',
+    caption: 'Yo fingiendo que me la como y diciendo "cuando me da hambre" 😋😂',
+    description: 'Una foto chistosa imitando que me la como',
+    category: 'diversión',
+    aspectRatio: 'aspect-square',
+  },
+  {
+    src: '/photos/fotos/en la pandemia.png',
+    alt: 'Recuerdo de la pandemia',
+    title: 'Recuerdo de la Pandemia',
+    caption: 'Recuerdo de la pandemia',
+    description: 'Un recuerdo íntimo de los tiempos de pandemia',
+    category: 'diversión',
+    aspectRatio: 'aspect-[4/5]',
   },
 ]

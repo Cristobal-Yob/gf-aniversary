@@ -48,9 +48,9 @@ const storyCards: StoryCard[] = [
     ],
   },
   {
-    title: 'Para estar elegantes juntos 👔👗',
+    title: 'Gracias por acompañarme en todo momento 👔👗',
     description:
-      'Porque a veces nos gusta arreglarnos bonito y vernos espectaculares el uno al lado del otro',
+      'Te amo gracias por acompanarme en cada evento en esta vida y por ser mi compañera perfecta para cada ocasión',
     photos: [
       {
         src: '/photos/fotos/yo la josefa ordenados y formales.jpeg',
@@ -61,7 +61,7 @@ const storyCards: StoryCard[] = [
   {
     title: 'Comamos juntos siempre 🍽️',
     description:
-      'Cada comida contigo es especial. Compartir estos momentos es uno de mis placeres favoritos',
+      'Cada comida contigo es especial. Compartir estos momentos es uno de mis momentos favoritos',
     photos: [
       {
         src: '/photos/fotos/yo en la comida.jpeg',
