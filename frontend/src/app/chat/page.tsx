@@ -56,7 +56,7 @@ export default function ChatPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
         <Navbar />
         <div className="flex min-h-screen items-center justify-center px-6">
           <div className="w-full max-w-md text-center">
@@ -69,7 +69,7 @@ export default function ChatPage() {
             </p>
             <Link
               href="/auth"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
             >
               Iniciar Sesión 💖
             </Link>
@@ -80,17 +80,17 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
       <Navbar />
       <div className="container mx-auto max-w-4xl px-6 py-8">
         <div className="mb-8 text-center">
           <div className="mb-4 text-6xl">💬</div>
           <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
               Chat con IA
             </span>
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-secondary-600">
             Habla sobre nuestros recuerdos y momentos especiales
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function ChatPage() {
                 <div
                   className={`max-w-[70%] rounded-lg p-4 ${
                     message.role === 'user'
-                      ? 'bg-pink-600 text-white'
+                      ? 'bg-primary-900 text-white'
                       : 'bg-gray-100 text-gray-800'
                   }`}
                 >
@@ -117,7 +117,7 @@ export default function ChatPage() {
                   <p
                     className={`text-xs ${
                       message.role === 'user'
-                        ? 'text-pink-100'
+                        ? 'text-primary-100'
                         : 'text-gray-500'
                     }`}
                   >
@@ -153,7 +153,7 @@ export default function ChatPage() {
                 <button
                   key={index}
                   onClick={() => handleSuggestedQuestion(question)}
-                  className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm transition-colors hover:border-pink-500 hover:text-pink-600"
+                  className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm transition-colors hover:border-primary-600 hover:text-primary-900"
                 >
                   {question}
                 </button>
@@ -172,13 +172,13 @@ export default function ChatPage() {
                 value={inputMessage}
                 onChange={e => setInputMessage(e.target.value)}
                 placeholder="Escribe tu mensaje..."
-                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-pink-500"
+                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !inputMessage.trim()}
-                className="rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700 disabled:bg-pink-300"
+                className="rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-primary-300"
               >
                 Enviar 💌
               </button>

@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
-import FloatingHearts from '@/components/FloatingHearts'
 import CinematicIntro from '@/components/CinematicIntro'
 import LoadingScreen from '@/components/LoadingScreen'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -21,91 +20,73 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      <div className="relative min-h-screen overflow-hidden">
+      <div className="relative min-h-screen overflow-hidden font-serif">
         {/* Fondo animado con gradiente suave tipo Apple */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="animate-gradient absolute inset-0 bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50"
+          className="animate-gradient absolute inset-0 bg-gradient-to-br from-cream via-[#fff0f3] to-[#fdf2f4]"
         />{' '}
-        {/* Partículas flotantes de corazones */}
-        <FloatingHearts />
         {/* Intro cinematográfica con imágenes flotantes */}
         <CinematicIntro />
-        <div className="relative">
+        <div className="relative z-20">
           <Navbar />
 
           {/* Hero Section */}
           <section className="relative flex min-h-screen items-center justify-center px-6 pb-8 pt-0 md:pb-12">
-            <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto max-w-5xl text-center">
               {/* Corazón flotante principal */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  duration: 0.8,
-                  delay: 0.8,
-                  ease: [0.16, 1, 0.3, 1], // Easing suave tipo Apple
+                  duration: 1,
+                  delay: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
                 className="mb-8"
               >
                 <motion.div
                   animate={{
-                    y: [-8, 8, -8],
-                    scale: [1, 1.08, 1],
+                    y: [-10, 10, -10],
+                    scale: [1, 1.05, 1],
                   }}
                   transition={{
-                    duration: 4,
+                    duration: 5,
                     repeat: Infinity,
                     ease: 'easeInOut',
                   }}
-                  className="inline-block text-7xl drop-shadow-lg md:text-8xl"
+                  className="inline-block text-7xl drop-shadow-2xl md:text-8xl"
                 >
-                  💕
+                  ♾️
                 </motion.div>
               </motion.div>
 
               {/* Nombres con efecto de brillo */}
               <motion.h1
-                initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{
                   duration: 1.2,
                   delay: 0.3,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="mb-6 text-5xl font-bold md:text-7xl"
+                className="mb-6 text-6xl font-bold tracking-tight md:text-8xl"
               >
-                <motion.span
-                  className="relative inline-block bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent"
-                  animate={{
-                    backgroundPosition: ['0%', '100%', '0%'],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                  style={{
-                    backgroundSize: '200% 100%',
-                  }}
-                >
+                <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-900 bg-clip-text text-transparent">
                   Cristóbal
-                </motion.span>
-                <span className="mx-4 text-gray-600">&</span>
-                <motion.span
-                  className="relative inline-block bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent"
-                  style={{
-                    backgroundSize: '200% 100%',
-                  }}
-                >
+                </span>
+                <span className="mx-4 font-script text-5xl text-accent-600 md:text-7xl">
+                  &
+                </span>
+                <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-900 bg-clip-text text-transparent">
                   Josefa
-                </motion.span>
+                </span>
               </motion.h1>
 
               {/* Subtítulo con efecto typewriter */}
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -113,11 +94,15 @@ export default function HomePage() {
                   delay: 0.6,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="mb-10 text-xl text-gray-600 md:text-2xl"
+                className="mb-12"
               >
-                Un lugar especial para nuestros recuerdos, música y momentos
-                juntos
-              </motion.p>
+                <p className="mb-2 text-2xl font-medium text-primary-800 md:text-3xl">
+                  8 Años de Historia
+                </p>
+                <p className="text-lg text-secondary-600 md:text-xl">
+                  Celebrando cada momento de nuestro amor infinito
+                </p>
+              </motion.div>
 
               {/* Botones con animación */}
               <motion.div
@@ -125,18 +110,23 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.8,
-                  delay: 1.0,
+                  delay: 0.8,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="flex flex-wrap justify-center gap-4"
+                className="flex flex-wrap justify-center gap-6"
               >
                 <Link href="/auth">
                   <motion.button
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="relative overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-rose-600 px-8 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-2xl hover:shadow-pink-500/50"
+                    className="btn-primary group"
                   >
-                    Comenzar 💖
+                    <span className="relative z-10 flex items-center gap-2">
+                      Nuestra Historia
+                      <span className="transition-transform group-hover:translate-x-1">
+                        →
+                      </span>
+                    </span>
                   </motion.button>
                 </Link>
 
@@ -144,9 +134,14 @@ export default function HomePage() {
                   <motion.button
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="rounded-full border-2 border-pink-300 bg-white/90 px-8 py-3 font-semibold text-pink-600 shadow-lg backdrop-blur-sm transition-all hover:border-pink-400 hover:bg-pink-50/90 hover:shadow-xl hover:shadow-pink-300/50"
+                    className="btn-secondary group"
                   >
-                    Ver Galería 📸
+                    <span className="flex items-center gap-2">
+                      Ver Recuerdos
+                      <span className="text-xl transition-transform group-hover:scale-110">
+                        📸
+                      </span>
+                    </span>
                   </motion.button>
                 </Link>
               </motion.div>
@@ -154,36 +149,23 @@ export default function HomePage() {
           </section>
 
           {/* Features Section */}
-          <section className="relative px-6 py-12">
+          <section className="relative px-6 py-20">
             <div className="mx-auto max-w-6xl">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-12 text-center"
+                className="mb-16 text-center"
               >
-                <h2 className="mb-3 text-4xl font-bold md:text-5xl">
-                  <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-500 bg-clip-text text-transparent">
-                    Nuestro Espacito
-                  </span>{' '}
-                  <span className="text-gray-800">en la Web</span>
-                </h2>
-                <p className="mx-auto flex max-w-2xl items-center justify-center gap-2 text-lg text-gray-600 md:text-xl">
-                  <span>
-                    Todas las secciones que puedes ver para que te diviertas
+                <h2 className="mb-4 text-4xl font-bold md:text-5xl">
+                  <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-800 bg-clip-text text-transparent">
+                    Nuestro Universo
                   </span>
-                  <motion.span
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                    className="text-2xl"
-                  >
-                    💖
-                  </motion.span>
+                </h2>
+                <div className="mx-auto h-1 w-24 rounded-full bg-gradient-to-r from-primary-300 to-accent-300" />
+                <p className="mt-6 text-lg text-secondary-600 md:text-xl">
+                  Explora los rincones de nuestra vida juntos
                 </p>
               </motion.div>
 
@@ -203,41 +185,39 @@ export default function HomePage() {
                         delay: index * 0.15,
                         ease: [0.16, 1, 0.3, 1],
                       }}
-                      whileHover={{ y: -12, scale: 1.03 }}
-                      className="group flex aspect-square w-full cursor-pointer items-center justify-center rounded-2xl border border-gray-100 bg-white/90 p-8 shadow-lg backdrop-blur-sm transition-all duration-500 hover:border-pink-200 hover:shadow-2xl hover:shadow-pink-500/20"
+                      whileHover={{ y: -12, scale: 1.02 }}
+                      className="card group flex aspect-square h-full w-full flex-col items-center justify-center text-center"
                     >
-                      <div className="flex h-full flex-col items-center justify-center text-center">
-                        <motion.div
-                          whileHover={{ scale: 1.2, rotate: 8 }}
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 300,
+                          damping: 15,
+                        }}
+                        className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary-50 text-5xl shadow-inner"
+                      >
+                        {feature.icon}
+                      </motion.div>
+                      <h3 className="mb-3 text-2xl font-semibold text-primary-900 transition-colors group-hover:text-primary-700">
+                        {feature.title}
+                      </h3>
+                      <p className="mb-6 px-4 text-secondary-600">
+                        {feature.description}
+                      </p>
+                      <div className="mt-auto inline-flex items-center font-medium text-accent-600 transition-all group-hover:gap-2 group-hover:text-accent-700">
+                        Descubrir
+                        <motion.span
+                          className="ml-1 inline-block"
+                          animate={{ x: [0, 4, 0] }}
                           transition={{
-                            type: 'spring',
-                            stiffness: 400,
-                            damping: 10,
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
                           }}
-                          className="mb-4 text-6xl"
                         >
-                          {feature.icon}
-                        </motion.div>
-                        <h3 className="mb-2 text-xl font-semibold text-gray-800 transition-colors group-hover:text-pink-700">
-                          {feature.title}
-                        </h3>
-                        <p className="mb-4 px-2 text-sm text-gray-600">
-                          {feature.description}
-                        </p>
-                        <div className="inline-flex items-center font-medium text-pink-600 transition-all group-hover:gap-2 group-hover:text-pink-700">
-                          Explorar
-                          <motion.span
-                            className="ml-1 inline-block"
-                            animate={{ x: [0, 4, 0] }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: 'easeInOut',
-                            }}
-                          >
-                            →
-                          </motion.span>
-                        </div>
+                          →
+                        </motion.span>
                       </div>
                     </motion.div>
                   </Link>
@@ -247,36 +227,39 @@ export default function HomePage() {
           </section>
 
           {/* Footer romántico */}
-          <footer className="relative px-6 py-16">
+          <footer className="relative px-6 py-20">
             <div className="mx-auto max-w-4xl text-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-3xl border border-primary-100 bg-white/50 p-12 backdrop-blur-sm"
               >
                 <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
+                  animate={{ scale: [1, 1.1, 1] }}
                   transition={{
                     duration: 3,
                     repeat: Infinity,
                     ease: 'easeInOut',
                   }}
-                  className="mb-4 inline-block text-5xl"
+                  className="mb-6 inline-block text-6xl"
                 >
                   💝
                 </motion.div>
-                <h3 className="mb-3 text-2xl font-semibold md:text-3xl">
-                  <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-500 bg-clip-text text-transparent">
-                    Ojalá que te guste
-                  </span>
+                <h3 className="mb-4 font-script text-4xl text-primary-800 md:text-5xl">
+                  Felices 8 Años
                 </h3>
-                <p className="mb-6 text-lg text-gray-600 md:text-xl">
-                  Este espacito lo hice con mucho amor para nosotros ❤️
+                <p className="mb-8 text-lg leading-relaxed text-secondary-700 md:text-xl">
+                  "Ocho años de aventuras, risas y un amor que crece cada día más.
+                  <br />
+                  Gracias por ser mi compañera de vida."
                 </p>
-                <div className="flex flex-col items-center gap-2 text-sm text-gray-500">
-                  <p>Hecho con 💖 por Cristóbal</p>
-                  <p className="text-xs">
+                <div className="flex flex-col items-center gap-3 text-sm text-secondary-500">
+                  <p className="font-medium">
+                    Hecho con todo mi ❤️ por Cristóbal
+                  </p>
+                  <p className="text-xs opacity-75">
                     © {new Date().getFullYear()} • Nuestro Aniversario
                   </p>
                 </div>
@@ -292,36 +275,23 @@ export default function HomePage() {
 const features = [
   {
     icon: '📸',
-    title: 'Galería de Recuerdos',
+    title: 'Nuestra Galería',
     description:
-      'Nuestras fotitos más lindas y momentos especiales guardados con amor',
+      'Ocho años de recuerdos capturados en momentos inolvidables.',
     href: '/gallery',
   },
   {
     icon: '🎵',
-    title: 'Música Juntos',
+    title: 'Soundtrack',
     description:
-      'Escucha nuestras canciones favoritas y controla Spotify en tiempo real',
+      'La música que ha acompañado nuestra historia de amor.',
     href: '/music',
   },
-  {
-    icon: '💬',
-    title: 'Chat con IA',
-    description:
-      'Pregúntale a nuestra IA sobre nuestros recuerdos y ella te responderá',
-    href: '/chat',
-  },
-  /* {
-    icon: '🎮',
-    title: 'Juegos Retro',
-    description:
-      'Juega conmigo a juegos clásicos Flash como en los viejos tiempos',
-    href: '/games',
-  }, */
+
   {
     icon: '❤️',
-    title: 'Sobre Nosotros',
-    description: 'Nuestra historia de amor y los momentos que más atesoramos',
+    title: 'Nuestra Historia',
+    description: 'El viaje desde aquel primer día hasta hoy.',
     href: '/about',
   },
 ]

@@ -27,7 +27,7 @@ export default function GamesPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
         <Navbar />
         <div className="flex min-h-screen items-center justify-center px-6">
           <div className="w-full max-w-md text-center">
@@ -40,7 +40,7 @@ export default function GamesPage() {
             </p>
             <Link
               href="/auth"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
             >
               Iniciar Sesión 💖
             </Link>
@@ -55,7 +55,7 @@ export default function GamesPage() {
     const game = games[selectedGame]
     return (
       <div className="flex h-screen w-full flex-col bg-black">
-        <div className="flex items-center justify-between bg-gradient-to-r from-pink-600 to-orange-600 p-4 shadow-lg">
+        <div className="flex items-center justify-between bg-gradient-to-r from-primary-900 to-accent-600 p-4 shadow-lg">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setSelectedGame(null)}
@@ -107,11 +107,11 @@ export default function GamesPage() {
         <div className="mb-12 text-center">
           <div className="mb-4 text-6xl">🎮</div>
           <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
               Sala de Juegos
             </span>
           </h1>
-          <p className="mx-auto max-w-2xl text-xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-xl text-secondary-600">
             Juegos clásicos para disfrutar juntos 💕
           </p>
         </div>
@@ -123,7 +123,7 @@ export default function GamesPage() {
               onClick={() => setSelectedGame(index)}
               className="transform cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
             >
-              <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-pink-200 to-orange-200">
+              <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-primary-200 to-accent-200">
                 <span className="text-6xl">{game.emoji}</span>
               </div>
               <div className="p-6">
@@ -139,7 +139,7 @@ export default function GamesPage() {
                     </span>
                   </div>
                 )}
-                <button className="w-full rounded-lg bg-pink-600 py-2 font-medium text-white transition-colors hover:bg-pink-700">
+                <button className="w-full rounded-full bg-primary-900 py-2 font-medium text-white transition-colors hover:bg-primary-800">
                   Jugar Ahora 🎮
                 </button>
               </div>

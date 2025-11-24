@@ -9,20 +9,20 @@ export default function AboutPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-cream via-[#fff0f3] to-[#fdf2f4]">
         <Navbar />
         <div className="flex min-h-screen items-center justify-center px-6">
           <div className="w-full max-w-md text-center">
             <div className="mb-6 text-6xl">🔒</div>
-            <h1 className="mb-4 text-3xl font-bold text-gray-800">
+            <h1 className="mb-4 text-3xl font-bold text-primary-900">
               Área Privada
             </h1>
-            <p className="mb-8 text-gray-600">
+            <p className="mb-8 text-secondary-600">
               Necesitas iniciar sesión para conocer nuestra historia
             </p>
             <Link
               href="/auth"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="btn-primary inline-block"
             >
               Iniciar Sesión 💖
             </Link>
@@ -33,42 +33,43 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-[#fff0f3] to-[#fdf2f4] font-serif">
       <Navbar />
-      <div className="container mx-auto px-6 py-20">
-        <div className="mb-12 text-center">
+      <div className="container relative z-20 mx-auto px-6 py-20">
+        <div className="mb-16 text-center">
           <div className="mb-4 text-6xl">❤️</div>
           <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
               Nuestra Historia
             </span>
           </h1>
-          <p className="mx-auto max-w-2xl text-xl text-gray-600">
-            El viaje de Cristóbal y Josefa
+          <p className="mx-auto max-w-2xl text-xl text-secondary-600">
+            El viaje de Cristóbal y Josefa a través de los años
           </p>
         </div>
 
         {/* Timeline */}
-        <div className="mx-auto mb-12 max-w-3xl space-y-8">
+        <div className="mx-auto mb-16 max-w-3xl space-y-8">
           {timeline.map((event, index) => (
             <div
               key={index}
-              className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg"
+              className="card relative overflow-hidden"
             >
-              <div className="flex items-start space-x-4">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-200 to-orange-200 text-3xl">
+              <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-primary-50 opacity-50 blur-2xl" />
+              <div className="flex items-start space-x-6">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-100 to-accent-100 text-3xl shadow-inner">
                   {event.emoji}
                 </div>
                 <div className="flex-1">
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-gray-800">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-xl font-bold text-primary-900">
                       {event.title}
                     </h3>
-                    <span className="text-sm font-medium text-pink-600">
+                    <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-medium text-primary-700">
                       {event.date}
                     </span>
                   </div>
-                  <p className="text-gray-600">{event.description}</p>
+                  <p className="leading-relaxed text-secondary-700">{event.description}</p>
                 </div>
               </div>
             </div>
@@ -76,45 +77,54 @@ export default function AboutPage() {
         </div>
 
         {/* Stats */}
-        <div className="mb-12 grid gap-6 md:grid-cols-3">
+        <div className="mb-16 grid gap-6 md:grid-cols-3">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="rounded-xl border border-gray-100 bg-white p-6 text-center shadow-lg"
+              className="card text-center transition-transform hover:-translate-y-1"
             >
-              <div className="mb-2 text-4xl">{stat.emoji}</div>
-              <div className="mb-1 text-3xl font-bold text-pink-600">
+              <div className="mb-4 text-5xl">{stat.emoji}</div>
+              <div className="mb-2 text-4xl font-bold text-primary-800">
                 {stat.value}
               </div>
-              <div className="text-gray-600">{stat.label}</div>
+              <div className="font-medium text-secondary-500">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Love Letter */}
-        <div className="mx-auto max-w-2xl rounded-xl border border-gray-100 bg-white p-8 shadow-lg">
-          <div className="mb-6 text-center">
-            <div className="mb-4 text-5xl">💌</div>
-            <h2 className="text-2xl font-bold text-gray-800">Para Ti</h2>
-          </div>
-          <div className="space-y-4 leading-relaxed text-gray-700">
-            <p>
-              Cada día contigo es una nueva aventura. Has llenado mi vida de
-              colores, risas y momentos inolvidables.
-            </p>
-            <p>
-              Desde nuestra primera cita hasta hoy, cada momento ha sido
-              especial. Tu sonrisa ilumina mis días y tu amor me da fuerza para
-              enfrentar cualquier desafío.
-            </p>
-            <p>
-              Gracias por ser mi compañera, mi mejor amiga, mi todo. Este
-              espacio es un pequeño tributo a nuestro amor y a todos los
-              momentos que hemos compartido y los que vendrán.
-            </p>
-            <p className="mt-6 text-right font-semibold text-pink-600">
-              Con todo mi amor 💕
-            </p>
+        <div className="mx-auto max-w-3xl">
+          <div className="card relative overflow-hidden p-10 md:p-12">
+            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-primary-50 opacity-50 blur-3xl" />
+            <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-accent-50 opacity-50 blur-3xl" />
+            
+            <div className="relative text-center">
+              <div className="mb-6 text-6xl">💌</div>
+              <h2 className="mb-8 font-script text-4xl font-bold text-primary-900">Para Ti, Mi Amor</h2>
+              
+              <div className="space-y-6 text-lg leading-relaxed text-secondary-800">
+                <p>
+                  Hoy celebramos <strong>8 años</strong> de una historia que se ha convertido en mi vida entera.
+                  Ocho años de risas que me llenan el alma, de abrazos que reinician mi mundo y de un amor
+                  que ha crecido con cada amanecer.
+                </p>
+                <p>
+                  Desde aquel primer día en el preu, cuando el destino cruzó nuestros caminos, supe que había
+                  encontrado algo especial. Pero nunca imaginé que construiríamos un universo tan hermoso juntos.
+                  Has estado en mis mejores momentos y has sido mi roca en los difíciles.
+                </p>
+                <p>
+                  Gracias por elegirme cada día, por tu paciencia infinita y por esa sonrisa que sigue siendo
+                  mi paisaje favorito. Eres mi compañera, mi mejor amiga y el amor de mi vida.
+                </p>
+                <p>
+                  Por estos 8 años y por toda una eternidad juntos.
+                </p>
+                <p className="mt-8 font-script text-3xl font-bold text-primary-800">
+                  Te amo infinitamente 💕
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -125,36 +135,36 @@ export default function AboutPage() {
 const timeline = [
   {
     emoji: '✨',
-    title: 'Nos Conocimos',
-    date: 'Hace mucho tiempo',
+    title: 'El Encuentro',
+    date: '2017',
     description:
-      'En el preuniversitario antes de clases, donde llegar temprano fue la mejor decisión que tomé.',
+      'En el preuniversitario, entre libros y sueños, nuestras miradas se cruzaron por primera vez. Llegar temprano nunca tuvo una mejor recompensa.',
   },
   {
     emoji: '💑',
-    title: 'Primer beso',
-    date: '25 de septiembre de 2017',
+    title: 'Primer Beso',
+    date: '25 de Septiembre, 2017',
     description:
-      'Nervios, risas y la certeza de que queríamos volver a vernos.',
+      'Un momento mágico que selló el inicio de algo inexplicable. Nervios, mariposas y la certeza de querer estar juntos.',
   },
   {
     emoji: '💕',
-    title: 'Empezamos a Salir',
-    date: '25 de noviembre de 2017',
+    title: 'El "Sí"',
+    date: '25 de Noviembre, 2017',
     description:
-      'Oficialmente decidimos caminar juntos en esta aventura llamada amor.',
+      'El día que decidimos caminar de la mano oficialmente. El comienzo de nuestra aventura más bonita.',
   },
   {
     emoji: '🎉',
-    title: 'Primer Aniversario',
-    date: '25 de noviembre de 2018',
-    description: 'Un año de risas, lágrimas de felicidad y crecimiento juntos.',
+    title: 'Primer Año Juntos',
+    date: '25 de Noviembre, 2018',
+    description: '365 días de descubrimientos, primeras veces y un amor que empezaba a echar raíces profundas.',
   },
   {
-    emoji: '🏠',
-    title: 'Planes Futuros',
-    date: 'Por venir',
-    description: 'Muchos más años de amor, aventuras y recuerdos por crear.',
+    emoji: '♾️',
+    title: '8 Años de Amor',
+    date: '25 de Noviembre, 2025',
+    description: 'Ocho años construyendo una vida, superando obstáculos y amándonos más fuerte que ayer. Y esto es solo el comienzo.',
   },
 ]
 
@@ -170,12 +180,12 @@ const stats = [
   },
   {
     emoji: '📸',
-    value: '1000+',
-    label: 'Fotos Compartidas',
+    value: '8',
+    label: 'Años de Historia',
   },
   {
-    emoji: '💌',
+    emoji: '💝',
     value: '∞',
-    label: 'Mensajes de Amor',
+    label: 'Amor Infinito',
   },
 ]

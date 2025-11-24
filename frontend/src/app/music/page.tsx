@@ -17,7 +17,9 @@ export default function MusicPage() {
     playTrack,
     togglePlayPause,
     seekTo,
-    playlist, // Obtenemos la playlist del contexto
+    playlist,
+    volume,
+    setVolume,
   } = useMusicPlayer()
 
   const [hoveredTrack, setHoveredTrack] = useState<string | null>(null)
@@ -33,7 +35,7 @@ export default function MusicPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
         <Navbar />
         <div className="flex min-h-screen items-center justify-center px-6">
           <div className="w-full max-w-md text-center">
@@ -46,7 +48,7 @@ export default function MusicPage() {
             </p>
             <Link
               href="/auth"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
             >
               Iniciar Sesión 💖
             </Link>
@@ -56,7 +58,7 @@ export default function MusicPage() {
     )
   }
 
-  const currentGradient = currentTrack?.color || 'from-pink-600 to-orange-600'
+  const currentGradient = currentTrack?.color || 'from-primary-600 to-accent-600'
 
   return (
     <motion.div
@@ -68,7 +70,7 @@ export default function MusicPage() {
       }}
     >
       <Navbar />
-      <div className="container mx-auto px-6 py-20">
+      <div className="container relative z-20 mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -91,16 +93,16 @@ export default function MusicPage() {
           </motion.div>
 
           <motion.h1
-            className="font-cursive mb-4 text-4xl font-bold text-pink-600 drop-shadow-lg md:text-6xl"
+            className="font-script mb-4 text-5xl font-bold text-primary-900 drop-shadow-lg md:text-7xl"
             animate={{
               textShadow:
                 currentTrack && isPlaying
                   ? [
-                      '0 0 20px rgba(236, 72, 153, 0.5)',
-                      '0 0 40px rgba(236, 72, 153, 0.7)',
-                      '0 0 20px rgba(236, 72, 153, 0.5)',
+                      '0 0 20px rgba(128, 0, 32, 0.5)',
+                      '0 0 40px rgba(128, 0, 32, 0.7)',
+                      '0 0 20px rgba(128, 0, 32, 0.5)',
                     ]
-                  : '0 0 0 rgba(236, 72, 153, 0)',
+                  : '0 0 0 rgba(128, 0, 32, 0)',
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
@@ -111,7 +113,7 @@ export default function MusicPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mx-auto max-w-2xl text-xl text-gray-600"
+            className="mx-auto max-w-2xl text-xl text-secondary-600"
           >
             Las canciones que cuentan nuestra historia de amor 💕
           </motion.p>
@@ -126,7 +128,7 @@ export default function MusicPage() {
                 transition={{ duration: 0.6 }}
                 className="mt-6"
               >
-                <p className="font-cursive text-lg text-pink-600">
+                <p className="font-script text-lg text-primary-700">
                   "Cada vez que suena esta canción, pienso en ti 💕"
                 </p>
               </motion.div>
@@ -135,19 +137,39 @@ export default function MusicPage() {
         </motion.div>
 
         <div className="mx-auto mb-16 max-w-4xl">
+          {/* Control de Volumen */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mx-auto mb-12 flex max-w-xs items-center justify-center gap-4 rounded-full bg-white/80 px-6 py-3 shadow-lg backdrop-blur-sm"
+          >
+            <span className="text-xl">🔈</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-primary-600"
+            />
+            <span className="text-xl">🔊</span>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="mb-8 text-center"
           >
-            <h2 className="font-cursive mb-3 text-3xl font-bold text-pink-600 drop-shadow-md md:text-4xl">
+            <h2 className="font-script mb-3 text-4xl font-bold text-primary-900 drop-shadow-md md:text-5xl">
               <span className="transition-all duration-1000">
                 Nuestra Playlist
               </span>{' '}
               del Corazón
             </h2>
-            <p className="font-medium text-gray-700 drop-shadow-sm">
+            <p className="font-medium text-secondary-700 drop-shadow-sm">
               {playlist.length} canciones que cuentan nuestra historia 💕
             </p>
           </motion.div>
@@ -166,7 +188,7 @@ export default function MusicPage() {
                 className={`group relative cursor-pointer overflow-hidden rounded-2xl p-5 shadow-lg transition-all duration-300 ${
                   currentTrack?.id === track.id
                     ? `bg-gradient-to-r ${track.color} bg-opacity-20 shadow-2xl`
-                    : 'bg-white/90 hover:bg-pink-50/50 hover:shadow-xl'
+                    : 'bg-white/90 hover:bg-primary-50/30 hover:shadow-xl'
                 }`}
               >
                 {currentTrack?.id === track.id && isPlaying && (
@@ -203,10 +225,10 @@ export default function MusicPage() {
                   </motion.div>
 
                   <div className="flex-1">
-                    <h3 className="mb-1 font-semibold text-gray-900 drop-shadow-sm">
+                    <h3 className="mb-1 font-semibold text-secondary-900 drop-shadow-sm">
                       {track.title}
                     </h3>
-                    <p className="mb-1 text-sm text-gray-700 drop-shadow-sm">
+                    <p className="mb-1 text-sm text-secondary-700 drop-shadow-sm">
                       {track.artist}
                     </p>
                     <motion.p
@@ -215,7 +237,7 @@ export default function MusicPage() {
                         opacity: hoveredTrack === track.id ? 1 : 0.7,
                         y: 0,
                       }}
-                      className="font-cursive text-xs font-medium text-pink-700 drop-shadow-sm"
+                      className="font-script text-xs font-medium text-primary-700 drop-shadow-sm"
                     >
                       {track.memory}
                     </motion.p>

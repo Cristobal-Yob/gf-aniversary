@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext'
 import GlobalMusicPlayer from '@/components/GlobalMusicPlayer'
+import FloatingHearts from '@/components/FloatingHearts'
 
 export const metadata: Metadata = {
   title: 'Cristóbal y Josefa - Aniversario Número 8 💕',
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <MusicPlayerProvider>
+            <FloatingHearts />
             {children}
             <GlobalMusicPlayer />
           </MusicPlayerProvider>

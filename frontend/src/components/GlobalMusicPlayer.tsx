@@ -14,6 +14,8 @@ export default function GlobalMusicPlayer() {
     nextTrack,
     previousTrack,
     seekTo,
+    volume,
+    setVolume,
   } = useMusicPlayer()
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -46,7 +48,7 @@ export default function GlobalMusicPlayer() {
             background:
               'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
             boxShadow:
-              '0 8px 32px rgba(236, 72, 153, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.5)',
+              '0 8px 32px rgba(128, 0, 32, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.5)',
           }}
         >
           {/* Glow animado de fondo */}
@@ -132,6 +134,21 @@ export default function GlobalMusicPlayer() {
                 <span>{formatTime(progress)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
+            </div>
+
+            {/* Control de Volumen */}
+            <div className="mb-3 flex items-center justify-center gap-2 px-2">
+              <span className="text-sm">🔈</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-primary-600"
+              />
+              <span className="text-sm">🔊</span>
             </div>
 
             {/* Controles */}

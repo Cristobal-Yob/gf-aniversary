@@ -30,25 +30,25 @@ export default function FloatingHearts() {
   if (!mounted) return null
 
   return (
-    <div className="pointer-events-none fixed inset-0 overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-10 overflow-hidden">
       {[...Array(15)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute text-2xl opacity-20"
+          className="absolute text-2xl"
+          style={{
+            left: `${Math.random() * 100}%`,
+          }}
           initial={{
-            x: Math.random() * windowSize.width,
-            y: windowSize.height + 100,
+            y: '110vh',
+            opacity: 0,
           }}
           animate={{
-            y: -100,
-            x: [
-              Math.random() * windowSize.width,
-              Math.random() * windowSize.width + (Math.random() - 0.5) * 200,
-              Math.random() * windowSize.width,
-            ],
+            y: '-10vh',
+            x: [-20, 20, -20],
+            opacity: [0, 0.5, 0],
           }}
           transition={{
-            duration: Math.random() * 15 + 20,
+            duration: Math.random() * 10 + 20,
             repeat: Infinity,
             delay: Math.random() * 10,
             ease: 'linear',

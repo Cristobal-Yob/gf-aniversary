@@ -5,7 +5,6 @@ import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import PhotoLightbox from '@/components/PhotoLightbox'
-import FloatingHearts from '@/components/FloatingHearts'
 import LoveStory from '@/components/LoveStory'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
@@ -61,13 +60,12 @@ export default function GalleryPage() {
       : photos.filter(photo => photo.category === activeCategory)
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
       {/* Partículas flotantes */}
-      <FloatingHearts />
-
+      
       <Navbar />
 
-      <div className="container relative mx-auto px-4 py-16 md:px-6 md:py-20">
+      <div className="container relative z-20 mx-auto px-4 py-16 md:px-6 md:py-20">
         {/* Header romántico */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -90,14 +88,14 @@ export default function GalleryPage() {
             💖
           </motion.div>
 
-          <h1 className="font-cursive mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="font-script mb-4 text-5xl font-bold md:text-7xl">
+            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
               Nuestros Recuerdos
             </span>{' '}
-            <span className="text-gray-800">más Lindos</span>
+            <span className="text-secondary-700">más Lindos</span>
           </h1>
 
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-gray-600 md:text-xl">
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-secondary-600 md:text-xl">
             Cada foto cuenta una historia de amor 📸✨
           </p>
 
@@ -106,9 +104,9 @@ export default function GalleryPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-            className="inline-block rounded-full bg-white/90 px-6 py-3 shadow-lg backdrop-blur-sm"
+            className="inline-block rounded-full bg-white/60 px-6 py-3 shadow-lg backdrop-blur-md border border-white/50"
           >
-            <span className="font-semibold text-pink-600">
+            <span className="font-semibold text-primary-800">
               {photos.length} recuerdos capturados 💕
             </span>
           </motion.div>
@@ -135,8 +133,8 @@ export default function GalleryPage() {
               onClick={() => setActiveCategory(category.id)}
               className={`rounded-full px-6 py-2.5 font-medium transition-all ${
                 activeCategory === category.id
-                  ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/50'
-                  : 'bg-white/90 text-gray-700 backdrop-blur-sm hover:bg-white hover:shadow-md'
+                  ? 'bg-primary-900 text-white shadow-lg shadow-primary-900/20'
+                  : 'bg-white/60 text-secondary-700 backdrop-blur-sm hover:bg-white hover:shadow-md border border-white/50'
               }`}
             >
               <span className="mr-2">{category.icon}</span>
@@ -169,7 +167,7 @@ export default function GalleryPage() {
               >
                 <motion.div
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white p-3 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/30"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white/80 p-3 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-primary-900/20 backdrop-blur-sm"
                   onClick={() => setSelectedPhoto(photo)}
                 >
                   {/* Efecto Polaroid */}
@@ -204,7 +202,7 @@ export default function GalleryPage() {
                         className="absolute right-3 top-3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                         whileHover={{ scale: 1.2, rotate: 15 }}
                       >
-                        <div className="rounded-full bg-white/90 p-2 text-2xl backdrop-blur-sm">
+                        <div className="rounded-full bg-white/90 p-2 text-2xl backdrop-blur-sm text-primary-600">
                           💗
                         </div>
                       </motion.div>
@@ -213,7 +211,7 @@ export default function GalleryPage() {
 
                   {/* Caption estilo polaroid */}
                   <div className="mt-3 text-center">
-                    <p className="font-handwriting text-sm text-gray-600">
+                    <p className="font-handwriting text-sm text-secondary-600">
                       {photo.caption || photo.title}
                     </p>
                   </div>
@@ -245,9 +243,9 @@ export default function GalleryPage() {
           >
             💝
           </motion.div>
-          <h2 className="font-cursive mb-3 text-3xl font-bold text-gray-800 md:text-4xl">
+          <h2 className="font-script mb-3 text-4xl font-bold text-primary-900 md:text-5xl">
             Gracias por compartir{' '}
-            <span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-900 to-accent-600 bg-clip-text text-transparent">
               este camino
             </span>{' '}
             conmigo

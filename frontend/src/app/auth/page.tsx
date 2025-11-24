@@ -29,7 +29,7 @@ export default function AuthPage() {
 
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
         <Navbar />
         <div className="flex min-h-screen items-center justify-center px-6">
           <div className="w-full max-w-md text-center">
@@ -42,7 +42,7 @@ export default function AuthPage() {
             </p>
             <Link
               href="/"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
             >
               Ir al Inicio
             </Link>
@@ -81,7 +81,7 @@ export default function AuthPage() {
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-pink-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
                   placeholder="cristobal-josefa"
                   required
                 />
@@ -99,7 +99,7 @@ export default function AuthPage() {
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-pink-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
                   placeholder="nuestroamor2024"
                   required
                 />
@@ -114,17 +114,17 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-lg bg-pink-600 py-3 font-medium text-white transition-colors hover:bg-pink-700 disabled:bg-pink-300"
+                className="w-full rounded-full bg-primary-900 py-3 font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-primary-300"
               >
                 {isLoading ? 'Ingresando...' : 'Ingresar 💖'}
               </button>
             </form>
 
-            <div className="mt-6 rounded-lg bg-pink-50 p-4">
-              <h3 className="mb-2 text-sm font-medium text-pink-800">
+            <div className="mt-6 rounded-lg bg-primary-50 p-4">
+              <h3 className="mb-2 text-sm font-medium text-primary-800">
                 Credenciales de Acceso:
               </h3>
-              <p className="text-sm text-pink-700">
+              <p className="text-sm text-primary-700">
                 <strong>Usuario:</strong> cristobal-josefa
                 <br />
                 <strong>Contraseña:</strong> nuestroamor2024
