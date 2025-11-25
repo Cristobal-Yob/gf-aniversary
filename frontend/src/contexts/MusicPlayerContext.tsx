@@ -222,6 +222,12 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
   const playTrack = (track: Track) => {
     setCurrentTrack(track)
     setIsPlaying(true)
+    // Forzar reproducción inmediata
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(err => console.log('Play error:', err))
+      }
+    }, 100)
   }
 
   // Play/Pause

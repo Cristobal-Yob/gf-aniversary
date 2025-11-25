@@ -12,21 +12,57 @@ import { useState, useEffect } from 'react'
 
 export default function GalleryPage() {
   const { isAuthenticated } = useAuth()
-  const { playlist, playTrack, currentTrack } = useMusicPlayer()
+  const { playlist, playTrack, currentTrack, audioRef } = useMusicPlayer()
   const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
   const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [hasStarted, setHasStarted] = useState(false)
 
-  // Reproducir automáticamente la canción de UP cuando se carga la galería
-  useEffect(() => {
-    if (isAuthenticated && playlist.length > 0) {
-      // Buscar la canción de UP por título
-      const upSong = playlist.find(track => track.title === 'Married Life (UP)')
-      // Solo cambiar si no es la canción actual
-      if (upSong && currentTrack?.id !== upSong.id) {
-        playTrack(upSong)
-      }
+  // Función para iniciar la experiencia con música
+  const startExperience = () => {
+    const upSong = playlist.find(track => track.title === 'Married Life (UP)')
+    if (upSong) {
+      playTrack(upSong)
+      // Forzar reproducción después del clic del usuario
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(err => console.log('Play error:', err))
+        }
+      }, 50)
     }
-  }, [isAuthenticated]) // Solo se ejecuta cuando cambia la autenticación
+    setHasStarted(true)
+  }
+
+  // Mostrar pantalla de inicio si no ha empezado
+  if (isAuthenticated && !hasStarted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-orange-50">
+        <Navbar />
+        <div className="flex min-h-screen items-center justify-center px-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md text-center"
+          >
+            <div className="mb-6 text-8xl">💕</div>
+            <h1 className="mb-4 text-4xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+              Nuestros Recuerdos
+            </h1>
+            <p className="mb-8 text-gray-600 text-lg">
+              Prepárate para revivir nuestros momentos más especiales con música 🎵
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={startExperience}
+              className="inline-block rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-8 py-4 font-medium text-white text-lg shadow-lg hover:shadow-xl transition-all"
+            >
+              Comenzar experiencia ✨
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+    )
+  }
 
   if (!isAuthenticated) {
     return (

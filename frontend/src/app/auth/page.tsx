@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
@@ -12,6 +13,7 @@ export default function AuthPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { login, isAuthenticated } = useAuth()
+  const { playlist, playTrack, audioRef } = useMusicPlayer()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,6 +22,17 @@ export default function AuthPage() {
 
     try {
       await login(username, password)
+      // Reproducir "Come to Me" inmediatamente después del login exitoso
+      const comeToMe = playlist.find(track => track.title === 'Come to Me')
+      if (comeToMe) {
+        playTrack(comeToMe)
+        // Forzar reproducción con el clic del usuario
+        setTimeout(() => {
+          if (audioRef.current) {
+            audioRef.current.play().catch(err => console.log('Play error:', err))
+          }
+        }, 100)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
     } finally {
