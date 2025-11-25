@@ -19,8 +19,8 @@ export default function GalleryPage() {
   // Reproducir automáticamente la canción de UP cuando se carga la galería
   useEffect(() => {
     if (isAuthenticated && playlist.length > 0) {
-      // Buscar la canción de UP (id: '2')
-      const upSong = playlist.find(track => track.id === '2')
+      // Buscar la canción de UP por título
+      const upSong = playlist.find(track => track.title === 'Married Life (UP)')
       // Solo cambiar si no es la canción actual
       if (upSong && currentTrack?.id !== upSong.id) {
         playTrack(upSong)

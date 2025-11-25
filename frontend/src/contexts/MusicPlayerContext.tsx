@@ -75,6 +75,17 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
     },
     {
       id: '2',
+      title: 'Aprender A Quererte',
+      artist: 'Morat',
+      memory: 'Aún estoy aprendiendo, pero quiero hacerte la mujer más feliz del mundo',
+      emoji: '💕',
+      src: '/music/Morat - Aprender A Quererte.mp3',
+      duration: '3:45',
+      color: 'from-pink-400 to-purple-500',
+      icon: '💗',
+    },
+    {
+      id: '3',
       title: 'Married Life (UP)',
       artist: 'Michael Giacchino',
       memory: 'Cancion para llorar pero muy linda🎈',
@@ -85,7 +96,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🎈',
     },
     {
-      id: '3',
+      id: '4',
       title: 'Perfect',
       artist: 'Ed Sheeran',
       memory: 'Eres perfecta c: 💖',
@@ -96,7 +107,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '✨',
     },
     {
-      id: '4',
+      id: '5',
       title: "Hearts Don't Break Round Here",
       artist: 'Ed Sheeran',
       memory: 'Te amo en nuestra historia no se romperan corazones c: 🥰',
@@ -107,7 +118,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '💘',
     },
     {
-      id: '5',
+      id: '6',
       title: 'Amo Soltanto Te',
       artist: 'señor que canta italiano ',
       memory: 'Te amo solo a ti ✈️',
@@ -118,7 +129,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🎸',
     },
     {
-      id: '6',
+      id: '7',
       title: 'Aquela Pessoa',
       artist: 'Henrique e Juliano',
       memory: 'Eres esa persona 🌹',
@@ -129,7 +140,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '💖',
     },
     {
-      id: '7',
+      id: '8',
       title: 'O Nosso Santo Bateu',
       artist: 'Matheus & Kauan',
       memory: 'De las primeras canciones que te dedique 💫',
@@ -140,7 +151,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🎵',
     },
     {
-      id: '8',
+      id: '9',
       title: 'Sou Favela',
       artist: 'MC Bruninho',
       memory: 'Mi riqueza eres tú 🇧🇷',
@@ -151,7 +162,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🇧🇷',
     },
     {
-      id: '9',
+      id: '10',
       title: 'One Life',
       artist: 'Ed Sheeran',
       memory: 'Una vida contigo es todo lo que necesito',
@@ -162,7 +173,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🌟',
     },
     {
-      id: '10',
+      id: '11',
       title: 'I Will Follow You into the Dark',
       artist: 'Death Cab for Cutie',
       memory: 'Estaré contigo hasta el final',
@@ -173,7 +184,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       icon: '🖤',
     },
     {
-      id: '11',
+      id: '12',
       title: 'Fall On Me',
       artist: 'Andrea Bocelli & Matteo Bocelli',
       memory: 'Me haces sentir lleno',
@@ -182,6 +193,17 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
       duration: '3:36',
       color: 'from-sky-400 to-blue-600',
       icon: '🕊️',
+    },
+    {
+      id: '13',
+      title: 'Mi Nuevo Vicio',
+      artist: 'Morat',
+      memory: 'Eres mi vicio',
+      emoji: '💘',
+      src: '/music/Morat - Mi Nuevo Vicio (Lyric).mp3',
+      duration: '3:28',
+      color: 'from-red-400 to-rose-500',
+      icon: '🎸',
     },
   ]
 
