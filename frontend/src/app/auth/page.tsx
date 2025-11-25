@@ -82,7 +82,7 @@ export default function AuthPage() {
                   value={username}
                   onChange={e => setUsername(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
-                  placeholder="cristobal-josefa"
+                  placeholder="Tu nombre"
                   required
                 />
               </div>
@@ -100,7 +100,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
-                  placeholder="nuestroamor2024"
+                  placeholder="••••••••"
                   required
                 />
               </div>
@@ -120,14 +120,9 @@ export default function AuthPage() {
               </button>
             </form>
 
-            <div className="mt-6 rounded-lg bg-primary-50 p-4">
-              <h3 className="mb-2 text-sm font-medium text-primary-800">
-                Credenciales de Acceso:
-              </h3>
+            <div className="mt-6 rounded-lg bg-primary-50 p-4 text-center">
               <p className="text-sm text-primary-700">
-                <strong>Usuario:</strong> cristobal-josefa
-                <br />
-                <strong>Contraseña:</strong> nuestroamor2024
+                💕 Solo para nosotros 💕
               </p>
             </div>
           </div>

@@ -115,7 +115,7 @@ export default function HomePage() {
                 }}
                 className="flex flex-wrap justify-center gap-6"
               >
-                <Link href="/auth">
+                <Link href={isAuthenticated ? '/about' : '/auth'}>
                   <motion.button
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}

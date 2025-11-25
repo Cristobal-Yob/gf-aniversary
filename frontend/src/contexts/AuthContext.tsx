@@ -28,13 +28,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check if user is logged in on mount
     const token = localStorage.getItem('access_token')
-    if (token === 'couple_token_2024') {
+    if (token && token.startsWith('couple_token_')) {
       // Restore user session
       setUser({
         id: 1,
-        username: 'cristobal-josefa',
-        email: 'cristobal.josefa@amor.com',
-        full_name: 'Cristóbal & Josefa',
+        username: 'josefa',
+        email: 'josefa@amor.com',
+        full_name: 'Josefa',
       })
     }
     setIsLoading(false)
@@ -42,23 +42,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
-      // Credenciales únicas para la pareja
-      const validCredentials = {
-        username: 'cristobal-josefa',
-        password: 'nuestroamor2024',
+      // Hash simple para validación
+      const hashPassword = (str: string) => {
+        let hash = 0
+        for (let i = 0; i < str.length; i++) {
+          const char = str.charCodeAt(i)
+          hash = (hash << 5) - hash + char
+          hash = hash & hash
+        }
+        return hash.toString()
       }
 
+      const validUser = 'josefa'
+      const validHash = '-1309015506' // hash de la contraseña
+
       if (
-        username === validCredentials.username &&
-        password === validCredentials.password
+        username.toLowerCase() === validUser &&
+        hashPassword(password) === validHash
       ) {
         setUser({
           id: 1,
-          username: 'cristobal-josefa',
-          email: 'cristobal.josefa@amor.com',
-          full_name: 'Cristóbal & Josefa',
+          username: 'josefa',
+          email: 'josefa@amor.com',
+          full_name: 'Josefa',
         })
-        localStorage.setItem('access_token', 'couple_token_2024')
+        localStorage.setItem('access_token', 'couple_token_' + hashPassword(password))
         router.push('/')
       } else {
         throw new Error('Credenciales incorrectas')
