@@ -62,7 +62,7 @@ export default function GalleryPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
       {/* Partículas flotantes */}
-      
+
       <Navbar />
 
       <div className="container relative z-20 mx-auto px-4 py-16 md:px-6 md:py-20">
@@ -88,7 +88,7 @@ export default function GalleryPage() {
             💖
           </motion.div>
 
-          <h1 className="font-script mb-4 text-5xl font-bold md:text-7xl">
+          <h1 className="mb-4 font-script text-5xl font-bold md:text-7xl">
             <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
               Nuestros Recuerdos
             </span>{' '}
@@ -104,7 +104,7 @@ export default function GalleryPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-            className="inline-block rounded-full bg-white/60 px-6 py-3 shadow-lg backdrop-blur-md border border-white/50"
+            className="inline-block rounded-full border border-white/50 bg-white/60 px-6 py-3 shadow-lg backdrop-blur-md"
           >
             <span className="font-semibold text-primary-800">
               {photos.length} recuerdos capturados 💕
@@ -134,7 +134,7 @@ export default function GalleryPage() {
               className={`rounded-full px-6 py-2.5 font-medium transition-all ${
                 activeCategory === category.id
                   ? 'bg-primary-900 text-white shadow-lg shadow-primary-900/20'
-                  : 'bg-white/60 text-secondary-700 backdrop-blur-sm hover:bg-white hover:shadow-md border border-white/50'
+                  : 'border border-white/50 bg-white/60 text-secondary-700 backdrop-blur-sm hover:bg-white hover:shadow-md'
               }`}
             >
               <span className="mr-2">{category.icon}</span>
@@ -167,7 +167,7 @@ export default function GalleryPage() {
               >
                 <motion.div
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white/80 p-3 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-primary-900/20 backdrop-blur-sm"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white/80 p-3 shadow-lg backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary-900/20"
                   onClick={() => setSelectedPhoto(photo)}
                 >
                   {/* Efecto Polaroid */}
@@ -202,7 +202,7 @@ export default function GalleryPage() {
                         className="absolute right-3 top-3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                         whileHover={{ scale: 1.2, rotate: 15 }}
                       >
-                        <div className="rounded-full bg-white/90 p-2 text-2xl backdrop-blur-sm text-primary-600">
+                        <div className="rounded-full bg-white/90 p-2 text-2xl text-primary-600 backdrop-blur-sm">
                           💗
                         </div>
                       </motion.div>
@@ -243,7 +243,7 @@ export default function GalleryPage() {
           >
             💝
           </motion.div>
-          <h2 className="font-script mb-3 text-4xl font-bold text-primary-900 md:text-5xl">
+          <h2 className="mb-3 font-script text-4xl font-bold text-primary-900 md:text-5xl">
             Gracias por compartir{' '}
             <span className="bg-gradient-to-r from-primary-900 to-accent-600 bg-clip-text text-transparent">
               este camino
@@ -284,8 +284,8 @@ const photos = [
     src: '/photos/fotos/felizes en ny.jpeg',
     alt: 'Felices en Nueva York',
     title: 'Felices en NY',
-    caption: ' en la gran manzana 🗽',
-    description: 'Explorando Nueva York juntos, un viaje inolvidable',
+    caption: ' en ny 🗽 tu carita muy linda',
+    description: 'Esta foto captura tu belleza en todo su esplendor con tu hermosa sonrisa',
     category: 'ny',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -294,7 +294,7 @@ const photos = [
     alt: 'Sorprendidos en NY',
     title: 'Sorpresa en NY',
     caption: 'Ese momento cuando... 😮💕',
-    description: 'Momento espontáneo en las calles de Nueva York',
+    description: 'je je esta foto me da risa te amu',
     category: 'ny',
     aspectRatio: 'aspect-square',
   },
@@ -305,7 +305,7 @@ const photos = [
     alt: 'Beso en la nieve',
     title: 'Beso bajo la nieve',
     caption: 'Un momento mágico ❄️💋',
-    description: 'Nuestro primer beso en la nieve',
+    description: 'me encanta salir contigo a todos lados',
     category: 'nieve',
     aspectRatio: 'aspect-[4/5]',
   },
@@ -323,7 +323,7 @@ const photos = [
     alt: 'Caras felices en la nieve',
     title: 'Sonrisas Nevadas',
     caption: 'Felicidad pura ☃️😊',
-    description: 'No hay nada como vernos sonreír juntos',
+    description: 'je je de verdad veo todas las fotos y estas mu hermosa c:',
     category: 'nieve',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -333,8 +333,8 @@ const photos = [
     src: '/photos/fotos/hearth templo.jpeg',
     alt: 'Corazón en el templo',
     title: 'Corazón en el Templo',
-    caption: 'Amor sagrado ⛩️💖',
-    description: 'Momento especial en el templo',
+    caption: 'Amor en bahai ⛩️💖',
+    description: 'ya es costumbre el viaje en el templo es mu wen panorama',
     category: 'templo',
     aspectRatio: 'aspect-[4/5]',
   },
@@ -342,7 +342,7 @@ const photos = [
     src: '/photos/fotos/mirandonos templo.jpeg',
     alt: 'Mirándonos en el templo',
     title: 'Miradas Eternas',
-    caption: 'Solo nosotros dos 👀💕',
+    caption: 'miradas que dicen mucho 👀💕',
     description: 'Perdidos en nuestros ojos',
     category: 'templo',
     aspectRatio: 'aspect-[4/5]',
@@ -354,7 +354,7 @@ const photos = [
     alt: 'Josefa comiendo',
     title: 'Mi Amor Comiendo',
     caption: 'Felicidad en cada bocado 😋💕',
-    description: 'Te ves hermosa hasta cuando comes',
+    description: 'me encanta conocer diferentes lugares de comida contigo',
     category: 'comida',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -400,7 +400,7 @@ const photos = [
     src: '/photos/fotos/yo la josefa ordenados y formales.jpeg',
     alt: 'Ordenados y formales',
     title: 'Elegantes',
-    caption: 'Cuando nos arreglamos bonito 👔👗',
+    caption: 'Cuando me acompañas a los momentos importantes 👔👗',
     description: 'Luciendo espectaculares',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
@@ -410,16 +410,16 @@ const photos = [
     alt: 'Disfrazados de payasos',
     title: 'Payasos Enamorados',
     caption: 'Locura total 🤡',
-    description: 'Cuando nos animamos a disfrazarnos',
+    description: 'disfrazardos',
     category: 'celebraciones',
     aspectRatio: 'aspect-square',
   },
   {
     src: '/photos/fotos/esto es halloween en fantasilandia con jac .jpeg',
-    alt: 'Halloween en Fantasilandia',
-    title: 'Halloween en Fantasilandia',
+    alt: 'Fantasilandia',
+    title: 'fantasilandia',
     caption: 'Esto es Halloween! 🎃👻',
-    description: 'Aventura terrorífica en Fantasilandia',
+    description: 'mu weno subirnos a el barco pirata contigo',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -427,7 +427,7 @@ const photos = [
     src: '/photos/fotos/halloween.jpeg',
     alt: 'Halloween - Catrina y Calavera Mexicana',
     title: 'Noche de Brujas',
-    caption: 'Ella de Catrina, yo de Calavera Mexicana 💀👑',
+    caption: ' Catrina y Calavera Mexicana 💀👑',
     description: 'Celebrando Halloween con estilo mexicano',
     category: 'celebraciones',
     aspectRatio: 'aspect-square',
@@ -439,7 +439,7 @@ const photos = [
     alt: 'Josefa con Blue Berry',
     title: 'Con Blue Berry',
     caption: 'Amor de perrito 🐕💙',
-    description: 'La perrita que tanto amas',
+    description: 'Nuestra hija peluda',
     category: 'animales',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -448,7 +448,7 @@ const photos = [
     alt: 'Acariciando un caballo',
     title: 'Amor por los Caballos',
     caption: 'Momento tierno con el caballo 🐴💕',
-    description: 'Tu conexión especial con los animales',
+    description: 'Tu conexión especial con los animalitos',
     category: 'animales',
     aspectRatio: 'aspect-square',
   },
@@ -456,8 +456,8 @@ const photos = [
     src: '/photos/fotos/con el senior de buin zoo.jpeg',
     alt: 'Con el señor en Buin Zoo',
     title: 'Visita al Zoo',
-    caption: 'Aventura en el zoológico 🦁',
-    description: 'Descubriendo animales juntos',
+    caption: 'con señor buin zoo 🦁',
+    description: 'jue weno ese dia',
     category: 'animales',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -468,7 +468,7 @@ const photos = [
     alt: 'En Pixar Up con el abuelito',
     title: 'Aventura UP',
     caption: 'Volando alto juntos 🎈🏠',
-    description: 'Recreando nuestra película favorita',
+    description: 'a llegar a abuelitos',
     category: 'diversión',
     aspectRatio: 'aspect-[4/3]',
   },
@@ -485,7 +485,7 @@ const photos = [
     src: '/photos/fotos/tu triste en pixar .jpeg',
     alt: 'Triste en Pixar',
     title: 'Momento Dramático',
-    caption: 'Actuando en Pixar 🎭',
+    caption: 'nooo sose triste 🎭',
     description: 'Incluso triste te ves hermosa',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
@@ -495,7 +495,7 @@ const photos = [
     alt: 'Yo enojado en Pixar',
     title: 'Cara de Enojado',
     caption: 'Mi mejor actuación 😤',
-    description: 'Haciéndome el enojado',
+    description: 'Que yo soy enojon',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -515,7 +515,7 @@ const photos = [
     alt: 'Caras chistosas esperando el boba',
     title: 'Espera Divertida',
     caption: 'Mientras esperamos el boba 🧋😝',
-    description: 'Haciendo el tonto contigo',
+    description: 'Haciendo el tonto je je',
     category: 'diversión',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -534,8 +534,9 @@ const photos = [
     src: '/photos/fotos/anillos de carino en w.png',
     alt: 'Anillito de cariño',
     title: 'Nuestro Anillito',
-    caption: 'La primera vez que le compré un anillito que representa nuestro amor 💍',
-    description: 'Recuerdo especial: mi primer anillo para ella',
+    caption:
+      'nuestro primer anillito que representa nuestro amor 💍',
+    description: 'Recuerdo especial',
     category: 'celebraciones',
     aspectRatio: 'aspect-[3/4]',
   },
@@ -543,8 +544,9 @@ const photos = [
     src: '/photos/fotos/cuando me da hambe.png',
     alt: 'Cuando me da hambre (broma)',
     title: 'Cuando me da Hambe',
-    caption: 'Yo fingiendo que me la como y diciendo "cuando me da hambre" 😋😂',
-    description: 'Una foto chistosa imitando que me la como',
+    caption:
+      'hace hambre" 😋😂',
+    description: 'yo te como',
     category: 'diversión',
     aspectRatio: 'aspect-square',
   },
@@ -552,8 +554,8 @@ const photos = [
     src: '/photos/fotos/en la pandemia.png',
     alt: 'Recuerdo de la pandemia',
     title: 'Recuerdo de la Pandemia',
-    caption: 'Recuerdo de la pandemia',
-    description: 'Un recuerdo íntimo de los tiempos de pandemia',
+    caption: 'fue re loco pero lo pasamos juntos',
+    description: 'Un recuerdo de la pandemita',
     category: 'diversión',
     aspectRatio: 'aspect-[4/5]',
   },

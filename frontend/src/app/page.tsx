@@ -251,7 +251,8 @@ export default function HomePage() {
                   Felices 8 Años
                 </h3>
                 <p className="mb-8 text-lg leading-relaxed text-secondary-700 md:text-xl">
-                  "Ocho años de aventuras, risas y un amor que crece cada día más.
+                  "Ocho años de aventuras, risas y un amor que crece cada día
+                  más.
                   <br />
                   Gracias por ser mi compañera de vida."
                 </p>
@@ -276,22 +277,20 @@ const features = [
   {
     icon: '📸',
     title: 'Nuestra Galería',
-    description:
-      'Ocho años de recuerdos capturados en momentos inolvidables.',
+    description: 'Ocho años de recuerdos capturados en momentos inolvidables.',
     href: '/gallery',
   },
   {
     icon: '🎵',
     title: 'Soundtrack',
-    description:
-      'La música que ha acompañado nuestra historia de amor.',
+    description: 'La música bonita c:.',
     href: '/music',
   },
 
   {
     icon: '❤️',
     title: 'Nuestra Historia',
-    description: 'El viaje desde aquel primer día hasta hoy.',
+    description: 'El camino desde el primer día hasta hoy.',
     href: '/about',
   },
 ]

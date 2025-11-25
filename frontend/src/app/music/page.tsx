@@ -58,7 +58,8 @@ export default function MusicPage() {
     )
   }
 
-  const currentGradient = currentTrack?.color || 'from-primary-600 to-accent-600'
+  const currentGradient =
+    currentTrack?.color || 'from-primary-600 to-accent-600'
 
   return (
     <motion.div
@@ -93,7 +94,7 @@ export default function MusicPage() {
           </motion.div>
 
           <motion.h1
-            className="font-script mb-4 text-5xl font-bold text-primary-900 drop-shadow-lg md:text-7xl"
+            className="mb-4 font-script text-5xl font-bold text-primary-900 drop-shadow-lg md:text-7xl"
             animate={{
               textShadow:
                 currentTrack && isPlaying
@@ -151,7 +152,7 @@ export default function MusicPage() {
               max="1"
               step="0.01"
               value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              onChange={e => setVolume(parseFloat(e.target.value))}
               className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-primary-600"
             />
             <span className="text-xl">🔊</span>
@@ -163,7 +164,7 @@ export default function MusicPage() {
             transition={{ delay: 0.3 }}
             className="mb-8 text-center"
           >
-            <h2 className="font-script mb-3 text-4xl font-bold text-primary-900 drop-shadow-md md:text-5xl">
+            <h2 className="mb-3 font-script text-4xl font-bold text-primary-900 drop-shadow-md md:text-5xl">
               <span className="transition-all duration-1000">
                 Nuestra Playlist
               </span>{' '}

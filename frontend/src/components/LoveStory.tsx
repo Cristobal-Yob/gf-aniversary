@@ -61,7 +61,7 @@ const storyCards: StoryCard[] = [
   {
     title: 'Comamos juntos siempre 🍽️',
     description:
-      'Cada comida contigo es especial. Compartir estos momentos es uno de mis momentos favoritos',
+      'Cada comida contigo es especial. Compartir estos momentos es uno de mis momentos favoritos cuando te veo con tu bailecito si esta rico',
     photos: [
       {
         src: '/photos/fotos/yo en la comida.jpeg',
@@ -76,7 +76,7 @@ const storyCards: StoryCard[] = [
   {
     title: 'Celebremos juntos cada festividad 🎉',
     description:
-      'Halloween, Navidad, y cada celebración especial. Quiero estar a tu lado en cada momento festivo',
+      'Halloween, Navidad, y cada celebración especial. Quiero estar a tu lado en cada momento',
     photos: [
       {
         src: '/photos/fotos/disfrazados yo de pallazo y ella tamb ien.jpeg',
@@ -258,7 +258,7 @@ export default function LoveStory() {
               <span className="text-gray-800">juntos para siempre</span>
             </h3>
             <p className="mx-auto max-w-3xl text-lg leading-relaxed text-gray-700 md:text-xl">
-              Como Carl y Ellie en UP, quiero que nuestra historia sea una
+              Quiero que nuestra historia sea una
               aventura que dure toda la vida. Desde este momento hasta que
               seamos viejitos juntos, compartiendo risas, recuerdos y todo el
               amor del mundo 💕
@@ -412,10 +412,7 @@ export default function LoveStory() {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             >
-              "La verdadera aventura no es ir a un lugar, sino vivir cada
-              momento contigo. Quiero estar a tu lado desde ahora hasta que
-              seamos viejitos, compartiendo cada risa, cada lágrima y cada
-              latido de nuestros corazones" 💫
+              “Contigo, cualquier lugar se vuelve mi próxima aventura favorita.” 💫
             </motion.p>
 
             <motion.div
