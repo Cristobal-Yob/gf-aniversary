@@ -66,7 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: 'josefa@amor.com',
           full_name: 'Josefa',
         })
-        localStorage.setItem('access_token', 'couple_token_' + hashPassword(password))
+        localStorage.setItem(
+          'access_token',
+          'couple_token_' + hashPassword(password)
+        )
         router.push('/')
       } else {
         throw new Error('Credenciales incorrectas')
