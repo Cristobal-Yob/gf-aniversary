@@ -32,18 +32,139 @@ export default function GlobalMusicPlayer() {
 
   return (
     <AnimatePresence>
+      {/* Versión móvil - Mini player compacto */}
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+      >
+        {/* Player expandido en móvil */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="border-t border-pink-100 bg-white/95 px-4 pb-2 pt-4 backdrop-blur-lg"
+            >
+              {/* Barra de progreso expandida */}
+              <div className="mb-3">
+                <div
+                  className="relative h-2 cursor-pointer overflow-hidden rounded-full bg-gray-200"
+                  onClick={e => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const x = e.clientX - rect.left
+                    const percent = x / rect.width
+                    seekTo(percent * duration)
+                  }}
+                >
+                  <motion.div
+                    className={`h-full rounded-full bg-gradient-to-r ${currentTrack.color}`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>{formatTime(progress)}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
+
+              {/* Control de Volumen */}
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-sm">🔈</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-pink-500"
+                />
+                <span className="text-sm">🔊</span>
+              </div>
+
+              {/* Recuerdo */}
+              <p className="text-center text-xs italic text-pink-600">
+                {currentTrack.memory}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Barra mini compacta */}
+        <div 
+          className="flex items-center gap-2 border-t border-pink-100 bg-white/95 px-3 py-2 backdrop-blur-lg"
+          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))' }}
+        >
+          {/* Emoji + Info */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex flex-1 items-center gap-2 overflow-hidden"
+          >
+            <motion.div
+              animate={{ rotate: isPlaying ? 360 : 0 }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${currentTrack.color} text-lg`}
+            >
+              {currentTrack.emoji}
+            </motion.div>
+            <div className="flex-1 overflow-hidden text-left">
+              <p className="truncate text-sm font-semibold text-gray-900">{currentTrack.title}</p>
+              <p className="truncate text-xs text-gray-500">{currentTrack.artist}</p>
+            </div>
+            <motion.span
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              className="text-gray-400"
+            >
+              ▲
+            </motion.span>
+          </button>
+
+          {/* Controles compactos */}
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              onClick={previousTrack}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-lg active:bg-gray-100"
+            >
+              ⏮️
+            </button>
+            <button
+              onClick={togglePlayPause}
+              className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${currentTrack.color} text-xl text-white shadow-md`}
+            >
+              {isPlaying ? '⏸️' : '▶️'}
+            </button>
+            <button
+              onClick={nextTrack}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-lg active:bg-gray-100"
+            >
+              ⏭️
+            </button>
+          </div>
+        </div>
+
+        {/* Mini barra de progreso */}
+        <div className="absolute left-0 right-0 top-0 h-0.5 bg-gray-200">
+          <div
+            className={`h-full bg-gradient-to-r ${currentTrack.color}`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </motion.div>
+
+      {/* Versión desktop - Player flotante */}
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 100, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed bottom-6 right-6 z-50 hidden md:block"
       >
         <motion.div
-          animate={{ scale: isExpanded ? 1 : 1 }}
-          className={`group relative overflow-hidden rounded-2xl backdrop-blur-2xl transition-all duration-500 ${
-            isExpanded ? 'w-80' : 'w-72'
-          }`}
+          className="group relative w-80 overflow-hidden rounded-2xl backdrop-blur-2xl"
           style={{
             background:
               'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',

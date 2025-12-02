@@ -59,6 +59,25 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
 }) => {
   const { isAuthenticated } = useAuth()
 
+  // Verificar si es 2 de diciembre (cumpleaños)
+  const isBirthday = () => {
+    const today = new Date()
+    return today.getMonth() === 11 && today.getDate() === 2 // Diciembre es mes 11 (0-indexed)
+  }
+
+  // Canción especial de cumpleaños
+  const birthdaySong: Track = {
+    id: 'birthday',
+    title: 'Cumpleaños Feliz',
+    artist: 'Stitch',
+    memory: '¡Feliz Cumpleaños mi amor! 🎂🎉 Que este día sea tan especial como tú 💕',
+    emoji: '🎂',
+    src: '/music/CUMPLEAÑOS FELIZ de STITCH  Canción en Español para dedicar.mp3',
+    duration: '3:00',
+    color: 'from-blue-400 to-purple-500',
+    icon: '🎉',
+  }
+
   // Playlist completa (definida primero para poder usarla en useState)
   const playlist: Track[] = [
     {
@@ -207,10 +226,13 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
     },
   ]
 
-  // Estados del reproductor (inicializamos con "Come to Me" como canción por defecto)
-  const comeToMeTrack = playlist.find(t => t.id === '1') // Come to Me ahora es el primero
+  // Playlist completa incluyendo canción de cumpleaños si es el día
+  const fullPlaylist = isBirthday() ? [birthdaySong, ...playlist] : playlist
+
+  // Estados del reproductor - Si es cumpleaños, empezar con la canción de cumpleaños
+  const defaultTrack = isBirthday() ? birthdaySong : playlist.find(t => t.id === '1')
   const [currentTrack, setCurrentTrack] = useState<Track | null>(
-    comeToMeTrack || null
+    defaultTrack || null
   )
   const [isPlaying, setIsPlaying] = useState(true) // Inicia reproduciendo automáticamente
   const [progress, setProgress] = useState(0)
@@ -238,18 +260,18 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
   // Siguiente canción
   const nextTrack = () => {
     if (!currentTrack) return
-    const currentIndex = playlist.findIndex(t => t.id === currentTrack.id)
-    const nextIndex = (currentIndex + 1) % playlist.length
-    playTrack(playlist[nextIndex])
+    const currentIndex = fullPlaylist.findIndex(t => t.id === currentTrack.id)
+    const nextIndex = (currentIndex + 1) % fullPlaylist.length
+    playTrack(fullPlaylist[nextIndex])
   }
 
   // Canción anterior
   const previousTrack = () => {
     if (!currentTrack) return
-    const currentIndex = playlist.findIndex(t => t.id === currentTrack.id)
+    const currentIndex = fullPlaylist.findIndex(t => t.id === currentTrack.id)
     const previousIndex =
-      currentIndex === 0 ? playlist.length - 1 : currentIndex - 1
-    playTrack(playlist[previousIndex])
+      currentIndex === 0 ? fullPlaylist.length - 1 : currentIndex - 1
+    playTrack(fullPlaylist[previousIndex])
   }
 
   // Buscar posición
@@ -337,7 +359,7 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
         progress,
         duration,
         volume,
-        playlist,
+        playlist: fullPlaylist,
         playTrack,
         togglePlayPause,
         nextTrack,

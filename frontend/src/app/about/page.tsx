@@ -3,9 +3,62 @@
 import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 export default function AboutPage() {
   const { isAuthenticated } = useAuth()
+  const [timeTogetherData, setTimeTogetherData] = useState({
+    years: 0,
+    months: 0,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
+
+  // Fecha de inicio de la relación (25 de Noviembre de 2017)
+  const startDate = new Date(2017, 10, 25)
+
+  // Calcular tiempo juntos
+  useEffect(() => {
+    const calculateTime = () => {
+      const now = new Date()
+      const diff = now.getTime() - startDate.getTime()
+
+      const seconds = Math.floor(diff / 1000)
+      const minutes = Math.floor(seconds / 60)
+      const hours = Math.floor(minutes / 60)
+
+      let years = now.getFullYear() - startDate.getFullYear()
+      let months = now.getMonth() - startDate.getMonth()
+      let remainingDays = now.getDate() - startDate.getDate()
+
+      if (remainingDays < 0) {
+        months--
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+        remainingDays += prevMonth.getDate()
+      }
+
+      if (months < 0) {
+        years--
+        months += 12
+      }
+
+      setTimeTogetherData({
+        years,
+        months,
+        days: remainingDays,
+        hours: hours % 24,
+        minutes: minutes % 60,
+        seconds: seconds % 60,
+      })
+    }
+
+    calculateTime()
+    const interval = setInterval(calculateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   if (!isAuthenticated) {
     return (
@@ -44,6 +97,92 @@ export default function AboutPage() {
             El viaje de nosotros a través de los años
           </p>
         </div>
+
+        {/* Contador en Tiempo Real */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mx-auto mb-16 max-w-4xl"
+        >
+          <div className="card relative overflow-hidden p-8 text-center">
+            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-pink-100 opacity-50 blur-3xl" />
+            <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-red-100 opacity-50 blur-3xl" />
+            
+            <div className="relative">
+              <h2 className="mb-2 text-2xl font-bold text-primary-800 md:text-3xl">
+                ⏱️ Tiempo Juntos ⏱️
+              </h2>
+              <p className="mb-6 text-secondary-500">Desde el 25 de Noviembre de 2017</p>
+              
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-6 md:gap-4">
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-pink-50 to-pink-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-pink-600 md:text-4xl">
+                    {timeTogetherData.years}
+                  </div>
+                  <div className="text-xs text-pink-400 md:text-sm">Años</div>
+                </motion.div>
+                
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-red-500 md:text-4xl">
+                    {timeTogetherData.months}
+                  </div>
+                  <div className="text-xs text-red-400 md:text-sm">Meses</div>
+                </motion.div>
+                
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-orange-500 md:text-4xl">
+                    {timeTogetherData.days}
+                  </div>
+                  <div className="text-xs text-orange-400 md:text-sm">Días</div>
+                </motion.div>
+                
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-yellow-600 md:text-4xl">
+                    {timeTogetherData.hours}
+                  </div>
+                  <div className="text-xs text-yellow-500 md:text-sm">Horas</div>
+                </motion.div>
+                
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-green-500 md:text-4xl">
+                    {timeTogetherData.minutes}
+                  </div>
+                  <div className="text-xs text-green-400 md:text-sm">Minutos</div>
+                </motion.div>
+                
+                <motion.div
+                  className="rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-3 shadow-sm md:p-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="text-2xl font-bold text-blue-500 md:text-4xl">
+                    {timeTogetherData.seconds}
+                  </div>
+                  <div className="text-xs text-blue-400 md:text-sm">Segundos</div>
+                </motion.div>
+              </div>
+              
+              <p className="mt-6 text-lg text-secondary-600">
+                💕 Cada segundo contigo es un regalo 💕
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Timeline */}
         <div className="mx-auto mb-16 max-w-3xl space-y-8">

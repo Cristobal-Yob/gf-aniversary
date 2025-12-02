@@ -53,8 +53,8 @@ export default function LoadingScreen({
       </div>
 
       {/* Contenido de carga */}
-      <div className="relative z-10 text-center">
-        {/* Corazón animado */}
+      <div className="relative z-10 px-4 text-center">
+        {/* Emoji de cumpleaños */}
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -65,25 +65,34 @@ export default function LoadingScreen({
             repeat: Infinity,
             ease: 'easeInOut',
           }}
-          className="mb-8 text-8xl"
+          className="mb-6 text-6xl md:mb-8 md:text-8xl"
         >
-          💕
+          🎂
         </motion.div>
 
-        {/* Texto de carga */}
+        {/* Texto de cumpleaños */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-6 text-3xl font-bold md:text-4xl"
+          className="mb-2 text-2xl font-bold md:mb-4 md:text-4xl"
         >
           <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent">
-            Cargando nuestro espacio...
+            ¡Feliz Cumpleaños!
           </span>
         </motion.h2>
 
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-4 font-script text-4xl font-bold text-pink-600 md:mb-6 md:text-6xl"
+        >
+          Mi amor Josefa 💕
+        </motion.h1>
+
         {/* Barra de progreso */}
-        <div className="mx-auto mb-4 h-2 w-64 overflow-hidden rounded-full bg-white/50 backdrop-blur-sm">
+        <div className="mx-auto mb-4 h-2 w-48 overflow-hidden rounded-full bg-white/50 backdrop-blur-sm md:w-64">
           <motion.div
             className="h-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500"
             initial={{ width: '0%' }}
@@ -94,7 +103,7 @@ export default function LoadingScreen({
 
         {/* Porcentaje */}
         <motion.p
-          className="text-xl font-semibold text-pink-600"
+          className="text-lg font-semibold text-pink-600 md:text-xl"
           key={progress}
           initial={{ scale: 1.2 }}
           animate={{ scale: 1 }}
@@ -108,7 +117,7 @@ export default function LoadingScreen({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="mt-4 text-sm text-gray-600"
+          className="mt-3 text-xs text-gray-600 md:mt-4 md:text-sm"
         >
           Preparando algo especial para ti... ❤️
         </motion.p>
@@ -117,17 +126,17 @@ export default function LoadingScreen({
       {/* Partículas flotantes */}
       {isMounted && (
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-2xl opacity-30"
+              className="absolute text-xl opacity-40 md:text-2xl"
               initial={{
-                x: Math.random() * window.innerWidth,
-                y: window.innerHeight + 50,
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 400),
+                y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 50,
               }}
               animate={{
                 y: -50,
-                x: Math.random() * window.innerWidth,
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 400),
               }}
               transition={{
                 duration: 8 + Math.random() * 4,
@@ -136,7 +145,7 @@ export default function LoadingScreen({
                 ease: 'linear',
               }}
             >
-              {['💖', '💝', '💕', '💗'][Math.floor(Math.random() * 4)]}
+              {['🎂', '🎁', '🎈', '🎉', '💖', '💝', '✨', '🌟'][Math.floor(Math.random() * 8)]}
             </motion.div>
           ))}
         </div>
