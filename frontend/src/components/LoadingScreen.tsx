@@ -1,155 +1,84 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
+import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { BindingRings } from '@/components/illustrations'
+import { EASE_OUT, RELATIONSHIP_START } from '@/lib/site'
 
+const STEP_MS = 150
+const HOLD_MS = 450
+
+/** Portada del calendario: pasa los años desde 2017 hasta hoy y se arranca hacia arriba */
 export default function LoadingScreen({
   onLoadingComplete,
 }: {
   onLoadingComplete: () => void
 }) {
-  const [progress, setProgress] = useState(0)
-  const [isMounted, setIsMounted] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const startYear = RELATIONSHIP_START.getFullYear()
+  const [year, setYear] = useState(startYear)
 
   useEffect(() => {
-    setIsMounted(true)
+    const endYear = new Date().getFullYear()
 
-    // Simular progreso de carga
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setTimeout(() => {
-            onLoadingComplete()
-          }, 300)
-          return 100
+    if (reduceMotion) {
+      setYear(endYear)
+      const done = setTimeout(onLoadingComplete, HOLD_MS)
+      return () => clearTimeout(done)
+    }
+
+    let done: ReturnType<typeof setTimeout>
+    const tick = setInterval(() => {
+      setYear(current => {
+        if (current >= endYear) {
+          clearInterval(tick)
+          done = setTimeout(onLoadingComplete, HOLD_MS)
+          return endYear
         }
-        // Incremento más rápido al inicio, más lento al final
-        const increment = prev < 60 ? 8 : prev < 90 ? 4 : 2
-        return Math.min(prev + increment, 100)
+        return current + 1
       })
-    }, 100)
+    }, STEP_MS)
 
-    return () => clearInterval(interval)
-  }, [onLoadingComplete])
+    return () => {
+      clearInterval(tick)
+      clearTimeout(done)
+    }
+  }, [onLoadingComplete, reduceMotion])
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50"
+      initial={false}
+      exit={
+        reduceMotion
+          ? { opacity: 0 }
+          : { transform: 'translateY(-100%) rotate(-2deg)' }
+      }
+      transition={{ duration: reduceMotion ? 0.2 : 0.6, ease: EASE_OUT }}
+      style={{ transformOrigin: 'top left' }}
+      className="fixed inset-0 z-[60] flex flex-col bg-cobalt text-paper"
     >
-      {/* Imagen de fondo con blur */}
-      <div className="absolute inset-0">
-        <Image
-          src="/photos/icon/J&C.png"
-          alt="Loading"
-          fill
-          className="object-contain opacity-10 blur-3xl"
-          priority
-        />
+      <BindingRings className="h-10 w-full shrink-0 text-paper" />
+
+      <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
+        <p className="font-display text-2xl font-semibold uppercase tracking-wide text-cobalt-tint md:text-3xl">
+          ¡Feliz Aniversario!
+        </p>
+
+        <p
+          aria-live="polite"
+          className="font-display text-[clamp(7rem,38vw,20rem)] font-black leading-[0.85] tabular-nums"
+        >
+          {year}
+        </p>
+
+        <p className="font-hand text-4xl text-marker md:text-5xl">
+          Mi amor Josefa
+        </p>
+
+        <p className="mt-6 text-sm text-cobalt-tint md:text-base">
+          Preparando algo especial para ti...
+        </p>
       </div>
-
-      {/* Contenido de carga */}
-      <div className="relative z-10 px-4 text-center">
-        {/* Emoji de cumpleaños */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 10, -10, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="mb-6 text-6xl md:mb-8 md:text-8xl"
-        >
-          🎂
-        </motion.div>
-
-        {/* Texto de cumpleaños */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-2 text-2xl font-bold md:mb-4 md:text-4xl"
-        >
-          <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent">
-            ¡Feliz Cumpleaños!
-          </span>
-        </motion.h2>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-4 font-script text-4xl font-bold text-pink-600 md:mb-6 md:text-6xl"
-        >
-          Mi amor Josefa 💕
-        </motion.h1>
-
-        {/* Barra de progreso */}
-        <div className="mx-auto mb-4 h-2 w-48 overflow-hidden rounded-full bg-white/50 backdrop-blur-sm md:w-64">
-          <motion.div
-            className="h-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500"
-            initial={{ width: '0%' }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-          />
-        </div>
-
-        {/* Porcentaje */}
-        <motion.p
-          className="text-lg font-semibold text-pink-600 md:text-xl"
-          key={progress}
-          initial={{ scale: 1.2 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {progress}%
-        </motion.p>
-
-        {/* Mensaje romántico */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="mt-3 text-xs text-gray-600 md:mt-4 md:text-sm"
-        >
-          Preparando algo especial para ti... ❤️
-        </motion.p>
-      </div>
-
-      {/* Partículas flotantes */}
-      {isMounted && (
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-xl opacity-40 md:text-2xl"
-              initial={{
-                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 400),
-                y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 50,
-              }}
-              animate={{
-                y: -50,
-                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 400),
-              }}
-              transition={{
-                duration: 8 + Math.random() * 4,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: 'linear',
-              }}
-            >
-              {['🎂', '🎁', '🎈', '🎉', '💖', '💝', '✨', '🌟'][Math.floor(Math.random() * 8)]}
-            </motion.div>
-          ))}
-        </div>
-      )}
     </motion.div>
   )
 }

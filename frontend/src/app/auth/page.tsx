@@ -60,9 +60,9 @@ export default function AuthPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md text-center"
           >
-            <div className="mb-4 text-5xl md:mb-6 md:text-6xl">🎂</div>
+            <div className="mb-4 text-5xl md:mb-6 md:text-6xl">💞</div>
             <h1 className="mb-3 text-2xl font-bold text-gray-800 md:mb-4 md:text-3xl">
-              ¡Feliz Cumpleaños!
+              ¡Feliz Aniversario!
             </h1>
             <p className="mb-6 text-gray-600 md:mb-8">
               Bienvenida a tu espacio especial, mi amor 💕
@@ -94,10 +94,10 @@ export default function AuthPage() {
               transition={{ duration: 2, repeat: Infinity }}
               className="mb-3 text-5xl md:mb-4 md:text-6xl"
             >
-              🎂
+              💞
             </motion.div>
             <h1 className="mb-2 text-2xl font-bold text-gray-800 md:text-3xl">
-              ¡Feliz Cumpleaños!
+              ¡Feliz Aniversario!
             </h1>
             <p className="text-sm text-gray-600 md:text-base">
               Ingresa para ver tu sorpresa especial 💕
@@ -166,7 +166,7 @@ export default function AuthPage() {
 
             <div className="mt-5 rounded-xl bg-gradient-to-r from-pink-50 to-rose-50 p-4 text-center md:mt-6">
               <p className="text-sm text-primary-700">
-                🎂 Hecho con amor para ti 💕
+                💞 Hecho con amor para ti 💕
               </p>
             </div>
           </div>

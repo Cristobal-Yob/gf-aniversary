@@ -1,346 +1,441 @@
 'use client'
 
 import Link from 'next/link'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type ComponentType,
+  type SVGProps,
+} from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
-import CinematicIntro from '@/components/CinematicIntro'
 import LoadingScreen from '@/components/LoadingScreen'
-import Confetti from '@/components/Confetti'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import MonthGrid from '@/components/home/MonthGrid'
+import DrawOnView from '@/components/ui/DrawOnView'
+import PhotoPrint from '@/components/ui/PhotoPrint'
+import {
+  IconArrowRight,
+  IconBook,
+  IconCamera,
+  IconHeart,
+  IconMusicNote,
+} from '@/components/icons'
+import {
+  BindingRings,
+  MarkCircle,
+  MarkHeart,
+  MarkUnderline,
+  StampNine,
+  TornEdge,
+} from '@/components/illustrations'
+import { milestones } from '@/content/milestones'
+import {
+  COUPLE,
+  EASE_OUT,
+  daysTogether,
+  formatCount,
+  yearsTogether,
+} from '@/lib/site'
+
+const MONTHS = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+]
+const WEEKDAYS = [
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+]
+
+const prints = [
+  {
+    src: '/photos/fotos/felizes en ny.jpeg',
+    alt: 'Felices en NY',
+    caption: 'Felices en NY',
+    date: 'Abril 2022',
+    position: 'left-0 top-[9%] w-[52%]',
+    rotate: -5,
+  },
+  {
+    src: '/photos/fotos/snow kiss.jpeg',
+    alt: 'Snow Kiss',
+    caption: 'Snow Kiss',
+    position: 'right-0 top-0 w-[49%]',
+    rotate: 4,
+  },
+  {
+    src: '/photos/fotos/hearth templo.jpeg',
+    alt: 'Corazón Templo',
+    caption: 'Corazón Templo',
+    position: 'bottom-0 left-[24%] w-[50%]',
+    rotate: -1.5,
+  },
+]
+
+interface Destination {
+  Icon: ComponentType<SVGProps<SVGSVGElement>>
+  title: string
+  description: string
+  href: string
+}
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth()
+  const reduceMotion = useReducedMotion()
   const [isLoading, setIsLoading] = useState(true)
-  const [showConfetti, setShowConfetti] = useState(true)
+  const [today, setToday] = useState<Date | null>(null)
+
+  // La fecha se calcula en el navegador: la página se prerenderiza al compilar
+  useEffect(() => setToday(new Date()), [])
+  const finishLoading = useCallback(() => setIsLoading(false), [])
+
+  const ready = !isLoading
+  const years = today ? yearsTogether(today) : 9
+  const storyHref = isAuthenticated ? '/about' : '/auth'
+  const isSecondOfDecember =
+    today !== null && today.getMonth() === 11 && today.getDate() === 2
+
+  const destinations: Destination[] = [
+    {
+      Icon: IconCamera,
+      title: 'Nuestra Galería',
+      description:
+        'Nueve años de recuerdos capturados en momentos inolvidables.',
+      href: '/gallery',
+    },
+    {
+      Icon: IconMusicNote,
+      title: 'Soundtrack',
+      description: 'La música bonita c:.',
+      href: '/music',
+    },
+    {
+      Icon: IconBook,
+      title: 'Nuestra Historia',
+      description: 'El camino desde el primer día hasta hoy.',
+      href: '/about',
+    },
+  ]
+
+  // Entrada del hero: espera a que la portada se arranque
+  const enter = (delay: number, fromRotate = 0, toRotate = 0) => ({
+    initial: reduceMotion
+      ? { opacity: 0, transform: `translateY(0px) rotate(${toRotate}deg)` }
+      : { opacity: 0, transform: `translateY(14px) rotate(${fromRotate}deg)` },
+    animate: ready
+      ? { opacity: 1, transform: `translateY(0px) rotate(${toRotate}deg)` }
+      : undefined,
+    transition: { duration: 0.7, delay, ease: EASE_OUT },
+  })
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {isLoading && (
-          <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
-        )}
+      <AnimatePresence>
+        {isLoading && <LoadingScreen onLoadingComplete={finishLoading} />}
       </AnimatePresence>
 
-      {/* Confetti de cumpleaños */}
-      {!isLoading && showConfetti && <Confetti duration={6000} intensity="high" />}
+      <Navbar />
 
-      <div className="relative min-h-screen overflow-hidden font-serif">
-        {/* Fondo animado con gradiente suave tipo Apple */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="animate-gradient absolute inset-0 bg-gradient-to-br from-cream via-[#fff0f3] to-[#fdf2f4]"
-        />{' '}
-        {/* Intro cinematográfica con imágenes flotantes */}
-        <CinematicIntro />
-        <div className="relative z-20">
-          <Navbar />
+      <main>
+        {/* Hoja del día */}
+        <section className="relative bg-cobalt text-paper [--accent:theme(colors.marker)]">
+          <BindingRings className="h-8 w-full text-paper md:h-10" />
 
-          {/* Hero Section */}
-          <section className="relative flex min-h-[calc(100vh-80px)] items-center justify-center px-4 pb-6 pt-0 md:min-h-screen md:px-6 md:pb-12">
-            <div className="mx-auto max-w-5xl text-center">
-              {/* Banner de cumpleaños */}
-              <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.2,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="mb-4 md:mb-6"
-              >
-                <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 px-4 py-2 text-white shadow-lg md:px-6 md:py-3">
-                  <span className="text-lg md:text-2xl">🎂</span>
-                  <span className="text-sm font-semibold md:text-lg">¡Feliz Cumpleaños Mi Amor!</span>
-                  <span className="text-lg md:text-2xl">🎉</span>
-                </div>
-              </motion.div>
-
-              {/* Emoji flotante principal */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 1,
-                  delay: 0.5,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="mb-4 md:mb-8"
-              >
-                <motion.div
-                  animate={{
-                    y: [-10, 10, -10],
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="inline-block text-5xl drop-shadow-2xl md:text-7xl lg:text-8xl"
-                >
-                  ♾️
-                </motion.div>
-              </motion.div>
-
-              {/* Nombres con efecto de brillo */}
-              <motion.h1
-                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{
-                  duration: 1.2,
-                  delay: 0.3,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="mb-4 text-4xl font-bold tracking-tight md:mb-6 md:text-6xl lg:text-8xl"
-              >
-                <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-900 bg-clip-text text-transparent">
-                  Cristóbal
-                </span>
-                <span className="mx-2 font-script text-3xl text-accent-600 md:mx-4 md:text-5xl lg:text-7xl">
-                  &
-                </span>
-                <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-900 bg-clip-text text-transparent">
-                  Josefa
-                </span>
-              </motion.h1>
-
-              {/* Subtítulo con efecto typewriter */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.6,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="mb-8 md:mb-12"
-              >
-                <p className="mb-1 text-xl font-medium text-primary-800 md:mb-2 md:text-2xl lg:text-3xl">
-                  8 Años de Historia
-                </p>
-                <p className="text-base text-secondary-600 md:text-lg lg:text-xl">
-                  Celebrando cada momento de nuestro amor infinito
-                </p>
-              </motion.div>
-
-              {/* Botones con animación - optimizados para móvil */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.8,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-6"
-              >
-                <Link href={isAuthenticated ? '/about' : '/auth'} className="w-full sm:w-auto">
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn-primary group w-full py-4 text-base sm:w-auto sm:py-3"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      Nuestra Historia
-                      <span className="transition-transform group-hover:translate-x-1">
-                        →
-                      </span>
-                    </span>
-                  </motion.button>
-                </Link>
-
-                <Link href="/gallery" className="w-full sm:w-auto">
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn-secondary group w-full py-4 text-base sm:w-auto sm:py-3"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      Ver Recuerdos
-                      <span className="text-xl transition-transform group-hover:scale-110">
-                        📸
-                      </span>
-                    </span>
-                  </motion.button>
-                </Link>
-
-                {/* Botón especial de cumpleaños - Solo el 2 de diciembre */}
-                {isAuthenticated && new Date().getMonth() === 11 && new Date().getDate() === 2 && (
-                  <Link href="/birthday" className="w-full sm:w-auto">
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      animate={{ 
-                        boxShadow: [
-                          '0 0 20px rgba(236, 72, 153, 0.4)',
-                          '0 0 40px rgba(236, 72, 153, 0.6)',
-                          '0 0 20px rgba(236, 72, 153, 0.4)',
-                        ]
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="group w-full rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 px-8 py-4 text-base font-medium text-white shadow-lg sm:w-auto sm:py-3"
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        🎂 Tu Sorpresa de Cumpleaños
-                        <span className="text-xl transition-transform group-hover:scale-110">
-                          ✨
-                        </span>
-                      </span>
-                    </motion.button>
-                  </Link>
-                )}
-              </motion.div>
+          <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 md:px-8 md:pb-28">
+            <div className="flex items-baseline justify-between border-b-2 border-paper pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
+              <span>
+                {today
+                  ? `${WEEKDAYS[today.getDay()]} ${today.getDate()} · ${MONTHS[today.getMonth()]}`
+                  : ' '}
+              </span>
+              <span>{today ? today.getFullYear() : ' '}</span>
             </div>
-          </section>
 
-          {/* Features Section */}
-          <section className="relative px-4 py-12 md:px-6 md:py-20">
-            <div className="mx-auto max-w-6xl">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-10 text-center md:mb-16"
-              >
-                <h2 className="mb-3 text-3xl font-bold md:mb-4 md:text-4xl lg:text-5xl">
-                  <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-primary-800 bg-clip-text text-transparent">
-                    Nuestro Universo
-                  </span>
-                </h2>
-                <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-primary-300 to-accent-300 md:w-24" />
-                <p className="mt-4 text-base text-secondary-600 md:mt-6 md:text-lg lg:text-xl">
-                  Explora los rincones de nuestra vida juntos
-                </p>
-              </motion.div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
-                {features.map((feature, index) => (
-                  <Link
-                    key={feature.title}
-                    href={feature.href}
-                    className="w-full"
+            <div className="grid items-center gap-10 pt-8 lg:grid-cols-12 lg:gap-8 lg:pt-12">
+              <div className="lg:col-span-7">
+                <div className="relative inline-block">
+                  <motion.p
+                    initial={
+                      reduceMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' }
+                    }
+                    animate={
+                      ready
+                        ? { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }
+                        : undefined
+                    }
+                    transition={{ duration: 0.9, ease: EASE_OUT }}
+                    className="font-display text-[clamp(6.5rem,31vw,19rem)] font-black leading-[0.82] tabular-nums"
                   >
+                    {today ? formatCount(daysTogether(today)) : '0.000'}
+                  </motion.p>
+                  <DrawOnView
+                    play={ready}
+                    delay={700}
+                    className="pointer-events-none absolute -inset-x-[5%] -inset-y-[9%] block"
+                  >
+                    <MarkCircle className="h-full w-full" />
+                  </DrawOnView>
+                </div>
+
+                <motion.p
+                  {...enter(0.2)}
+                  className="mt-4 font-display text-2xl font-semibold uppercase tracking-wide md:text-4xl"
+                >
+                  días juntos
+                  <span className="block text-base font-semibold normal-case tracking-normal text-cobalt-tint md:text-lg">
+                    desde el 25 de noviembre de 2017
+                  </span>
+                </motion.p>
+
+                <motion.h1
+                  {...enter(0.3)}
+                  className="mt-8 font-display text-5xl font-extrabold uppercase leading-[0.95] md:text-7xl"
+                >
+                  {COUPLE.first} <span className="text-marker">&amp;</span>{' '}
+                  {COUPLE.second}
+                </motion.h1>
+
+                <motion.div {...enter(0.4)} className="mt-4 max-w-xl">
+                  <p className="text-xl font-semibold md:text-2xl">
+                    {years} Años de Historia
+                  </p>
+                  <p className="mt-1 text-base text-cobalt-tint md:text-lg">
+                    Celebrando cada momento de nuestro amor infinito
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  {...enter(0.9, -8, -3)}
+                  className="mt-8 inline-block"
+                >
+                  <p className="relative font-hand text-4xl leading-none text-marker md:text-5xl">
+                    ¡Feliz Aniversario Mi Amor!
+                    <DrawOnView
+                      play={ready}
+                      delay={1500}
+                      className="absolute -bottom-3 left-0 block h-3 w-full"
+                    >
+                      <MarkUnderline className="h-full w-full" />
+                    </DrawOnView>
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  {...enter(0.55)}
+                  className="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+                >
+                  <Link
+                    href={storyHref}
+                    className="btn-almanac group border-paper bg-paper text-ink hover:bg-marker"
+                  >
+                    Nuestra Historia
+                    <IconArrowRight className="h-5 w-5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
+                  </Link>
+                  <Link
+                    href="/gallery"
+                    className="btn-almanac border-paper text-paper hover:bg-paper hover:text-ink"
+                  >
+                    Ver Recuerdos
+                    <IconCamera className="h-5 w-5" />
+                  </Link>
+                  {isAuthenticated && isSecondOfDecember && (
+                    <Link
+                      href="/birthday"
+                      className="btn-almanac border-marker bg-marker text-ink"
+                    >
+                      Tu Sorpresa de Cumpleaños
+                    </Link>
+                  )}
+                </motion.div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="relative mx-auto aspect-[10/11] w-full max-w-[520px]">
+                  {prints.map((print, index) => (
                     <motion.div
-                      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      viewport={{ once: true }}
+                      key={print.src}
+                      initial={
+                        reduceMotion
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              transform: `translateY(-28px) rotate(${print.rotate + 7}deg) scale(1.05)`,
+                            }
+                      }
+                      animate={
+                        ready
+                          ? {
+                              opacity: 1,
+                              transform: `translateY(0px) rotate(${print.rotate}deg) scale(1)`,
+                            }
+                          : undefined
+                      }
                       transition={{
                         duration: 0.8,
-                        delay: index * 0.15,
-                        ease: [0.16, 1, 0.3, 1],
+                        delay: 0.45 + index * 0.14,
+                        ease: EASE_OUT,
                       }}
-                      whileHover={{ y: -8, scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="card group flex h-full min-h-[200px] w-full flex-col items-center justify-center p-6 text-center md:min-h-[280px] md:p-8"
+                      className={`absolute ${print.position}`}
                     >
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 300,
-                          damping: 15,
-                        }}
-                        className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50 text-4xl shadow-inner md:mb-6 md:h-20 md:w-20 md:text-5xl"
-                      >
-                        {feature.icon}
-                      </motion.div>
-                      <h3 className="mb-2 text-xl font-semibold text-primary-900 transition-colors group-hover:text-primary-700 md:mb-3 md:text-2xl">
-                        {feature.title}
-                      </h3>
-                      <p className="mb-4 text-sm text-secondary-600 md:mb-6 md:px-4 md:text-base">
-                        {feature.description}
-                      </p>
-                      <div className="mt-auto inline-flex items-center text-sm font-medium text-accent-600 transition-all group-hover:gap-2 group-hover:text-accent-700 md:text-base">
-                        Descubrir
-                        <motion.span
-                          className="ml-1 inline-block"
-                          animate={{ x: [0, 4, 0] }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                          }}
-                        >
-                          →
-                        </motion.span>
-                      </div>
+                      <PhotoPrint
+                        src={print.src}
+                        alt={print.alt}
+                        caption={print.caption}
+                        date={print.date}
+                        sizes="(min-width: 1024px) 260px, 50vw"
+                        priority={index === 0}
+                      />
                     </motion.div>
-                  </Link>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          {/* Footer romántico */}
-          <footer className="relative px-4 py-12 md:px-6 md:py-20">
-            <div className="mx-auto max-w-4xl text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="rounded-2xl border border-primary-100 bg-white/50 p-6 backdrop-blur-sm md:rounded-3xl md:p-12"
-              >
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="mb-4 inline-block text-5xl md:mb-6 md:text-6xl"
-                >
-                  🎂
-                </motion.div>
-                <h3 className="mb-3 font-script text-3xl text-primary-800 md:mb-4 md:text-4xl lg:text-5xl">
-                  Feliz Cumpleaños Josefa
-                </h3>
-                <p className="mb-6 text-base leading-relaxed text-secondary-700 md:mb-8 md:text-lg lg:text-xl">
-                  "Que este día esté lleno de alegría, amor y todos tus sueños cumplidos.
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  Te amo infinitamente."
-                </p>
-                <div className="flex flex-col items-center gap-2 text-xs text-secondary-500 md:gap-3 md:text-sm">
-                  <p className="font-medium">
-                    Hecho con todo mi ❤️ por Cristóbal
-                  </p>
-                  <p className="opacity-75">
-                    © {new Date().getFullYear()} • Nuestro Aniversario
-                  </p>
-                </div>
-              </motion.div>
+          <TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-cobalt md:h-6" />
+        </section>
+
+        {/* Índice del almanaque */}
+        <section className="px-4 pb-16 pt-24 md:px-8 md:pb-24 md:pt-32">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="font-display text-[clamp(3rem,11vw,7.5rem)] font-black uppercase leading-[0.9]">
+              Nuestro Universo
+            </h2>
+            <p className="mt-3 max-w-xl text-lg text-dim md:text-xl">
+              Explora los rincones de nuestra vida juntos
+            </p>
+
+            <ul className="mt-10 border-t-2 border-ink md:mt-14">
+              {destinations.map(({ Icon, title, description, href }) => (
+                <li key={title} className="border-b-2 border-ink">
+                  <Link
+                    href={href}
+                    className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 py-6 transition-colors duration-200 hover:bg-ink hover:text-paper md:gap-8 md:px-4 md:py-8"
+                  >
+                    <Icon className="h-9 w-9 md:h-12 md:w-12" />
+                    <span>
+                      <span className="block font-display text-4xl font-extrabold uppercase leading-none md:text-6xl">
+                        {title}
+                      </span>
+                      <span className="mt-2 block text-base text-dim transition-colors duration-200 group-hover:text-rule md:text-lg">
+                        {description}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-3 font-display text-lg font-semibold uppercase tracking-wide">
+                      <span className="hidden sm:inline">Descubrir</span>
+                      <IconArrowRight className="h-7 w-7 transition-transform duration-200 ease-out group-hover:translate-x-2 md:h-9 md:w-9" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Los meses, uno por uno */}
+        <section className="px-4 pb-20 md:px-8 md:pb-28">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-7">
+              <MonthGrid />
             </div>
-          </footer>
+
+            <div className="lg:col-span-5">
+              <h2 className="font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
+                Cada cuadro es un mes
+              </h2>
+              <ul className="mt-8 border-t border-rule">
+                {milestones.map(milestone => (
+                  <li
+                    key={milestone.title}
+                    className="flex items-center gap-4 border-b border-rule py-3"
+                  >
+                    <span className="h-4 w-4 shrink-0 bg-marker ring-2 ring-inset ring-ink" />
+                    <span className="flex-1 font-display text-xl font-semibold uppercase leading-tight md:text-2xl">
+                      {milestone.title}
+                    </span>
+                    <span className="text-right text-sm text-dim">
+                      {milestone.dateLabel}
+                    </span>
+                  </li>
+                ))}
+                <li className="flex items-center gap-4 py-3">
+                  <span className="h-4 w-4 shrink-0 bg-cobalt" />
+                  <span className="flex-1 font-display text-xl font-semibold uppercase leading-tight md:text-2xl">
+                    Hoy
+                  </span>
+                </li>
+              </ul>
+              <Link
+                href={storyHref}
+                className="btn-almanac group mt-8 border-ink hover:bg-ink hover:text-paper"
+              >
+                Nuestra Historia
+                <IconArrowRight className="h-5 w-5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Última hoja */}
+      <footer className="relative overflow-hidden bg-ink px-4 pb-28 pt-16 text-paper [--accent:theme(colors.marker)] md:px-8 md:pb-32 md:pt-24">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-8">
+            <DrawOnView className="block h-16 w-16 md:h-20 md:w-20">
+              <MarkHeart className="h-full w-full" />
+            </DrawOnView>
+            <h3 className="mt-6 font-display text-5xl font-black uppercase leading-[0.9] md:text-8xl">
+              Feliz Aniversario {COUPLE.second}
+            </h3>
+            <p className="mt-6 max-w-2xl font-hand text-3xl leading-snug text-marker md:text-4xl">
+              &ldquo;Nueve años a tu lado y te sigo eligiendo cada día. Te amo
+              infinitamente.&rdquo;
+            </p>
+            <div className="mt-10 space-y-1 text-sm text-rule">
+              <p className="flex items-center gap-1.5 font-medium">
+                Hecho con todo mi
+                <IconHeart className="h-4 w-4 text-marker" aria-label="amor" />
+                por {COUPLE.first}
+              </p>
+              <p>
+                © {today ? today.getFullYear() : 2026} • Nuestro Aniversario
+              </p>
+            </div>
+          </div>
+
+          <motion.div
+            initial={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, transform: 'rotate(14deg) scale(1.35)' }
+            }
+            whileInView={{ opacity: 1, transform: 'rotate(14deg) scale(1)' }}
+            viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+            transition={{ duration: 0.35, ease: EASE_OUT }}
+            className="justify-self-start text-marker md:col-span-4 md:justify-self-end"
+          >
+            <StampNine className="h-44 w-44 font-display md:h-60 md:w-60" />
+          </motion.div>
         </div>
-      </div>
+      </footer>
     </>
   )
 }
-
-const features = [
-  {
-    icon: '📸',
-    title: 'Nuestra Galería',
-    description: 'Ocho años de recuerdos capturados en momentos inolvidables.',
-    href: '/gallery',
-  },
-  {
-    icon: '🎵',
-    title: 'Soundtrack',
-    description: 'La música bonita c:.',
-    href: '/music',
-  },
-
-  {
-    icon: '❤️',
-    title: 'Nuestra Historia',
-    description: 'El camino desde el primer día hasta hoy.',
-    href: '/about',
-  },
-]

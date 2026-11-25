@@ -48,11 +48,21 @@ module.exports = {
           950: '#451a03',
         },
         cream: '#FDFBF7',
+        // Almanaque
+        paper: '#F4F5F1',
+        ink: '#0F1115',
+        cobalt: { DEFAULT: '#1F35D1', deep: '#16269C', tint: '#C9D0FF' },
+        marker: '#FFD60A',
+        rule: '#D5D8D2',
+        dim: '#575C66',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
         script: ['Dancing Script', 'cursive'],
+        display: ['var(--font-display)', 'Arial Narrow', 'sans-serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        hand: ['var(--font-hand)', 'cursive'],
       },
       animation: {
         'fade-in': 'fadeIn 1.5s ease-in-out',

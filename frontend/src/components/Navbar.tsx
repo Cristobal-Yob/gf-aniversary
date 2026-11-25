@@ -3,207 +3,212 @@
 import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, type ComponentType, type SVGProps } from 'react'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import {
+  IconBook,
+  IconCalendar,
+  IconCamera,
+  IconClose,
+  IconLogout,
+  IconMenu,
+  IconMusicNote,
+} from '@/components/icons'
+import { MonogramJC } from '@/components/illustrations'
+import { EASE_OUT } from '@/lib/site'
+
+interface NavLink {
+  href: string
+  label: string
+  Icon?: ComponentType<SVGProps<SVGSVGElement>>
+  always: boolean
+}
+
+// El cumpleaños de Josefa: 2 de diciembre
+function isBirthday() {
+  const today = new Date()
+  return today.getMonth() === 11 && today.getDate() === 2
+}
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const isActive = (path: string) => pathname === path
-
-  // Verificar si es 2 de diciembre (cumpleaños)
-  const isBirthday = () => {
-    const today = new Date()
-    return today.getMonth() === 11 && today.getDate() === 2
-  }
-
-  const navLinks = [
-    { href: '/', label: 'Inicio', icon: '🏠', always: true },
-    { href: '/gallery', label: 'Galería', icon: '📸', always: false },
-    { href: '/music', label: 'Música', icon: '🎵', always: false },
-    { href: '/about', label: 'Nosotros', icon: '❤️', always: false },
-    // Link de cumpleaños solo aparece el 2 de diciembre
-    ...(isBirthday() ? [{ href: '/birthday', label: '¡Cumpleaños!', icon: '🎂', always: false }] : []),
+  const navLinks: NavLink[] = [
+    { href: '/', label: 'Inicio', always: true },
+    { href: '/gallery', label: 'Galería', Icon: IconCamera, always: false },
+    { href: '/music', label: 'Música', Icon: IconMusicNote, always: false },
+    { href: '/about', label: 'Nosotros', Icon: IconBook, always: false },
+    ...(isBirthday()
+      ? [
+          {
+            href: '/birthday',
+            label: '¡Cumpleaños!',
+            Icon: IconCalendar,
+            always: false,
+          },
+        ]
+      : []),
   ]
 
-  const filteredLinks = navLinks.filter(link => link.always || isAuthenticated)
+  const links = navLinks.filter(link => link.always || isAuthenticated)
+  const closeMenu = () => setIsMobileMenuOpen(false)
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-primary-100/50 bg-white/80 shadow-lg backdrop-blur-lg backdrop-saturate-150">
-        <div className="flex w-full items-center justify-between px-4 py-2 md:px-8 md:py-3">
-          {/* 🩷 Logo - Izquierda */}
-          <div className="flex shrink-0 items-center">
-            <Link href="/" className="flex items-center">
-              <img
-                src="/photos/icon/J&C.png"
-                alt="C & J"
-                className="h-12 w-12 object-contain transition-transform duration-300 hover:rotate-3 hover:scale-110 md:h-16 md:w-16 lg:h-20 lg:w-20"
-              />
-            </Link>
-          </div>
+      <nav className="sticky top-0 z-50 border-b-2 border-ink bg-paper text-ink">
+        <div className="flex h-14 items-stretch justify-between pl-4 md:h-16 md:pl-8">
+          <Link
+            href="/"
+            aria-label="Inicio"
+            className="flex items-center gap-3"
+            onClick={closeMenu}
+          >
+            <MonogramJC className="h-9 w-9 md:h-10 md:w-10" />
+            <span className="hidden font-display text-xl font-extrabold uppercase tracking-wide sm:block">
+              Cristóbal &amp; Josefa
+            </span>
+          </Link>
 
-          {/* 💫 Centro - Menú Desktop */}
-          <ul className="hidden flex-1 items-center justify-center gap-4 text-sm font-medium text-secondary-700 md:flex md:gap-6 lg:gap-10 lg:text-base">
-            {filteredLinks.map(link => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`flex items-center space-x-2 transition-all duration-200 ease-in-out hover:scale-105 ${
-                    isActive(link.href)
-                      ? 'border-b-2 border-accent-400 pb-1 text-primary-900'
-                      : 'hover:text-primary-800'
-                  }`}
-                >
-                  <span className="text-lg">{link.icon}</span>
-                  <span>{link.label}</span>
-                </Link>
-              </li>
-            ))}
+          <ul className="hidden items-stretch font-display text-lg font-semibold uppercase tracking-wide md:flex">
+            {links.map(({ href, label, Icon }) => {
+              const active = pathname === href
+              return (
+                <li key={href} className="flex">
+                  <Link
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex items-center gap-2 px-4 transition-colors duration-150 lg:px-5 ${
+                      active ? 'bg-marker' : 'hover:bg-ink hover:text-paper'
+                    }`}
+                  >
+                    {Icon && <Icon className="h-5 w-5" />}
+                    {label}
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
 
-          {/* 🌷 Derecha - Sesión + Hamburguesa */}
-          <div className="flex shrink-0 items-center gap-2 md:gap-4">
-            {/* Botón hamburguesa móvil */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary-800 transition-colors hover:bg-primary-100 md:hidden"
-              aria-label="Menú"
-            >
-              <motion.div
-                animate={isMobileMenuOpen ? 'open' : 'closed'}
-                className="flex flex-col gap-1"
-              >
-                <motion.span
-                  variants={{
-                    closed: { rotate: 0, y: 0 },
-                    open: { rotate: 45, y: 6 },
-                  }}
-                  className="block h-0.5 w-5 bg-current"
-                />
-                <motion.span
-                  variants={{
-                    closed: { opacity: 1 },
-                    open: { opacity: 0 },
-                  }}
-                  className="block h-0.5 w-5 bg-current"
-                />
-                <motion.span
-                  variants={{
-                    closed: { rotate: 0, y: 0 },
-                    open: { rotate: -45, y: -6 },
-                  }}
-                  className="block h-0.5 w-5 bg-current"
-                />
-              </motion.div>
-            </button>
-
-            {/* Botones de sesión desktop */}
+          <div className="flex items-stretch">
             {isAuthenticated ? (
               <>
-                <span className="hidden text-sm font-medium text-secondary-600 lg:block">
-                  Hola, {user?.full_name || user?.username} �
+                <span className="hidden items-center px-4 text-sm text-dim lg:flex">
+                  Hola, {user?.full_name || user?.username}
                 </span>
                 <button
                   onClick={logout}
-                  className="hidden rounded-full bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-800 transition-all duration-200 ease-in-out hover:scale-105 hover:bg-primary-100 hover:shadow-md md:block"
+                  className="hidden items-center gap-2 border-l-2 border-ink px-5 font-display text-lg font-semibold uppercase tracking-wide transition-colors duration-150 hover:bg-ink hover:text-paper md:flex"
                 >
+                  <IconLogout className="h-5 w-5" />
                   Cerrar Sesión
                 </button>
               </>
             ) : (
               <Link
                 href="/auth"
-                className="hidden rounded-full bg-primary-900 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 ease-in-out hover:scale-105 hover:bg-primary-800 hover:shadow-md md:block"
+                className="hidden items-center bg-ink px-6 font-display text-lg font-semibold uppercase tracking-wide text-paper transition-colors duration-150 hover:bg-cobalt md:flex"
               >
-                Iniciar Sesión 💖
+                Iniciar Sesión
               </Link>
             )}
+
+            <button
+              onClick={() => setIsMobileMenuOpen(open => !open)}
+              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={isMobileMenuOpen}
+              className="flex w-14 items-center justify-center border-l-2 border-ink md:hidden"
+            >
+              {isMobileMenuOpen ? (
+                <IconClose className="h-6 w-6" />
+              ) : (
+                <IconMenu className="h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Menú móvil desplegable */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed left-0 right-0 top-[64px] z-40 overflow-hidden border-b border-primary-100 bg-white/95 shadow-lg backdrop-blur-lg md:hidden"
-          >
-            <div className="px-4 py-4">
-              {/* Links de navegación */}
-              <ul className="space-y-2">
-                {filteredLinks.map((link, index) => (
-                  <motion.li
-                    key={link.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-all ${
-                        isActive(link.href)
-                          ? 'bg-primary-100 text-primary-900'
-                          : 'text-secondary-700 hover:bg-primary-50'
-                      }`}
-                    >
-                      <span className="text-xl">{link.icon}</span>
-                      <span>{link.label}</span>
-                    </Link>
-                  </motion.li>
-                ))}
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={closeMenu}
+              className="fixed inset-0 z-30 bg-ink/40 md:hidden"
+            />
+            <motion.div
+              initial={
+                reduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, transform: 'translateY(-12px)' }
+              }
+              animate={{ opacity: 1, transform: 'translateY(0px)' }}
+              exit={
+                reduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, transform: 'translateY(-12px)' }
+              }
+              transition={{ duration: 0.22, ease: EASE_OUT }}
+              className="fixed inset-x-0 top-14 z-40 border-b-2 border-ink bg-paper text-ink md:hidden"
+            >
+              <ul className="font-display text-3xl font-extrabold uppercase">
+                {links.map(({ href, label, Icon }) => {
+                  const active = pathname === href
+                  return (
+                    <li key={href} className="border-b border-rule">
+                      <Link
+                        href={href}
+                        onClick={closeMenu}
+                        aria-current={active ? 'page' : undefined}
+                        className={`flex items-center justify-between px-4 py-4 ${
+                          active ? 'bg-marker' : ''
+                        }`}
+                      >
+                        {label}
+                        {Icon && <Icon className="h-6 w-6" />}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
 
-              {/* Separador */}
-              <div className="my-4 h-px bg-primary-100" />
-
-              {/* Sesión móvil */}
-              {isAuthenticated ? (
-                <div className="space-y-3">
-                  <p className="px-4 text-sm text-secondary-600">
-                    Hola, <span className="font-semibold">{user?.full_name || user?.username}</span> 👋
-                  </p>
-                  <button
-                    onClick={() => {
-                      logout()
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="w-full rounded-xl bg-primary-50 px-4 py-3 text-center font-semibold text-primary-800 transition-colors hover:bg-primary-100"
+              <div className="p-4">
+                {isAuthenticated ? (
+                  <div className="space-y-3">
+                    <p className="text-sm text-dim">
+                      Hola,{' '}
+                      <span className="font-semibold text-ink">
+                        {user?.full_name || user?.username}
+                      </span>
+                    </p>
+                    <button
+                      onClick={() => {
+                        logout()
+                        closeMenu()
+                      }}
+                      className="btn-almanac w-full border-ink"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/auth"
+                    onClick={closeMenu}
+                    className="btn-almanac w-full border-ink bg-ink text-paper"
                   >
-                    Cerrar Sesión
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  href="/auth"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block w-full rounded-xl bg-primary-900 px-4 py-3 text-center font-semibold text-white transition-colors hover:bg-primary-800"
-                >
-                  Iniciar Sesión 💖
-                </Link>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Overlay para cerrar menú */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 z-30 bg-black/20 md:hidden"
-          />
+                    Iniciar Sesión
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
