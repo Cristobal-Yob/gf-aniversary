@@ -50,6 +50,10 @@ export const photoCategories: PhotoCategory[] = [
   {
     id: "vangogh",
     label: "Van Gogh"
+  },
+  {
+    id: "conciertos",
+    label: "Conciertos"
   }
 ]
 
@@ -467,5 +471,32 @@ export const photos: Photo[] = [
     description: "",
     category: "celebraciones",
     aspectRatio: "aspect-[3/4]"
+  },
+  {
+    src: "/photos/nuevas/foto-18.jpg",
+    alt: "Selfie de los dos frente al escenario del concierto de Ed Sheeran",
+    title: "Ed Sheeran en vivo",
+    caption: "Esperando que empiece",
+    description: "",
+    category: "conciertos",
+    aspectRatio: "aspect-[3/4]"
+  },
+  {
+    src: "/photos/nuevas/foto-19.jpg",
+    alt: "Selfie de los dos de día en el concierto, con la pantalla pidiendo canciones",
+    title: "Solicita una canción",
+    caption: "Con calor y todo",
+    description: "",
+    category: "conciertos",
+    aspectRatio: "aspect-[4/3]"
+  },
+  {
+    src: "/photos/nuevas/foto-20.jpg",
+    alt: "Dos calabazas de Halloween talladas y pintadas por nosotros",
+    title: "Nuestras calabazas",
+    caption: "Halloween hecho a mano",
+    description: "",
+    category: "celebraciones",
+    aspectRatio: "aspect-[4/3]"
   }
 ]
