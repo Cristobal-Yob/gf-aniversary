@@ -16,6 +16,12 @@ import {
 import SpinningVinyl from '@/components/music/SpinningVinyl'
 import RuleSlider from '@/components/music/RuleSlider'
 import { formatTime } from '@/components/music/formatTime'
+import {
+  discAccent,
+  discPosition,
+  groupByDisc,
+  pad2,
+} from '@/components/music/discs'
 import { EASE_OUT } from '@/lib/site'
 
 const iconButton =
@@ -55,6 +61,7 @@ export default function GlobalMusicPlayer() {
 
   // En /music el tocadiscos grande es el que gira: un solo elemento en movimiento
   const spinHere = isPlaying && pathname !== '/music'
+  const position = discPosition(currentTrack, playlist)
   const elapsed = `${formatTime(progress)} de ${formatTime(duration)}`
 
   const toggleMute = () => {
@@ -91,10 +98,14 @@ export default function GlobalMusicPlayer() {
               <p className="font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-5xl">
                 {currentTrack.title}
               </p>
-              <p className="mt-1 text-base text-rule">{currentTrack.artist}</p>
-              <p className="mt-4 max-w-2xl font-hand text-3xl leading-snug text-marker md:text-4xl">
-                {currentTrack.memory}
-              </p>
+              {currentTrack.artist && (
+                <p className="mt-1 text-base text-rule">{currentTrack.artist}</p>
+              )}
+              {currentTrack.memory && (
+                <p className="mt-4 max-w-2xl font-hand text-3xl leading-snug text-marker md:text-4xl">
+                  {currentTrack.memory}
+                </p>
+              )}
 
               {/* Controles que en el teléfono no caben en la barra */}
               <div className="mt-5 flex items-center gap-3 md:hidden">
@@ -115,40 +126,52 @@ export default function GlobalMusicPlayer() {
                 </span>
               </div>
 
-              <ol className="mt-6 border-t border-rule/40">
-                {playlist.map((track, index) => {
-                  const active = track.id === currentTrack.id
-                  return (
-                    <li key={track.id} className="border-b border-rule/40">
-                      <button
-                        type="button"
-                        onClick={() => playTrack(track)}
-                        aria-current={active ? 'true' : undefined}
-                        className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 px-2 py-2.5 text-left transition-colors duration-150 ${
-                          active
-                            ? 'bg-marker text-ink'
-                            : 'hover:bg-paper hover:text-ink'
-                        }`}
-                      >
-                        <span className="font-display text-lg font-bold tabular-nums">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block truncate font-display text-xl font-bold uppercase leading-tight">
-                            {track.title}
-                          </span>
-                          <span className="block truncate text-sm opacity-80">
-                            {track.artist}
-                          </span>
-                        </span>
-                        <span className="text-sm tabular-nums">
-                          {track.duration}
-                        </span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ol>
+              {groupByDisc(playlist).map(({ disc, tracks }) => (
+                <section key={disc.id} className="mt-6">
+                  <h3 className="flex items-baseline justify-between gap-3 border-b-2 border-paper pb-1 font-display text-lg font-bold uppercase tracking-wide">
+                    <span>{disc.title}</span>
+                    <span className="truncate text-sm font-semibold text-rule">
+                      {disc.subtitle}
+                    </span>
+                  </h3>
+                  <ol>
+                    {tracks.map((track, index) => {
+                      const active = track.id === currentTrack.id
+                      return (
+                        <li key={track.id} className="border-b border-rule/40">
+                          <button
+                            type="button"
+                            onClick={() => playTrack(track)}
+                            aria-current={active ? 'true' : undefined}
+                            className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 px-2 py-2.5 text-left transition-colors duration-150 ${
+                              active
+                                ? 'bg-marker text-ink'
+                                : 'hover:bg-paper hover:text-ink'
+                            }`}
+                          >
+                            <span className="font-display text-lg font-bold tabular-nums">
+                              {pad2(index + 1)}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block truncate font-display text-xl font-bold uppercase leading-tight">
+                                {track.title}
+                              </span>
+                              {track.artist && (
+                                <span className="block truncate text-sm opacity-80">
+                                  {track.artist}
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-sm tabular-nums">
+                              {track.duration}
+                            </span>
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </section>
+              ))}
             </div>
           </motion.div>
         )}
@@ -179,14 +202,14 @@ export default function GlobalMusicPlayer() {
           >
             <SpinningVinyl
               spinning={spinHere}
-              className="h-11 w-11 shrink-0 text-calipso [--accent:theme(colors.marker)] [--hole:theme(colors.ink)]"
+              className={`h-11 w-11 shrink-0 text-paper [--groove:theme(colors.rule)] [--hole:theme(colors.ink)] ${discAccent[currentTrack.disc]}`}
             />
             <span className="min-w-0 flex-1">
               <span className="block truncate font-display text-xl font-extrabold uppercase leading-none">
                 {currentTrack.title}
               </span>
               <span className="block truncate text-sm text-rule">
-                {currentTrack.artist}
+                {currentTrack.artist || `${position.title} · ${pad2(position.number)} / ${pad2(position.total)}`}
               </span>
             </span>
             <IconChevronDown

@@ -9,12 +9,20 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Navbar from '@/components/Navbar'
 import DrawOnView from '@/components/ui/DrawOnView'
 import Turntable from '@/components/music/Turntable'
+import TapedPrint from '@/components/music/TapedPrint'
+import {
+  discPosition,
+  groupByDisc,
+  pad2,
+  type DiscGroup,
+} from '@/components/music/discs'
+import type { Track } from '@/content/playlist'
 import {
   IconArrowRight,
   IconLock,
@@ -98,6 +106,192 @@ function ParallaxIllustration() {
   )
 }
 
+/** Alto de las pestañas de discos, que quedan fijas bajo la barra de navegación */
+const TABS_H = '3.5rem'
+const BELOW_TABS = `calc(var(--nav-h) + ${TABS_H})`
+
+/** Pestañas tipo funda: saltan a cada disco y marcan el que está en pantalla */
+function DiscTabs({ groups }: { groups: DiscGroup[] }) {
+  const [active, setActive] = useState<number>(groups[0]?.disc.id ?? 1)
+
+  useEffect(() => {
+    const blocks = groups
+      .map(g => document.getElementById(`disco-${g.disc.id}`))
+      .filter((el): el is HTMLElement => el !== null)
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActive(Number(entry.target.getAttribute('data-disc')))
+          }
+        })
+      },
+      { rootMargin: '-35% 0px -60% 0px' }
+    )
+    blocks.forEach(block => observer.observe(block))
+    return () => observer.disconnect()
+  }, [groups])
+
+  return (
+    <nav
+      aria-label="Discos"
+      className="sticky top-nav z-20 -mx-4 flex h-14 items-end gap-2 border-b-2 border-ink bg-paper px-4 md:-mx-8 md:px-8"
+    >
+      {groups.map(({ disc, tracks }) => {
+        const isActive = disc.id === active
+        return (
+          <a
+            key={disc.id}
+            href={`#disco-${disc.id}`}
+            aria-current={isActive ? 'true' : undefined}
+            onClick={e => {
+              e.preventDefault()
+              setActive(disc.id)
+              document
+                .getElementById(`disco-${disc.id}`)
+                ?.scrollIntoView({ block: 'start' })
+            }}
+            className={`flex h-11 flex-1 items-center justify-between gap-3 border-x-2 border-t-2 border-ink px-3 font-display text-lg font-extrabold uppercase tracking-wide transition-colors duration-150 sm:flex-none sm:basis-64 md:text-2xl ${
+              isActive ? 'bg-marker text-ink' : 'hover:bg-ink hover:text-paper'
+            }`}
+          >
+            <span>{disc.title}</span>
+            <span className="text-sm font-semibold tabular-nums md:text-base">
+              {pad2(tracks.length)}
+            </span>
+          </a>
+        )
+      })}
+    </nav>
+  )
+}
+
+function DiscBlock({
+  group: { disc, tracks },
+  first,
+  currentTrack,
+  onPlay,
+}: {
+  group: DiscGroup
+  first: boolean
+  currentTrack: Track | null
+  onPlay: (track: Track) => void
+}) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <div
+      id={`disco-${disc.id}`}
+      data-disc={disc.id}
+      className={`lg:grid lg:grid-cols-12 lg:gap-12 ${
+        first ? '' : 'mt-16 border-t-2 border-ink'
+      }`}
+      style={{ scrollMarginTop: BELOW_TABS }}
+    >
+      <header
+        className="flex flex-col gap-6 border-b-2 border-ink pb-6 pt-8 sm:flex-row sm:items-end sm:justify-between lg:sticky lg:col-span-4 lg:flex-col lg:items-start lg:justify-start lg:self-start lg:border-b-0 lg:pb-8 lg:pt-10"
+        style={{ top: BELOW_TABS }}
+      >
+        <div>
+          <h2 className="font-display text-[clamp(3.5rem,14vw,8rem)] font-black uppercase leading-[0.9] lg:text-[clamp(3rem,min(6vw,12vh),7rem)]">
+            {disc.title}
+          </h2>
+          <p className="mt-2 font-display text-2xl font-extrabold uppercase leading-tight md:text-4xl lg:text-[clamp(1.5rem,min(2.4vw,5vh),2.25rem)]">
+            {disc.subtitle}
+          </p>
+          <p className="mt-2 max-w-md text-lg text-dim">{disc.note}</p>
+        </div>
+        {disc.image ? (
+          <TapedPrint
+            src={disc.image.src}
+            alt={disc.image.alt}
+            width={disc.image.width}
+            height={disc.image.height}
+            rotate={-3}
+            className="mt-2 self-start sm:self-end lg:self-start"
+          />
+        ) : (
+          <ParallaxIllustration />
+        )}
+      </header>
+
+      <ol className="lg:col-span-8 lg:mt-10 lg:border-t-2 lg:border-ink">
+        {tracks.map((track, index) => {
+          const active = track.id === currentTrack?.id
+          return (
+            <motion.li
+              key={track.id}
+              initial={
+                reduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, transform: 'translateY(18px)' }
+              }
+              whileInView={{ opacity: 1, transform: 'translateY(0px)' }}
+              viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+              transition={{
+                duration: 0.55,
+                delay: (index % 6) * 0.06,
+                ease: EASE_OUT,
+              }}
+              className="border-b border-rule"
+            >
+              <button
+                type="button"
+                onClick={() => onPlay(track)}
+                aria-current={active ? 'true' : undefined}
+                className={`group grid w-full grid-cols-[2.75rem_1fr_auto] items-baseline gap-x-3 px-2 py-5 text-left transition-colors duration-200 md:grid-cols-[5rem_1fr_auto] md:gap-x-6 md:px-4 md:py-6 ${
+                  active ? 'bg-marker text-ink' : 'hover:bg-ink hover:text-paper'
+                }`}
+              >
+                <span className="font-display text-2xl font-black tabular-nums md:text-5xl">
+                  {pad2(index + 1)}
+                </span>
+                <span className="min-w-0">
+                  <span className="block break-words font-display text-2xl font-extrabold uppercase leading-[0.95] md:text-5xl">
+                    {track.title}
+                  </span>
+                  {track.artist && (
+                    <span
+                      className={`mt-1 block text-base md:text-lg ${
+                        active ? '' : 'text-dim group-hover:text-rule'
+                      }`}
+                    >
+                      {track.artist}
+                    </span>
+                  )}
+                  {active && track.memory && (
+                    <motion.span
+                      initial={
+                        reduceMotion
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              transform: 'translateY(8px) rotate(-1deg)',
+                            }
+                      }
+                      animate={{
+                        opacity: 1,
+                        transform: 'translateY(0px) rotate(-1deg)',
+                      }}
+                      transition={{ duration: 0.5, ease: EASE_OUT }}
+                      className="mt-3 block max-w-2xl font-hand text-2xl leading-snug md:text-4xl"
+                    >
+                      {track.memory}
+                    </motion.span>
+                  )}
+                </span>
+                <span className="font-display text-lg font-semibold tabular-nums md:text-2xl">
+                  {track.duration}
+                </span>
+              </button>
+            </motion.li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
+
 export default function MusicPage() {
   const { isAuthenticated, isLoading } = useAuth()
   const {
@@ -115,6 +309,9 @@ export default function MusicPage() {
 
   // El elemento de audio vive en el proveedor; se lee después de montar
   useEffect(() => setAudio(audioRef.current), [audioRef])
+
+  const position = currentTrack ? discPosition(currentTrack, playlist) : null
+  const groups = useMemo(() => groupByDisc(playlist), [playlist])
 
   if (!isAuthenticated) {
     return (
@@ -181,7 +378,11 @@ export default function MusicPage() {
               transition={{ duration: 0.8, ease: EASE_OUT }}
               className="mx-auto w-full max-w-[520px] lg:col-span-6 lg:max-w-[min(520px,calc(100svh_-_var(--nav-h)_-_var(--player-h)_-_10rem))]"
             >
-              <Turntable audio={audio} isPlaying={isPlaying} />
+              <Turntable
+                audio={audio}
+                isPlaying={isPlaying}
+                disc={currentTrack?.disc ?? 1}
+              />
             </motion.div>
 
             <div className="min-w-0 lg:col-span-6">
@@ -204,18 +405,27 @@ export default function MusicPage() {
                   <h2 className="break-words font-display text-[clamp(2.75rem,9vw,6rem)] font-black uppercase leading-[0.9] lg:text-[clamp(2.5rem,min(6vw,9vh),5.5rem)]">
                     {currentTrack?.title}
                   </h2>
-                  <p className="mt-3 text-lg text-dim md:text-xl">
-                    {currentTrack?.artist}
+                  <p className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-lg text-dim md:text-xl">
+                    {currentTrack?.artist && (
+                      <span>{currentTrack.artist}</span>
+                    )}
+                    {position && (
+                      <span className="font-display font-semibold uppercase tracking-wide text-ink tabular-nums">
+                        {`${position.title} · ${pad2(position.number)} / ${pad2(position.total)}`}
+                      </span>
+                    )}
                   </p>
-                  <p className="relative mt-8 inline-block max-w-2xl font-hand text-3xl leading-snug text-calipso-deep [--accent:theme(colors.marker)] md:text-5xl lg:mt-5 lg:text-[clamp(1.75rem,min(3vw,5.5vh),3rem)]">
-                    {currentTrack?.memory}
-                    <DrawOnView
-                      delay={250}
-                      className="absolute -bottom-2 left-0 block h-3 w-full"
-                    >
-                      <MarkUnderline className="h-full w-full" />
-                    </DrawOnView>
-                  </p>
+                  {currentTrack?.memory && (
+                    <p className="relative mt-8 inline-block max-w-2xl font-hand text-3xl leading-snug text-calipso-deep [--accent:theme(colors.marker)] md:text-5xl lg:mt-5 lg:text-[clamp(1.75rem,min(3vw,5.5vh),3rem)]">
+                      {currentTrack.memory}
+                      <DrawOnView
+                        delay={250}
+                        className="absolute -bottom-2 left-0 block h-3 w-full"
+                      >
+                        <MarkUnderline className="h-full w-full" />
+                      </DrawOnView>
+                    </p>
+                  )}
                 </motion.div>
               </AnimatePresence>
 
@@ -253,97 +463,19 @@ export default function MusicPage() {
           </div>
         </section>
 
-        {/* La lista */}
+        {/* La lista, un bloque por disco */}
         <section className="relative px-4 pb-20 md:px-8 md:pb-28">
-          <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:gap-12">
-            <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6 lg:sticky lg:top-nav lg:col-span-4 lg:max-h-view lg:flex-col lg:items-start lg:justify-start lg:self-start lg:border-b-0 lg:pb-8 lg:pt-10">
-              <div>
-                <h2 className="font-display text-[clamp(3rem,10vw,7rem)] font-black uppercase leading-[0.9] lg:text-[clamp(3rem,min(4.6vw,10vh),5.5rem)]">
-                  Nuestra Playlist del Corazón
-                </h2>
-                <p className="mt-3 text-lg text-dim md:text-xl">
-                  {playlist.length} canciones que cuentan nuestra historia
-                </p>
-              </div>
-              <ParallaxIllustration />
-            </div>
-
-            <ol className="lg:col-span-8 lg:mt-10 lg:border-t-2 lg:border-ink">
-              {playlist.map((track, index) => {
-                const active = track.id === currentTrack?.id
-                return (
-                  <motion.li
-                    key={track.id}
-                    initial={
-                      reduceMotion
-                        ? { opacity: 0 }
-                        : { opacity: 0, transform: 'translateY(18px)' }
-                    }
-                    whileInView={{
-                      opacity: 1,
-                      transform: 'translateY(0px)',
-                    }}
-                    viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-                    transition={{
-                      duration: 0.55,
-                      delay: (index % 6) * 0.06,
-                      ease: EASE_OUT,
-                    }}
-                    className="border-b border-rule"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => playTrack(track)}
-                      aria-current={active ? 'true' : undefined}
-                      className={`group grid w-full grid-cols-[2.75rem_1fr_auto] items-baseline gap-x-3 px-2 py-5 text-left transition-colors duration-200 md:grid-cols-[5rem_1fr_auto] md:gap-x-6 md:px-4 md:py-6 ${
-                        active
-                          ? 'bg-marker text-ink'
-                          : 'hover:bg-ink hover:text-paper'
-                      }`}
-                    >
-                      <span className="font-display text-2xl font-black tabular-nums md:text-5xl">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block break-words font-display text-2xl font-extrabold uppercase leading-[0.95] md:text-5xl">
-                          {track.title}
-                        </span>
-                        <span
-                          className={`mt-1 block text-base md:text-lg ${
-                            active ? '' : 'text-dim group-hover:text-rule'
-                          }`}
-                        >
-                          {track.artist}
-                        </span>
-                        {active && (
-                          <motion.span
-                            initial={
-                              reduceMotion
-                                ? { opacity: 0 }
-                                : {
-                                    opacity: 0,
-                                    transform: 'translateY(8px) rotate(-1deg)',
-                                  }
-                            }
-                            animate={{
-                              opacity: 1,
-                              transform: 'translateY(0px) rotate(-1deg)',
-                            }}
-                            transition={{ duration: 0.5, ease: EASE_OUT }}
-                            className="mt-3 block max-w-2xl font-hand text-2xl leading-snug md:text-4xl"
-                          >
-                            {track.memory}
-                          </motion.span>
-                        )}
-                      </span>
-                      <span className="font-display text-lg font-semibold tabular-nums md:text-2xl">
-                        {track.duration}
-                      </span>
-                    </button>
-                  </motion.li>
-                )
-              })}
-            </ol>
+          <div className="mx-auto max-w-7xl">
+            <DiscTabs groups={groups} />
+            {groups.map((group, groupIndex) => (
+              <DiscBlock
+                key={group.disc.id}
+                group={group}
+                first={groupIndex === 0}
+                currentTrack={currentTrack}
+                onPlay={playTrack}
+              />
+            ))}
           </div>
         </section>
       </main>

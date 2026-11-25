@@ -5,10 +5,14 @@ import { useCallback, useEffect, useRef } from 'react'
 import { EqualizerBars, ToneArm } from '@/components/illustrations/extra'
 import SpinningVinyl from '@/components/music/SpinningVinyl'
 import { useAudioBeat } from '@/hooks/useAudioBeat'
+import { discAccent } from '@/components/music/discs'
+import type { Track } from '@/content/playlist'
 
 interface TurntableProps {
   audio: HTMLAudioElement | null
   isPlaying: boolean
+  /** La etiqueta del disco cambia de color según el disco */
+  disc: Track['disc']
 }
 
 const SWING = [0.77, 0, 0.175, 1] as const
@@ -17,7 +21,7 @@ const SWING = [0.77, 0, 0.175, 1] as const
  * Tocadiscos: el disco gira, el brazo baja sobre el surco al sonar, y el
  * ecualizador sigue el nivel real del audio (o una animación CSS si no se puede leer).
  */
-export default function Turntable({ audio, isPlaying }: TurntableProps) {
+export default function Turntable({ audio, isPlaying, disc }: TurntableProps) {
   const reduceMotion = useReducedMotion()
   const eqRef = useRef<HTMLDivElement>(null)
 
@@ -81,7 +85,7 @@ export default function Turntable({ audio, isPlaying }: TurntableProps) {
         <SpinningVinyl
           spinning={isPlaying}
           period={2.2}
-          className="h-full w-full text-ink [--accent:theme(colors.marker)] [--hole:theme(colors.calipso.DEFAULT)]"
+          className={`h-full w-full text-ink [--hole:theme(colors.calipso.DEFAULT)] ${discAccent[disc]}`}
         />
 
         {/* Brazo: pivota sobre su contrapeso (94,26 de 120x160) */}
