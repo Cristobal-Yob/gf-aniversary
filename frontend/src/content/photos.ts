@@ -476,7 +476,7 @@ export const photos: Photo[] = [
     src: "/photos/nuevas/foto-18.jpg",
     alt: "Selfie de los dos frente al escenario del concierto de Ed Sheeran",
     title: "Ed Sheeran en vivo",
-    caption: "Esperando que empiece",
+    caption: "otra experiencia hermosa con la mas hermosa",
     description: "",
     category: "conciertos",
     aspectRatio: "aspect-[3/4]"
@@ -484,7 +484,7 @@ export const photos: Photo[] = [
   {
     src: "/photos/nuevas/foto-19.jpg",
     alt: "Selfie de los dos de día en el concierto, con la pantalla pidiendo canciones",
-    title: "Solicita una canción",
+    title: "Concierto Ed Sheeran",
     caption: "Con calor y todo",
     description: "",
     category: "conciertos",
