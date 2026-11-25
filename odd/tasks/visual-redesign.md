@@ -12,20 +12,31 @@ Objective: replace the whole visual identity of the site while keeping its conte
 - S6. Order: content and dates live in one place instead of being hardcoded per page; dead code removed. User: "refactorizar visualmente y orden ademas de actualizar la informacion".
 - S7. Working split: Fable decides direction and visuals; raw code goes to Opus 5.5 at medium effort; Codex for images, SVG and animation assets.
 
-Direction (decided by Fable, assumption until the user confirms): "Almanaque". The site is a tear-off wall calendar that has been counting since 25 Nov 2017. Cobalt blue field, cool paper white, ink black, marker yellow for hand-circled dates; giant condensed numerals (Big Shoulders Display), Hanken Grotesk for text, Covered By Your Grace for short handwritten notes; no gradients; photographs as dated prints.
+Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only for a colour change): "Almanaque". The site is a tear-off wall calendar that has been counting since 25 Nov 2017. Calipso field with ink type, cool paper white, marker yellow for hand-circled dates; giant condensed numerals (Big Shoulders Display), Hanken Grotesk for text, Covered By Your Grace for short handwritten notes; no gradients; photographs as dated prints.
+
+- S8. User: "incorpora estas fotos tambien" (the folder `Downloads/fotos jose yob`), "genera muchas imagenes y visualizaciones con codex animaciones scroll", "incorpora algunas canciones de ed sheran como bad habits y esas cosas si puedes si no no importa".
+- S9. User: "cerrarlo todo dejarlo limpio y funcionando despues lo conectas con gcp cloudrun", "deberia estar arriba todo ok sin preguntarme nada mas".
+- S10. User: "muy bueno lo unico evita el morado como base inicial ojala colorimetria asociada al celeste(calipso o cosas del estilo) y puede que algunas cosas moradas pero no nos representaa tanto".
+- S11 (optional, not started). User: "si quieres incorporar chat con ia pidele a codex los secretos y cosas para crear backend langraph y alguna ia con historia de nosotros".
 
 ## Tasks
 
 - [x] T1 (S5) inline. Birthday copy to ninth anniversary on home, loading, login, metadata.
-- [ ] T2 (S1-S4) inline. Design tokens, fonts, global styles, header, Codex SVG set, shared `lib/site.ts`. In progress.
-- [ ] T3 (S1-S4) inline. Home rebuilt as the reference surface. In progress.
-- [ ] T4 (S1-S4, S6) delegated, Opus 5.5 medium. Gallery, LoveStory, PhotoLightbox; photos to `content/photos.ts`.
-- [ ] T5 (S1-S4, S6) delegated. About page; timeline to `content/timeline.ts`; ninth-year entry needs the user's text.
-- [ ] T6 (S1-S4, S6) delegated. Music page and global player; playlist to `content/playlist.ts`.
-- [ ] T7 (S1-S4) delegated. Auth, games, chat, birthday pages.
-- [ ] T8 (S6) inline. Remove dead files, unused deps, old tokens and the old font import once T4-T7 land.
+- [x] T2 (S1-S4) inline. Design tokens, fonts, global styles, header, Codex SVG set, shared `lib/site.ts`, content files, `DESIGN.md`. Commit `a6acd46`.
+- [x] T3 (S1-S4) inline. Home rebuilt as the reference surface. Type-check passes; seen in the browser at 800px. Commit `a6acd46`.
+- [x] T4 (S1-S4, S6) delegated, Opus 5.5 medium, session `w-gallery`. Gallery, LoveStory, PhotoLightbox. Parent fix: Tailwind now scans `src/content` (photo aspect classes were not generated).
+- [x] T5 (S1-S4, S6) delegated, session `w-about`. About page with scroll timeline.
+- [x] T6 (S1-S4, S6) delegated, session `w-music`. Music page, global player, context cleanup.
+- [x] T7 (S1-S4) delegated, session `w-misc`. Auth, games, chat, birthday, Confetti, ProtectedRoute, not-found. Parent fixes: game file path, microphone cleanup on the candle.
+- [x] T8 (S6) inline. Dead files, 14 unused dependencies, old tokens and the old font import removed; ESLint configured; `sharp` added for image optimization.
+- [x] T9 (S8) inline. 14 new photos; 10 Codex risograph illustrations (`public/illustrations/*.webp`) and 17 extra SVG components (`illustrations/extra.tsx`).
+- [x] T11 (S10) inline. Base colour moved from cobalt to calipso across tokens, pages and illustrations.
+- [ ] T10 (S9) inline. Merge to `main`, push, verify the Cloud Run deploy.
 
 ## Log
 
 - L1 (2026-11-25, user): "no me gusta la mayoria de cosas la font los colores los degradados esa imagen tampoco mejora mucho por eso pedi directamente una reformulacion completa con el contenido no tanto emoji svg reales creados con codex y esas cosas usalo no mas"
 - L2 (2026-11-25): Direction chosen without an interview because the user asked to proceed. T4-T7 wait for the user to see the home, since a rejected direction would waste four delegated units.
+- L3 (2026-11-25, user): "ya no pares de construir trabaja con el flujo completo [...] no pares en cosas para preguntar [...] ese es el objetivo cerrarlo todo dejarlo limpio y funcionando despues lo conectas con gcp cloudrun si no sabes como preguntale a codex y deberia estar arriba todo ok sin preguntarme nada mas"
+- L4 (2026-11-25): The checkpoint in L2 is withdrawn by L3; rollout started with four parallel Opus 5.5 sessions on disjoint files. No Ed Sheeran file other than the three already in the playlist exists on this machine, and copyrighted audio is not downloaded, so "Bad Habits" is not added. Cloud Run service `gf-aniversary` does not exist yet in project `capable-droplet-446401-t5`; the image repository and the `GCP_SA_KEY` secret do, and the workflow has no recorded runs.
+- L5 (2026-11-25): T4-T11 verified by the parent: `tsc` and `next lint` clean, production build passes, standalone server returns 200 on all eight routes and 404 on a missing one, image optimization returns WebP, a scripted contrast audit finds no text under 3.2:1 on any route, and pages were viewed at 1280px and 375px. Not verified: reduced-motion behaviour in a browser, touch swipe in the lightbox, and animations frame by frame (the Browser pane throttles hidden pages).
