@@ -31,7 +31,7 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - [x] T8 (S6) inline. Dead files, 14 unused dependencies, old tokens and the old font import removed; ESLint configured; `sharp` added for image optimization.
 - [x] T9 (S8) inline. 14 new photos; 10 Codex risograph illustrations (`public/illustrations/*.webp`) and 17 extra SVG components (`illustrations/extra.tsx`).
 - [x] T11 (S10) inline. Base colour moved from cobalt to calipso across tokens, pages and illustrations.
-- [ ] T10 (S9) inline. Merge to `main`, push, verify the Cloud Run deploy.
+- [x] T10 (S9) inline. `main` fast-forwarded to `c43e71d` and pushed; workflow run 45611158460 succeeded and created Cloud Run service `gf-aniversary` (revision `gf-aniversary-00001-ljs`) at https://gf-aniversary-gw5z6vdu4q-uc.a.run.app.
 
 ## Log
 
@@ -40,3 +40,4 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - L3 (2026-11-25, user): "ya no pares de construir trabaja con el flujo completo [...] no pares en cosas para preguntar [...] ese es el objetivo cerrarlo todo dejarlo limpio y funcionando despues lo conectas con gcp cloudrun si no sabes como preguntale a codex y deberia estar arriba todo ok sin preguntarme nada mas"
 - L4 (2026-11-25): The checkpoint in L2 is withdrawn by L3; rollout started with four parallel Opus 5.5 sessions on disjoint files. No Ed Sheeran file other than the three already in the playlist exists on this machine, and copyrighted audio is not downloaded, so "Bad Habits" is not added. Cloud Run service `gf-aniversary` does not exist yet in project `capable-droplet-446401-t5`; the image repository and the `GCP_SA_KEY` secret do, and the workflow has no recorded runs.
 - L5 (2026-11-25): T4-T11 verified by the parent: `tsc` and `next lint` clean, production build passes, standalone server returns 200 on all eight routes and 404 on a missing one, image optimization returns WebP, a scripted contrast audit finds no text under 3.2:1 on any route, and pages were viewed at 1280px and 375px. Not verified: reduced-motion behaviour in a browser, touch swipe in the lightbox, and animations frame by frame (the Browser pane throttles hidden pages).
+- L6 (2026-11-25): Live check over HTTP: eight routes return 200 and a missing one 404, optimized photos and illustrations return WebP, audio returns 206, the served CSS carries the calipso token and the home has no birthday copy. S11 (AI chat backend) is not started: it needs the owner to approve enabling a model API and its cost on their GCP project.
