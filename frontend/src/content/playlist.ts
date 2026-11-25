@@ -77,7 +77,7 @@ export const playlist: Track[] = [
     id: "9",
     title: "Sou Favela",
     artist: "MC Bruninho",
-    memory: "Mi riqueza eres tú 🇧🇷",
+    memory: "Mi riqueza eres tú",
     src: "/music/sou favela.mp3",
     duration: "3:20"
   },

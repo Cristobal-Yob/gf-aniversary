@@ -8,7 +8,7 @@ The site is a tear-off wall calendar that has been counting since 25 November 20
 - Emoji or Unicode glyphs used as icons, bullets or decoration. Emoji are also stripped from copy.
 - The old tokens and classes: `primary-*`, `secondary-*`, `accent-*`, `cream`, `font-serif`, `font-script`, `font-cursive`, `font-handwriting`, `.btn-primary`, `.btn-secondary`, `.card`, `.gradient-text`, `.gold-text`, `.glass-effect`, `animate-gradient`, `animate-shimmer`.
 - Rounded corners (`rounded-*`), pills, glass/blur panels, soft pastel shadows, glow shadows.
-- Pink, rose, purple, burgundy, gold. The palette below is the whole palette.
+- Pink, rose, purple, violet-leaning blue, burgundy, gold. The palette below is the whole palette.
 - Cards of icon + heading + text as page structure. Use ruled rows, grids and full-bleed fields.
 - A small label (kicker/eyebrow) above a heading. Section numbers like 01 / 02 / 03.
 - Everything looping at once. At most one continuously moving element per screen.
@@ -19,28 +19,28 @@ The site is a tear-off wall calendar that has been counting since 25 November 20
 | --- | --- | --- |
 | `paper` | `#F4F5F1` | Default page ground, text on dark fields |
 | `ink` | `#0F1115` | Text on paper, rules, dark fields |
-| `cobalt` | `#1F35D1` | The drenched field: heroes, active states, "today" |
-| `cobalt-deep` | `#16269C` | Pressed/hover on cobalt |
-| `cobalt-tint` | `#C9D0FF` | Secondary text on cobalt (never gray on blue) |
+| `calipso` | `#1FC4D4` | The drenched field: heroes, active states, "today". Text on it is `ink` |
+| `calipso-deep` | `#00798A` | Calipso as text or ink on paper: hand notes, numerals, focus borders |
+| `calipso-shade` | `#0B4A55` | Secondary text on the calipso field (never gray on colour) |
 | `marker` | `#FFD60A` | Hand marks, highlighted dates, active nav, hover on paper buttons |
 | `rule` | `#D5D8D2` | Hairlines on paper, secondary text on ink |
 | `dim` | `#575C66` | Secondary text on paper |
 
-Text on `marker` is always `ink`. Text on `cobalt` and `ink` is `paper`.
+Text on `marker` and on `calipso` is always `ink`. Text on `ink` is `paper`. Yellow is never used for text on calipso; emphasise a word there with a marker highlight (`box-decoration-clone bg-marker px-[0.12em] text-ink`).
 
 ## Type
 
 - `font-display` (Big Shoulders Display, weights 600/800/900): headings, numerals, nav, buttons, labels. Always `uppercase`. Headings use `font-black` or `font-extrabold` with `leading-[0.9]`. Numerals use `tabular-nums`.
 - `font-body` (Hanken Grotesk): running text. It is the body default; do not add a font class for normal text.
-- `font-hand` (Covered By Your Grace): Cristóbal's own words only, such as photo captions, song memories and short dedications. Never for UI. Size it large (`text-2xl` and up) and color it `text-marker` on dark fields or `text-cobalt` on paper.
+- `font-hand` (Covered By Your Grace): Cristóbal's own words only, such as photo captions, song memories and short dedications. Never for UI. Size it large (`text-2xl` and up) and color it `text-marker` on `ink` fields, `text-ink` on calipso and `text-calipso-deep` on paper.
 - Fluid display sizes use `clamp()`, for example `text-[clamp(3rem,11vw,7.5rem)]`. Check that the real copy fits at 375px.
 - Body copy maxes at `max-w-2xl`.
 
 ## Layout
 
-- Page shell: `<Navbar />` then `<main>`; the footer of each page is a dark `bg-ink` or `bg-cobalt` closing band. The global music player is rendered by the root layout, fixed at the bottom; leave `pb-28` of clearance at the end of every page.
+- Page shell: `<Navbar />` then `<main>`; the footer of each page is a dark `bg-ink` or `bg-calipso` closing band. The global music player is rendered by the root layout, fixed at the bottom; leave `pb-28` of clearance at the end of every page.
 - Content width: `mx-auto max-w-7xl px-4 md:px-8`.
-- Each inner page opens with a calendar-sheet header: a full-bleed `bg-cobalt text-paper` section starting with `<BindingRings className="h-8 w-full text-paper md:h-10" />`, then a ruled row (`border-b-2 border-paper`) with small display labels left and right, then the page `h1` in giant display type, and `<TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-cobalt md:h-6" />` as its bottom edge (the section must be `relative`).
+- Each inner page opens with a calendar-sheet header: a full-bleed `bg-calipso text-ink` section starting with `<BindingRings className="h-8 w-full text-ink md:h-10" />`, then a ruled row (`border-b-2 border-ink`) with small display labels left and right, then the page `h1` in giant display type, and `<TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-calipso md:h-6" />` as its bottom edge (the section must be `relative`).
 - Rules are structure: `border-ink` at 2px between major rows, `border-rule` at 1px for minor ones.
 - Corners are square. Depth appears only on photo prints.
 
@@ -52,8 +52,8 @@ Text on `marker` is always `ink`. Text on `cobalt` and `ink` is `paper`.
 - `@/components/home/MonthGrid`: the months grid.
 - `@/components/icons`: `IconMenu`, `IconClose`, `IconArrowRight`, `IconArrowUpRight`, `IconChevronDown`, `IconPlay`, `IconPause`, `IconSkipNext`, `IconSkipPrev`, `IconVolume`, `IconVolumeMute`, `IconCamera`, `IconMusicNote`, `IconBook`, `IconHeart`, `IconRing`, `IconLock`, `IconCalendar`, `IconInfinity`, `IconExpand`, `IconGamepad`, `IconChat`, `IconLogout`, `IconUser`. They take `className` for size and inherit `currentColor`.
 - `@/components/illustrations`: marker marks `MarkCircle`, `MarkUnderline`, `MarkArrow`, `MarkHeart`, `MarkCross` (colored through `[--accent:theme(colors.marker)]` on an ancestor, stretched with `className="h-full w-full"` inside a positioned `DrawOnView`); hardware `BindingRings`, `Perforation`, `TornEdge`; `MonogramJC`; `StampNine`.
-- Buttons: the `.btn-almanac` class plus color classes. On cobalt: primary `border-paper bg-paper text-ink hover:bg-marker`, secondary `border-paper text-paper hover:bg-paper hover:text-ink`. On paper: primary `border-ink bg-ink text-paper hover:bg-cobalt hover:border-cobalt`, secondary `border-ink hover:bg-ink hover:text-paper`.
-- Form fields: `w-full border-2 border-ink bg-paper px-4 py-3.5 text-base placeholder:text-dim focus:border-cobalt focus:outline-none focus:ring-0`; labels in `font-display text-lg font-semibold uppercase tracking-wide`.
+- Buttons: the `.btn-almanac` class plus color classes. On calipso: primary `border-ink bg-ink text-paper hover:bg-paper hover:text-ink`, secondary `border-ink text-ink hover:bg-ink hover:text-paper`. On paper: primary `border-ink bg-ink text-paper hover:bg-calipso hover:text-ink hover:border-calipso`, secondary `border-ink hover:bg-ink hover:text-paper`.
+- Form fields: `w-full border-2 border-ink bg-paper px-4 py-3.5 text-base placeholder:text-dim focus:border-calipso-deep focus:outline-none focus:ring-0`; labels in `font-display text-lg font-semibold uppercase tracking-wide`.
 
 ## Content
 
@@ -89,4 +89,4 @@ Motion is part of the gift. Every page has scroll-driven life, but one idea at a
 - Visible focus is global (yellow outline); do not remove outlines.
 - Icon-only buttons need `aria-label` in Spanish.
 - Photos need their `alt` from the content file.
-- Body text contrast at least 4.5:1: `dim` on `paper`, `cobalt-tint` on `cobalt`, `rule` on `ink`.
+- Body text contrast at least 4.5:1: `dim` on `paper`, `calipso-shade` on `calipso`, `rule` on `ink`.

@@ -44,6 +44,7 @@ A handmade keepsake. The content is the value: real photos, real dates, his own 
 - The J&C monogram exists as the site icon.
 - Owner rejected the previous look: Playfair Display and Dancing Script, the burgundy/pink/gold palette, gradients on every surface, and emoji used as illustration.
 - Owner wants: real SVG illustration and icons, photographs as the lead, and animation kept as part of the experience.
+- Colour: the owner asked for a base in the light-blue family ("celeste, calipso"). Purple or violet-leaning blue as the base does not represent them; small purple touches are acceptable but not needed.
 
 ## Evidence on Hand
 

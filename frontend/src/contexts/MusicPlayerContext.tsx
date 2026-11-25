@@ -2,25 +2,22 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
-  useState,
-  useRef,
   useEffect,
-  ReactNode,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
 } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import {
+  birthdayTrack,
+  playlist as basePlaylist,
+  type Track,
+} from '@/content/playlist'
 
-export interface Track {
-  id: string
-  title: string
-  artist: string
-  memory: string
-  emoji: string
-  src: string
-  duration: string
-  color: string // Para gradiente dinámico
-  icon?: string // Ícono especial (🗽, ❄️, 💍, etc.)
-}
+export type { Track }
 
 interface MusicPlayerContextType {
   currentTrack: Track | null
@@ -50,328 +47,202 @@ export const useMusicPlayer = () => {
   return context
 }
 
-interface MusicPlayerProviderProps {
-  children: ReactNode
+// 2 de diciembre: el cumpleaños de Josefa (diciembre es el mes 11)
+const isBirthdayToday = () => {
+  const today = new Date()
+  return today.getMonth() === 11 && today.getDate() === 2
 }
 
-export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({
+const defaultTrack = basePlaylist.find(t => t.id === '1') ?? basePlaylist[0]
+
+export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { isAuthenticated } = useAuth()
 
-  // Verificar si es 2 de diciembre (cumpleaños)
-  const isBirthday = () => {
-    const today = new Date()
-    return today.getMonth() === 11 && today.getDate() === 2 // Diciembre es mes 11 (0-indexed)
-  }
-
-  // Canción especial de cumpleaños
-  const birthdaySong: Track = {
-    id: 'birthday',
-    title: 'Cumpleaños Feliz',
-    artist: 'Stitch',
-    memory: '¡Feliz Cumpleaños mi amor! 🎂🎉 Que este día sea tan especial como tú 💕',
-    emoji: '🎂',
-    src: '/music/CUMPLEAÑOS FELIZ de STITCH  Canción en Español para dedicar.mp3',
-    duration: '3:00',
-    color: 'from-blue-400 to-purple-500',
-    icon: '🎉',
-  }
-
-  // Playlist completa (definida primero para poder usarla en useState)
-  const playlist: Track[] = [
-    {
-      id: '1',
-      title: 'Come to Me',
-      artist: 'Romantic',
-      memory:
-        'Siento que esta cancion me llego mucho gracias gracias por todo 💝',
-      emoji: '💫',
-      src: '/music/Come to Me.mp3',
-      duration: '4:15',
-      color: 'from-purple-500 to-pink-500',
-      icon: '🌙',
-    },
-    {
-      id: '2',
-      title: 'Aprender A Quererte',
-      artist: 'Morat',
-      memory: 'Aún estoy aprendiendo, pero quiero hacerte la mujer más feliz del mundo',
-      emoji: '💕',
-      src: '/music/Morat - Aprender A Quererte.mp3',
-      duration: '3:45',
-      color: 'from-pink-400 to-purple-500',
-      icon: '💗',
-    },
-    {
-      id: '3',
-      title: 'Married Life (UP)',
-      artist: 'Michael Giacchino',
-      memory: 'Cancion para llorar pero muy linda🎈',
-      emoji: '🏠',
-      src: '/music/cancion up.mp3',
-      duration: '4:08',
-      color: 'from-blue-400 to-purple-500',
-      icon: '🎈',
-    },
-    {
-      id: '4',
-      title: 'Perfect',
-      artist: 'Ed Sheeran',
-      memory: 'Eres perfecta c: 💖',
-      emoji: '💕',
-      src: '/music/Ed Sheeran - Perfect .mp3',
-      duration: '4:23',
-      color: 'from-pink-500 to-rose-500',
-      icon: '✨',
-    },
-    {
-      id: '5',
-      title: "Hearts Don't Break Round Here",
-      artist: 'Ed Sheeran',
-      memory: 'Te amo en nuestra historia no se romperan corazones c: 🥰',
-      emoji: '❤️',
-      src: '/music/Ed Sheeran - Hearts Dont Break Round Here .mp3',
-      duration: '4:30',
-      color: 'from-red-500 to-pink-500',
-      icon: '💘',
-    },
-    {
-      id: '6',
-      title: 'Amo Soltanto Te',
-      artist: 'señor que canta italiano ',
-      memory: 'Te amo solo a ti ✈️',
-      emoji: '🌟',
-      src: '/music/Amo Soltanto Te.mp3',
-      duration: '3:58',
-      color: 'from-yellow-500 to-orange-500',
-      icon: '🎸',
-    },
-    {
-      id: '7',
-      title: 'Aquela Pessoa',
-      artist: 'Henrique e Juliano',
-      memory: 'Eres esa persona 🌹',
-      emoji: '🌹',
-      src: '/music/Henrique e Juliano - AQUELA PESSOA .mp3',
-      duration: '3:42',
-      color: 'from-rose-500 to-red-500',
-      icon: '💖',
-    },
-    {
-      id: '8',
-      title: 'O Nosso Santo Bateu',
-      artist: 'Matheus & Kauan',
-      memory: 'De las primeras canciones que te dedique 💫',
-      emoji: '🎭',
-      src: '/music/Matheus & Kauan - O Nosso Santo Bateu .mp3',
-      duration: '3:35',
-      color: 'from-blue-500 to-cyan-500',
-      icon: '🎵',
-    },
-    {
-      id: '9',
-      title: 'Sou Favela',
-      artist: 'MC Bruninho',
-      memory: 'Mi riqueza eres tú 🇧🇷',
-      emoji: '🌴',
-      src: '/music/sou favela.mp3',
-      duration: '3:20',
-      color: 'from-green-500 to-yellow-500',
-      icon: '🇧🇷',
-    },
-    {
-      id: '10',
-      title: 'One Life',
-      artist: 'Ed Sheeran',
-      memory: 'Una vida contigo es todo lo que necesito',
-      emoji: '💫',
-      src: '/music/Ed Sheeran - One Life (Official Audio).mp3',
-      duration: '3:45',
-      color: 'from-orange-400 to-pink-500',
-      icon: '🌟',
-    },
-    {
-      id: '11',
-      title: 'I Will Follow You into the Dark',
-      artist: 'Death Cab for Cutie',
-      memory: 'Estaré contigo hasta el final',
-      emoji: '🌙',
-      src: '/music/I Will Follow You into the Dark.mp3',
-      duration: '3:09',
-      color: 'from-indigo-500 to-purple-600',
-      icon: '🖤',
-    },
-    {
-      id: '12',
-      title: 'Fall On Me',
-      artist: 'Andrea Bocelli & Matteo Bocelli',
-      memory: 'Me haces sentir lleno',
-      emoji: '🎶',
-      src: '/music/Andrea Bocelli, Matteo Bocelli - Fall On Me.mp3',
-      duration: '3:36',
-      color: 'from-sky-400 to-blue-600',
-      icon: '🕊️',
-    },
-    {
-      id: '13',
-      title: 'Mi Nuevo Vicio',
-      artist: 'Morat',
-      memory: 'Eres mi vicio',
-      emoji: '💘',
-      src: '/music/Morat - Mi Nuevo Vicio (Lyric).mp3',
-      duration: '3:28',
-      color: 'from-red-400 to-rose-500',
-      icon: '🎸',
-    },
-  ]
-
-  // Playlist completa incluyendo canción de cumpleaños si es el día
-  const fullPlaylist = isBirthday() ? [birthdaySong, ...playlist] : playlist
-
-  // Estados del reproductor - Si es cumpleaños, empezar con la canción de cumpleaños
-  const defaultTrack = isBirthday() ? birthdaySong : playlist.find(t => t.id === '1')
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(
-    defaultTrack || null
-  )
-  const [isPlaying, setIsPlaying] = useState(true) // Inicia reproduciendo automáticamente
+  // La fecha se revisa en el navegador: el proveedor se prerenderiza al compilar
+  const [mounted, setMounted] = useState(false)
+  const [isBirthday, setIsBirthday] = useState(false)
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(defaultTrack)
+  const [isPlaying, setIsPlaying] = useState(true) // Intenta reproducir al entrar
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolumeState] = useState(0.7)
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // Reproducir canción
-  const playTrack = (track: Track) => {
+  useEffect(() => {
+    if (isBirthdayToday()) {
+      setIsBirthday(true)
+      setCurrentTrack(birthdayTrack)
+    }
+    setMounted(true)
+  }, [])
+
+  const playlist = useMemo(
+    () => (isBirthday ? [birthdayTrack, ...basePlaylist] : basePlaylist),
+    [isBirthday]
+  )
+
+  // Referencias para que los manejadores de eventos lean siempre el estado actual
+  const playlistRef = useRef(playlist)
+  const currentTrackRef = useRef(currentTrack)
+  playlistRef.current = playlist
+  currentTrackRef.current = currentTrack
+
+  const playTrack = useCallback((track: Track) => {
     setCurrentTrack(track)
     setIsPlaying(true)
-    // Forzar reproducción inmediata
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(err => console.log('Play error:', err))
-      }
-    }, 100)
-  }
+  }, [])
 
-  // Play/Pause
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying)
-  }
+  const togglePlayPause = useCallback(() => {
+    setIsPlaying(playing => !playing)
+  }, [])
 
-  // Siguiente canción
-  const nextTrack = () => {
-    if (!currentTrack) return
-    const currentIndex = fullPlaylist.findIndex(t => t.id === currentTrack.id)
-    const nextIndex = (currentIndex + 1) % fullPlaylist.length
-    playTrack(fullPlaylist[nextIndex])
-  }
+  const stepTrack = useCallback(
+    (step: 1 | -1) => {
+      const list = playlistRef.current
+      const current = currentTrackRef.current
+      if (!current || list.length === 0) return
+      const index = list.findIndex(t => t.id === current.id)
+      const nextIndex = (index + step + list.length) % list.length
+      playTrack(list[nextIndex])
+    },
+    [playTrack]
+  )
 
-  // Canción anterior
-  const previousTrack = () => {
-    if (!currentTrack) return
-    const currentIndex = fullPlaylist.findIndex(t => t.id === currentTrack.id)
-    const previousIndex =
-      currentIndex === 0 ? fullPlaylist.length - 1 : currentIndex - 1
-    playTrack(fullPlaylist[previousIndex])
-  }
+  const nextTrack = useCallback(() => stepTrack(1), [stepTrack])
+  const previousTrack = useCallback(() => stepTrack(-1), [stepTrack])
 
-  // Buscar posición
-  const seekTo = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time
-      setProgress(time)
-    }
-  }
+  const seekTo = useCallback((time: number) => {
+    const audio = audioRef.current
+    if (!audio || !Number.isFinite(time)) return
+    audio.currentTime = time
+    setProgress(time)
+  }, [])
 
-  // Volumen
-  const setVolume = (vol: number) => {
-    setVolumeState(vol)
-    if (audioRef.current) {
-      audioRef.current.volume = vol
-    }
-  }
+  const setVolume = useCallback((vol: number) => {
+    setVolumeState(Math.min(1, Math.max(0, vol)))
+  }, [])
 
-  // Actualizar progreso
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume
+  }, [volume])
+
+  // Eventos del elemento de audio: se registran una sola vez
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
-    const updateProgress = () => {
-      setProgress(audio.currentTime)
-      setDuration(audio.duration)
-    }
-
-    const handleEnded = () => {
-      nextTrack()
-    }
+    const updateProgress = () => setProgress(audio.currentTime)
+    const updateDuration = () =>
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0)
+    const handlePlay = () => setIsPlaying(true)
+    const handleEnded = () => stepTrack(1)
 
     audio.addEventListener('timeupdate', updateProgress)
-    audio.addEventListener('loadedmetadata', updateProgress)
+    audio.addEventListener('loadedmetadata', updateDuration)
+    audio.addEventListener('durationchange', updateDuration)
+    audio.addEventListener('play', handlePlay)
     audio.addEventListener('ended', handleEnded)
 
     return () => {
       audio.removeEventListener('timeupdate', updateProgress)
-      audio.removeEventListener('loadedmetadata', updateProgress)
+      audio.removeEventListener('loadedmetadata', updateDuration)
+      audio.removeEventListener('durationchange', updateDuration)
+      audio.removeEventListener('play', handlePlay)
       audio.removeEventListener('ended', handleEnded)
     }
-  }, [currentTrack])
+  }, [stepTrack])
 
-  // Auto-reproducir "Come to Me" cuando el usuario inicia sesión
+  // Sincroniza con el elemento al montar y al cambiar de canción: el audio
+  // prerenderizado puede haber cargado sus metadatos antes de la hidratación
   useEffect(() => {
-    if (isAuthenticated && currentTrack && !isPlaying) {
-      // Delay de 1 segundo para que tenga mejor experiencia
-      const timer = setTimeout(() => {
-        setIsPlaying(true)
-      }, 1000)
+    const audio = audioRef.current
+    if (!audio) return
+    setProgress(audio.currentTime || 0)
+    setDuration(Number.isFinite(audio.duration) ? audio.duration : 0)
+  }, [currentTrack?.id])
 
-      return () => clearTimeout(timer)
-    }
-  }, [isAuthenticated]) // Se ejecuta cuando cambia el estado de autenticación
+  // Al iniciar sesión, vuelve a intentar reproducir después de un segundo
+  useEffect(() => {
+    if (!isAuthenticated) return
+    const timer = setTimeout(() => setIsPlaying(true), 1000)
+    return () => clearTimeout(timer)
+  }, [isAuthenticated])
 
   // Controlar reproducción
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch(err => console.log('Play error:', err))
-      } else {
-        audioRef.current.pause()
-      }
+    const audio = audioRef.current
+    if (!audio || !mounted) return
+
+    if (!isPlaying) {
+      audio.pause()
+      return
     }
-  }, [isPlaying, currentTrack])
+
+    audio.play().catch((error: unknown) => {
+      // AbortError: otra carga interrumpió esta reproducción; la siguiente la reemplaza.
+      // Cualquier otro rechazo (p. ej. el navegador bloquea el autoplay) deja el
+      // reproductor en pausa, sin ruido en la consola.
+      if (error instanceof DOMException && error.name === 'AbortError') return
+      setIsPlaying(false)
+    })
+  }, [isPlaying, currentTrack, mounted])
 
   // Atajo de teclado: espacio para play/pause
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && currentTrack && e.target === document.body) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.code === 'Space' &&
+        currentTrackRef.current &&
+        e.target === document.body
+      ) {
         e.preventDefault()
         togglePlayPause()
       }
     }
 
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [currentTrack, isPlaying])
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [togglePlayPause])
+
+  const value = useMemo(
+    () => ({
+      currentTrack,
+      isPlaying,
+      progress,
+      duration,
+      volume,
+      playlist,
+      playTrack,
+      togglePlayPause,
+      nextTrack,
+      previousTrack,
+      seekTo,
+      setVolume,
+      audioRef,
+    }),
+    [
+      currentTrack,
+      isPlaying,
+      progress,
+      duration,
+      volume,
+      playlist,
+      playTrack,
+      togglePlayPause,
+      nextTrack,
+      previousTrack,
+      seekTo,
+      setVolume,
+    ]
+  )
 
   return (
-    <MusicPlayerContext.Provider
-      value={{
-        currentTrack,
-        isPlaying,
-        progress,
-        duration,
-        volume,
-        playlist: fullPlaylist,
-        playTrack,
-        togglePlayPause,
-        nextTrack,
-        previousTrack,
-        seekTo,
-        setVolume,
-        audioRef,
-      }}
-    >
+    <MusicPlayerContext.Provider value={value}>
       {children}
-      {/* Audio element global */}
-      <audio ref={audioRef} src={currentTrack?.src} />
+      {/* Elemento de audio global */}
+      <audio ref={audioRef} src={currentTrack?.src} preload="metadata" />
     </MusicPlayerContext.Provider>
   )
 }

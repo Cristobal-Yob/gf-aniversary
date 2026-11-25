@@ -148,7 +148,7 @@ export const photos: Photo[] = [
     src: "/photos/fotos/siendo feliz comiendo en el 18 .jpeg",
     alt: "Feliz comiendo en el 18",
     title: "Fiestas Patrias",
-    caption: "Celebrando con sabor 🇨🇱",
+    caption: "Celebrando con sabor",
     description: "Disfrutando las Fiestas Patrias juntos",
     category: "comida",
     aspectRatio: "aspect-square"
@@ -157,7 +157,7 @@ export const photos: Photo[] = [
     src: "/photos/fotos/yo y la josefa tomando en el 18.jpeg",
     alt: "Tomando en el 18",
     title: "Brindando por Nosotros",
-    caption: "Salud! 🇨🇱",
+    caption: "Salud!",
     description: "Celebrando las Fiestas Patrias",
     category: "celebraciones",
     aspectRatio: "aspect-[3/4]"

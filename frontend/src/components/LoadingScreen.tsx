@@ -55,12 +55,12 @@ export default function LoadingScreen({
       }
       transition={{ duration: reduceMotion ? 0.2 : 0.6, ease: EASE_OUT }}
       style={{ transformOrigin: 'top left' }}
-      className="fixed inset-0 z-[60] flex flex-col bg-cobalt text-paper"
+      className="fixed inset-0 z-[60] flex flex-col bg-calipso text-ink"
     >
-      <BindingRings className="h-10 w-full shrink-0 text-paper" />
+      <BindingRings className="h-10 w-full shrink-0 text-ink" />
 
       <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
-        <p className="font-display text-2xl font-semibold uppercase tracking-wide text-cobalt-tint md:text-3xl">
+        <p className="font-display text-2xl font-semibold uppercase tracking-wide text-calipso-shade md:text-3xl">
           ¡Feliz Aniversario!
         </p>
 
@@ -71,11 +71,11 @@ export default function LoadingScreen({
           {year}
         </p>
 
-        <p className="font-hand text-4xl text-marker md:text-5xl">
+        <p className="font-hand text-4xl text-ink md:text-5xl">
           Mi amor Josefa
         </p>
 
-        <p className="mt-6 text-sm text-cobalt-tint md:text-base">
+        <p className="mt-6 text-sm text-calipso-shade md:text-base">
           Preparando algo especial para ti...
         </p>
       </div>

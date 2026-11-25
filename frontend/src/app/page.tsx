@@ -154,11 +154,11 @@ export default function HomePage() {
 
       <main>
         {/* Hoja del día */}
-        <section className="relative bg-cobalt text-paper [--accent:theme(colors.marker)]">
-          <BindingRings className="h-8 w-full text-paper md:h-10" />
+        <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
+          <BindingRings className="h-8 w-full text-ink md:h-10" />
 
           <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 md:px-8 md:pb-28">
-            <div className="flex items-baseline justify-between border-b-2 border-paper pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
+            <div className="flex items-baseline justify-between border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
               <span>
                 {today
                   ? `${WEEKDAYS[today.getDay()]} ${today.getDate()} · ${MONTHS[today.getMonth()]}`
@@ -200,7 +200,7 @@ export default function HomePage() {
                   className="mt-4 font-display text-2xl font-semibold uppercase tracking-wide md:text-4xl"
                 >
                   días juntos
-                  <span className="block text-base font-semibold normal-case tracking-normal text-cobalt-tint md:text-lg">
+                  <span className="block text-base font-semibold normal-case tracking-normal text-calipso-shade md:text-lg">
                     desde el 25 de noviembre de 2017
                   </span>
                 </motion.p>
@@ -209,7 +209,7 @@ export default function HomePage() {
                   {...enter(0.3)}
                   className="mt-8 font-display text-5xl font-extrabold uppercase leading-[0.95] md:text-7xl"
                 >
-                  {COUPLE.first} <span className="text-marker">&amp;</span>{' '}
+                  {COUPLE.first} <span className="text-calipso-shade">&amp;</span>{' '}
                   {COUPLE.second}
                 </motion.h1>
 
@@ -217,7 +217,7 @@ export default function HomePage() {
                   <p className="text-xl font-semibold md:text-2xl">
                     {years} Años de Historia
                   </p>
-                  <p className="mt-1 text-base text-cobalt-tint md:text-lg">
+                  <p className="mt-1 text-base text-calipso-shade md:text-lg">
                     Celebrando cada momento de nuestro amor infinito
                   </p>
                 </motion.div>
@@ -226,7 +226,7 @@ export default function HomePage() {
                   {...enter(0.9, -8, -3)}
                   className="mt-8 inline-block"
                 >
-                  <p className="relative font-hand text-4xl leading-none text-marker md:text-5xl">
+                  <p className="relative font-hand text-4xl leading-none text-ink md:text-5xl">
                     ¡Feliz Aniversario Mi Amor!
                     <DrawOnView
                       play={ready}
@@ -244,14 +244,14 @@ export default function HomePage() {
                 >
                   <Link
                     href={storyHref}
-                    className="btn-almanac group border-paper bg-paper text-ink hover:bg-marker"
+                    className="btn-almanac group border-ink bg-ink text-paper hover:bg-paper hover:text-ink"
                   >
                     Nuestra Historia
                     <IconArrowRight className="h-5 w-5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
                   </Link>
                   <Link
                     href="/gallery"
-                    className="btn-almanac border-paper text-paper hover:bg-paper hover:text-ink"
+                    className="btn-almanac border-ink text-ink hover:bg-ink hover:text-paper"
                   >
                     Ver Recuerdos
                     <IconCamera className="h-5 w-5" />
@@ -310,7 +310,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-cobalt md:h-6" />
+          <TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-calipso md:h-6" />
         </section>
 
         {/* Índice del almanaque */}
@@ -377,7 +377,7 @@ export default function HomePage() {
                   </li>
                 ))}
                 <li className="flex items-center gap-4 py-3">
-                  <span className="h-4 w-4 shrink-0 bg-cobalt" />
+                  <span className="h-4 w-4 shrink-0 bg-calipso" />
                   <span className="flex-1 font-display text-xl font-semibold uppercase leading-tight md:text-2xl">
                     Hoy
                   </span>

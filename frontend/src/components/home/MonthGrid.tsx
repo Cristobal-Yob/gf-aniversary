@@ -38,7 +38,7 @@ const CELL_STYLE: Record<CellState, string> = {
   empty: 'border border-rule',
   lived: 'bg-ink',
   milestone: 'bg-marker ring-2 ring-inset ring-ink',
-  today: 'bg-cobalt',
+  today: 'bg-calipso',
 }
 
 /** Cada cuadro es un mes: los años en columnas, de enero a diciembre hacia abajo */

@@ -1,14 +1,30 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
+import { IconArrowRight, IconGamepad } from '@/components/icons'
+import PrivateSheet from '@/components/secondary/PrivateSheet'
+import SheetHeader from '@/components/secondary/SheetHeader'
+import GameGlyph, { type GameGlyphName } from '@/components/secondary/GameGlyph'
+import { useReveal } from '@/components/secondary/motion'
+
+interface Game {
+  glyph: GameGlyphName
+  title: string
+  description: string
+  swfPath?: string
+  url?: string
+  width?: number
+  height?: number
+}
 
 export default function GamesPage() {
   const { isAuthenticated } = useAuth()
   const [selectedGame, setSelectedGame] = useState<number | null>(null)
   const [ruffleLoaded, setRuffleLoaded] = useState(false)
+  const reveal = useReveal()
 
   // Cargar Ruffle (emulador Flash)
   useEffect(() => {
@@ -27,69 +43,63 @@ export default function GamesPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
-        <Navbar />
-        <div className="flex min-h-screen items-center justify-center px-6">
-          <div className="w-full max-w-md text-center">
-            <div className="mb-6 text-6xl">🔒</div>
-            <h1 className="mb-4 text-3xl font-bold text-gray-800">
-              Área Privada
-            </h1>
-            <p className="mb-8 text-gray-600">
-              Necesitas iniciar sesión para jugar nuestros juegos
-            </p>
-            <Link
-              href="/auth"
-              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
-            >
-              Iniciar Sesión 💖
-            </Link>
-          </div>
-        </div>
-      </div>
+      <PrivateSheet
+        title="Área Privada"
+        message="Necesitas iniciar sesión para jugar nuestros juegos"
+      />
     )
   }
 
   // Si hay un juego seleccionado, mostrar el juego Flash con Ruffle
   if (selectedGame !== null) {
     const game = games[selectedGame]
+    const width = game.width || 960
+    const height = game.height || 600
+
     return (
-      <div className="flex h-screen w-full flex-col bg-black">
-        <div className="flex items-center justify-between bg-gradient-to-r from-primary-900 to-accent-600 p-4 shadow-lg">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setSelectedGame(null)}
-              className="rounded-lg bg-white/20 px-4 py-2 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30"
-            >
-              ← Volver
-            </button>
-            <h2 className="text-xl font-bold text-white">
-              {game.emoji} {game.title}
-            </h2>
-          </div>
+      <div className="flex min-h-screen w-full flex-col bg-ink pb-24 text-paper">
+        <div className="flex items-center gap-4 border-b-2 border-paper px-4 py-3 md:px-8">
+          <button
+            onClick={() => setSelectedGame(null)}
+            className="btn-almanac shrink-0 border-paper px-4 py-2 text-paper hover:bg-paper hover:text-ink"
+          >
+            <IconArrowRight className="h-5 w-5 rotate-180" />
+            Volver
+          </button>
+          <h2 className="flex min-w-0 items-center gap-3 font-display text-2xl font-extrabold uppercase leading-none md:text-3xl">
+            <GameGlyph name={game.glyph} className="h-7 w-7 shrink-0 text-marker" />
+            <span className="truncate">{game.title}</span>
+          </h2>
         </div>
+
         <div className="flex flex-1 items-center justify-center p-4">
           {!ruffleLoaded ? (
-            <div className="text-center">
-              <div className="mb-4 animate-pulse text-6xl">⏳</div>
-              <p className="text-xl text-white">Cargando emulador Flash...</p>
+            <div role="status" className="text-center">
+              <IconGamepad className="mx-auto mb-4 h-14 w-14 text-marker motion-safe:animate-pulse" />
+              <p className="font-display text-2xl font-semibold uppercase tracking-wide">
+                Cargando emulador Flash...
+              </p>
             </div>
           ) : game.swfPath ? (
-            <object
-              type="application/x-shockwave-flash"
-              data={game.swfPath}
-              width={game.width || 960}
-              height={game.height || 600}
-              className="rounded-lg shadow-2xl"
+            <div
+              className="w-full border-2 border-paper"
+              style={{ maxWidth: width, aspectRatio: `${width} / ${height}` }}
             >
-              <param name="movie" value={game.swfPath} />
-              <param name="quality" value="high" />
-              <param name="allowScriptAccess" value="always" />
-            </object>
+              <object
+                type="application/x-shockwave-flash"
+                data={game.swfPath}
+                width="100%"
+                height="100%"
+              >
+                <param name="movie" value={game.swfPath} />
+                <param name="quality" value="high" />
+                <param name="allowScriptAccess" value="always" />
+              </object>
+            </div>
           ) : (
             <iframe
               src={game.url}
-              className="h-full w-full rounded-lg"
+              className="h-[calc(100svh-10rem)] w-full border-2 border-paper bg-paper"
               allowFullScreen
               title={game.title}
             />
@@ -101,125 +111,130 @@ export default function GamesPage() {
 
   // Vista de galería de juegos
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+    <>
       <Navbar />
-      <div className="container mx-auto px-6 py-20">
-        <div className="mb-12 text-center">
-          <div className="mb-4 text-6xl">🎮</div>
-          <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
-              Sala de Juegos
-            </span>
-          </h1>
-          <p className="mx-auto max-w-2xl text-xl text-secondary-600">
-            Juegos clásicos para disfrutar juntos 💕
-          </p>
-        </div>
 
-        <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {games.map((game, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedGame(index)}
-              className="transform cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-            >
-              <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-primary-200 to-accent-200">
-                <span className="text-6xl">{game.emoji}</span>
-              </div>
-              <div className="p-6">
-                <h3 className="mb-2 text-xl font-semibold text-gray-800">
-                  {game.title}
-                </h3>
-                <p className="mb-4 text-sm text-gray-600">{game.description}</p>
-                {'swfPath' in game && (
-                  <div className="mb-3 flex items-center justify-between text-xs text-gray-500">
-                    <span>⚡ Flash/Ruffle</span>
-                    <span>
-                      📏 {game.width}x{game.height}
+      <main>
+        <SheetHeader label="Juegos" title="Sala de Juegos">
+          <p>Juegos clásicos para disfrutar juntos</p>
+        </SheetHeader>
+
+        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28">
+          <ul className="mx-auto max-w-7xl border-t-2 border-ink">
+            {games.map((game, index) => (
+              <motion.li
+                key={game.title}
+                {...reveal(Math.min(index, 4) * 0.06)}
+                className="border-b-2 border-ink"
+              >
+                <button
+                  type="button"
+                  onClick={() => setSelectedGame(index)}
+                  className="group grid w-full grid-cols-[auto_1fr] items-center gap-4 py-5 text-left transition-colors duration-200 hover:bg-ink hover:text-paper sm:grid-cols-[auto_1fr_auto] md:gap-8 md:px-4 md:py-7"
+                >
+                  <span className="flex h-16 w-16 items-center justify-center bg-calipso text-ink transition-colors duration-200 group-hover:bg-marker group-hover:text-ink md:h-24 md:w-24">
+                    <GameGlyph name={game.glyph} className="h-9 w-9 md:h-12 md:w-12" />
+                  </span>
+
+                  <span className="min-w-0">
+                    <span className="block font-display text-3xl font-extrabold uppercase leading-none md:text-5xl">
+                      {game.title}
                     </span>
-                  </div>
-                )}
-                <button className="w-full rounded-full bg-primary-900 py-2 font-medium text-white transition-colors hover:bg-primary-800">
-                  Jugar Ahora 🎮
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                    <span className="mt-2 block max-w-2xl text-base text-dim transition-colors duration-200 group-hover:text-rule md:text-lg">
+                      {game.description}
+                    </span>
+                    {game.swfPath && (
+                      <span className="mt-2 flex gap-4 font-display text-sm font-semibold uppercase tracking-wide text-dim transition-colors duration-200 group-hover:text-rule">
+                        <span>Flash/Ruffle</span>
+                        <span className="tabular-nums">
+                          {game.width}x{game.height}
+                        </span>
+                      </span>
+                    )}
+                  </span>
 
-        <div className="rounded-xl border border-gray-100 bg-white p-8 text-center shadow-lg">
-          <div className="mb-4 text-4xl">✨</div>
-          <h2 className="mb-4 text-2xl font-bold text-gray-800">
+                  <span className="col-span-2 flex items-center gap-3 font-display text-lg font-semibold uppercase tracking-wide sm:col-span-1">
+                    Jugar Ahora
+                    <IconArrowRight className="h-6 w-6 transition-transform duration-200 ease-out group-hover:translate-x-2 md:h-8 md:w-8" />
+                  </span>
+                </button>
+              </motion.li>
+            ))}
+          </ul>
+        </section>
+      </main>
+
+      <footer className="bg-ink px-4 pb-28 pt-16 text-paper md:px-8 md:pb-32 md:pt-24">
+        <motion.div {...reveal()} className="mx-auto max-w-7xl">
+          <IconGamepad className="h-12 w-12 text-marker md:h-16 md:w-16" />
+          <h2 className="mt-6 font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
             Más juegos retro llegando pronto
           </h2>
-          <p className="mb-6 text-gray-600">
+          <p className="mt-5 max-w-2xl text-lg text-rule md:text-xl">
             Estamos agregando más juegos clásicos para disfrutar juntos
           </p>
-          <div className="rounded-lg bg-purple-50 p-4">
-            <p className="text-sm text-purple-700">
-              🎮 Pac-Man, Tetris, Mario y más juegos nostálgicos...
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          <p className="mt-8 border-t border-rule pt-4 font-display text-xl font-semibold uppercase tracking-wide text-marker">
+            Pac-Man, Tetris, Mario y más juegos nostálgicos...
+          </p>
+        </motion.div>
+      </footer>
+    </>
   )
 }
 
-const games = [
+const games: Game[] = [
   {
-    emoji: '🦸',
+    glyph: 'hero',
     title: 'KND Operation Startup',
     description:
       'Ayuda a los KND en su misión. Juego clásico Flash de acción y aventura.',
-    swfPath: '/operation-startup-1593783454.swf',
+    swfPath: '/games/operation-startup-1593783454.swf',
     width: 960,
     height: 600,
   },
   {
-    emoji: '🎮',
+    glyph: 'web',
     title: 'KND Operation Startup (Web)',
     description:
       'Versión web del clásico juego de Codename Kids Next Door. ¡Acción y aventura!',
     url: 'https://www.mariogames.be/Codename_Kids_Next_Door_Operation_Startup_Game',
   },
   {
-    emoji: '🌻',
+    glyph: 'flower',
     title: 'Plants vs Zombies',
     description:
       '¡Defiende tu jardín de los zombies con plantas! Estrategia y diversión clásica.',
     url: 'http://www.playgamesarcade.com/playgame/1488/plants-vs-zombies.html',
-    thumbnail: 'http://www.playgamesarcade.com/games/images/plants-vs-zombies.png',
   },
   {
-    emoji: '🏃',
+    glyph: 'runner',
     title: 'Temple Run',
     description: 'Corre sin parar en este adictivo juego de aventuras.',
     url: 'https://www.crazygames.com/embed/temple-run-2',
   },
   {
-    emoji: '🐍',
+    glyph: 'snake',
     title: 'Snake',
     description:
       'El clásico juego de la serpiente. ¡A ver quién logra el puntaje más alto!',
     url: 'https://www.google.com/fbx?fbx=snake_arcade',
   },
   {
-    emoji: '👾',
+    glyph: 'invader',
     title: 'Space Invaders',
     description:
       'Defiende la Tierra de la invasión alienígena en este clásico arcade.',
     url: 'https://www.crazygames.com/embed/space-invaders',
   },
   {
-    emoji: '🧱',
+    glyph: 'blocks',
     title: 'Tetris',
     description:
       'El legendario juego de bloques. ¡Desafíate a completar líneas!',
     url: 'https://www.crazygames.com/embed/tetris',
   },
   {
-    emoji: '⚽',
+    glyph: 'ball',
     title: '2 Player Soccer',
     description:
       'Juego de fútbol para dos jugadores. ¡Compite contra tu pareja!',

@@ -3,6 +3,8 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { BindingRings } from '@/components/illustrations'
+import { IconCalendar } from '@/components/icons'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -22,13 +24,19 @@ export default function ProtectedRoute({
     }
   }, [isAuthenticated, isLoading, requireAuth, router])
 
-  // Show loading spinner while checking auth
+  // Hoja en blanco mientras se comprueba la sesión
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 via-white to-orange-50">
-        <div className="text-center">
-          <div className="mb-4 text-6xl">💕</div>
-          <p className="text-lg text-gray-600">Cargando...</p>
+      <div
+        role="status"
+        className="flex min-h-screen flex-col bg-calipso text-ink"
+      >
+        <BindingRings className="h-8 w-full text-ink md:h-10" />
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4">
+          <IconCalendar className="h-14 w-14 motion-safe:animate-pulse" />
+          <p className="font-display text-2xl font-semibold uppercase tracking-wide">
+            Cargando...
+          </p>
         </div>
       </div>
     )

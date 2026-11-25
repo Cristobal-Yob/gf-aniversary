@@ -1,8 +1,25 @@
 'use client'
 
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { usePathname } from 'next/navigation'
+import { useEffect, useId, useState } from 'react'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import {
+  IconChevronDown,
+  IconPause,
+  IconPlay,
+  IconSkipNext,
+  IconSkipPrev,
+  IconVolume,
+  IconVolumeMute,
+} from '@/components/icons'
+import SpinningVinyl from '@/components/music/SpinningVinyl'
+import RuleSlider from '@/components/music/RuleSlider'
+import { formatTime } from '@/components/music/formatTime'
+import { EASE_OUT } from '@/lib/site'
+
+const iconButton =
+  'flex h-10 w-10 shrink-0 items-center justify-center transition-colors duration-150 hover:bg-paper hover:text-ink active:bg-marker active:text-ink'
 
 export default function GlobalMusicPlayer() {
   const {
@@ -10,356 +27,249 @@ export default function GlobalMusicPlayer() {
     isPlaying,
     progress,
     duration,
+    volume,
+    playlist,
+    playTrack,
     togglePlayPause,
     nextTrack,
     previousTrack,
     seekTo,
-    volume,
     setVolume,
   } = useMusicPlayer()
+  const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
   const [isExpanded, setIsExpanded] = useState(false)
+  const [lastVolume, setLastVolume] = useState(0.7)
+  const sheetId = useId()
+
+  useEffect(() => {
+    if (!isExpanded) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsExpanded(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isExpanded])
 
   if (!currentTrack) return null
 
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00'
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  // En /music el tocadiscos grande es el que gira: un solo elemento en movimiento
+  const spinHere = isPlaying && pathname !== '/music'
+  const elapsed = `${formatTime(progress)} de ${formatTime(duration)}`
+
+  const toggleMute = () => {
+    if (volume > 0) {
+      setLastVolume(volume)
+      setVolume(0)
+    } else {
+      setVolume(lastVolume || 0.7)
+    }
   }
 
-  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0
-
   return (
-    <AnimatePresence>
-      {/* Versión móvil - Mini player compacto */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-      >
-        {/* Player expandido en móvil */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="border-t border-pink-100 bg-white/95 px-4 pb-2 pt-4 backdrop-blur-lg"
-            >
-              {/* Barra de progreso expandida */}
-              <div className="mb-3">
-                <div
-                  className="relative h-2 cursor-pointer overflow-hidden rounded-full bg-gray-200"
-                  onClick={e => {
-                    const rect = e.currentTarget.getBoundingClientRect()
-                    const x = e.clientX - rect.left
-                    const percent = x / rect.width
-                    seekTo(percent * duration)
-                  }}
-                >
-                  <motion.div
-                    className={`h-full rounded-full bg-gradient-to-r ${currentTrack.color}`}
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-                <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>{formatTime(progress)}</span>
-                  <span>{formatTime(duration)}</span>
-                </div>
-              </div>
-
-              {/* Control de Volumen */}
-              <div className="mb-2 flex items-center gap-2">
-                <span className="text-sm">🔈</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={volume}
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-pink-500"
-                />
-                <span className="text-sm">🔊</span>
-              </div>
-
-              {/* Recuerdo */}
-              <p className="text-center text-xs italic text-pink-600">
+    <div className="fixed inset-x-0 bottom-0 z-50 text-paper">
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            key="music-sheet"
+            id={sheetId}
+            initial={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, transform: 'translateY(24px)' }
+            }
+            animate={{ opacity: 1, transform: 'translateY(0px)' }}
+            exit={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, transform: 'translateY(24px)' }
+            }
+            transition={{ duration: 0.22, ease: EASE_OUT }}
+            className="max-h-[min(70vh,560px)] overflow-y-auto border-t-2 border-paper bg-ink"
+          >
+            <div className="mx-auto max-w-7xl px-4 pb-4 pt-6 md:px-8">
+              <p className="font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-5xl">
+                {currentTrack.title}
+              </p>
+              <p className="mt-1 text-base text-rule">{currentTrack.artist}</p>
+              <p className="mt-4 max-w-2xl font-hand text-3xl leading-snug text-marker md:text-4xl">
                 {currentTrack.memory}
               </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Barra mini compacta */}
-        <div 
-          className="flex items-center gap-2 border-t border-pink-100 bg-white/95 px-3 py-2 backdrop-blur-lg"
-          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))' }}
-        >
-          {/* Emoji + Info */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex flex-1 items-center gap-2 overflow-hidden"
-          >
-            <motion.div
-              animate={{ rotate: isPlaying ? 360 : 0 }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${currentTrack.color} text-lg`}
-            >
-              {currentTrack.emoji}
-            </motion.div>
-            <div className="flex-1 overflow-hidden text-left">
-              <p className="truncate text-sm font-semibold text-gray-900">{currentTrack.title}</p>
-              <p className="truncate text-xs text-gray-500">{currentTrack.artist}</p>
+              {/* Controles que en el teléfono no caben en la barra */}
+              <div className="mt-5 flex items-center gap-3 md:hidden">
+                <span className="w-10 text-xs tabular-nums text-rule">
+                  {formatTime(progress)}
+                </span>
+                <RuleSlider
+                  value={progress}
+                  max={duration}
+                  onChange={seekTo}
+                  step={5}
+                  label="Posición de la canción"
+                  valueText={elapsed}
+                  className="flex-1"
+                />
+                <span className="w-10 text-right text-xs tabular-nums text-rule">
+                  {formatTime(duration)}
+                </span>
+              </div>
+
+              <ol className="mt-6 border-t border-rule/40">
+                {playlist.map((track, index) => {
+                  const active = track.id === currentTrack.id
+                  return (
+                    <li key={track.id} className="border-b border-rule/40">
+                      <button
+                        type="button"
+                        onClick={() => playTrack(track)}
+                        aria-current={active ? 'true' : undefined}
+                        className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 px-2 py-2.5 text-left transition-colors duration-150 ${
+                          active
+                            ? 'bg-marker text-ink'
+                            : 'hover:bg-paper hover:text-ink'
+                        }`}
+                      >
+                        <span className="font-display text-lg font-bold tabular-nums">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate font-display text-xl font-bold uppercase leading-tight">
+                            {track.title}
+                          </span>
+                          <span className="block truncate text-sm opacity-80">
+                            {track.artist}
+                          </span>
+                        </span>
+                        <span className="text-sm tabular-nums">
+                          {track.duration}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ol>
             </div>
-            <motion.span
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              className="text-gray-400"
-            >
-              ▲
-            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative border-t-2 border-paper bg-ink">
+        {/* Progreso en el teléfono: solo la regla, sin controles */}
+        <span
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-0.5 origin-left bg-marker md:hidden"
+          style={{
+            transform: `scaleX(${duration > 0 ? progress / duration : 0})`,
+          }}
+        />
+
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 md:gap-4 md:px-8">
+          <button
+            type="button"
+            onClick={() => setIsExpanded(open => !open)}
+            aria-expanded={isExpanded}
+            aria-controls={sheetId}
+            aria-label={
+              isExpanded
+                ? 'Cerrar recuerdo y lista de canciones'
+                : 'Ver recuerdo y lista de canciones'
+            }
+            className="group flex min-w-0 flex-1 items-center gap-3 text-left md:flex-none md:basis-72"
+          >
+            <SpinningVinyl
+              spinning={spinHere}
+              className="h-11 w-11 shrink-0 text-calipso [--accent:theme(colors.marker)] [--hole:theme(colors.ink)]"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-display text-xl font-extrabold uppercase leading-none">
+                {currentTrack.title}
+              </span>
+              <span className="block truncate text-sm text-rule">
+                {currentTrack.artist}
+              </span>
+            </span>
+            <IconChevronDown
+              className={`hidden h-5 w-5 shrink-0 transition-transform duration-200 ease-out sm:block ${
+                isExpanded ? '' : 'rotate-180'
+              }`}
+            />
           </button>
 
-          {/* Controles compactos */}
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex items-center">
             <button
+              type="button"
               onClick={previousTrack}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-lg active:bg-gray-100"
+              aria-label="Canción anterior"
+              className={`${iconButton} hidden md:flex`}
             >
-              ⏮️
+              <IconSkipPrev className="h-5 w-5" />
             </button>
             <button
+              type="button"
               onClick={togglePlayPause}
-              className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${currentTrack.color} text-xl text-white shadow-md`}
+              aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+              className="flex h-11 w-11 shrink-0 items-center justify-center bg-paper text-ink transition-colors duration-150 hover:bg-marker"
             >
-              {isPlaying ? '⏸️' : '▶️'}
+              {isPlaying ? (
+                <IconPause className="h-5 w-5" />
+              ) : (
+                <IconPlay className="h-5 w-5" />
+              )}
             </button>
             <button
+              type="button"
               onClick={nextTrack}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-lg active:bg-gray-100"
+              aria-label="Siguiente canción"
+              className={iconButton}
             >
-              ⏭️
+              <IconSkipNext className="h-5 w-5" />
             </button>
           </div>
-        </div>
 
-        {/* Mini barra de progreso */}
-        <div className="absolute left-0 right-0 top-0 h-0.5 bg-gray-200">
-          <div
-            className={`h-full bg-gradient-to-r ${currentTrack.color}`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </motion.div>
-
-      {/* Versión desktop - Player flotante */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-6 right-6 z-50 hidden md:block"
-      >
-        <motion.div
-          className="group relative w-80 overflow-hidden rounded-2xl backdrop-blur-2xl"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
-            boxShadow:
-              '0 8px 32px rgba(128, 0, 32, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-          }}
-        >
-          {/* Glow animado de fondo */}
-          <motion.div
-            className={`absolute inset-0 bg-gradient-to-r ${currentTrack.color} opacity-20 blur-2xl`}
-            animate={{
-              opacity: isPlaying ? [0.2, 0.4, 0.2] : 0.1,
-              scale: isPlaying ? [1, 1.1, 1] : 1,
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
-          <div className="relative p-4">
-            {/* Header con info de canción */}
-            <div className="mb-3 flex items-center gap-3">
-              {/* Emoji rotando si está reproduciendo */}
-              <motion.div
-                animate={{
-                  rotate: isPlaying ? 360 : 0,
-                  scale: isPlaying ? [1, 1.1, 1] : 1,
-                }}
-                transition={{
-                  rotate: { duration: 3, repeat: Infinity, ease: 'linear' },
-                  scale: { duration: 1, repeat: Infinity, ease: 'easeInOut' },
-                }}
-                className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${currentTrack.color} text-2xl shadow-lg`}
-              >
-                {currentTrack.emoji}
-              </motion.div>
-
-              {/* Info */}
-              <div className="flex-1 overflow-hidden">
-                <h3 className="truncate text-sm font-bold text-gray-900 drop-shadow-sm">
-                  {currentTrack.title}
-                </h3>
-                <p className="truncate text-xs text-gray-700 drop-shadow-sm">
-                  {currentTrack.artist}
-                </p>
-              </div>
-
-              {/* Ícono especial */}
-              {currentTrack.icon && (
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-xl"
-                >
-                  {currentTrack.icon}
-                </motion.div>
-              )}
-            </div>
-
-            {/* Barra de progreso */}
-            <div className="mb-3">
-              <div
-                className="group/progress relative h-1.5 cursor-pointer overflow-hidden rounded-full bg-gray-200"
-                onClick={e => {
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const x = e.clientX - rect.left
-                  const percent = x / rect.width
-                  seekTo(percent * duration)
-                }}
-              >
-                <motion.div
-                  className={`h-full rounded-full bg-gradient-to-r ${currentTrack.color} shadow-lg`}
-                  style={{ width: `${progressPercent}%` }}
-                  animate={{
-                    boxShadow: isPlaying
-                      ? '0 0 15px rgba(236, 72, 153, 0.6)'
-                      : '0 0 5px rgba(236, 72, 153, 0.3)',
-                  }}
-                />
-                {/* Indicador de hover */}
-                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover/progress:opacity-100">
-                  <div className="h-full w-full bg-white/30" />
-                </div>
-              </div>
-              <div className="mt-1 flex justify-between text-xs text-gray-500">
-                <span>{formatTime(progress)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
-
-            {/* Control de Volumen */}
-            <div className="mb-3 flex items-center justify-center gap-2 px-2">
-              <span className="text-sm">🔈</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-primary-600"
-              />
-              <span className="text-sm">🔊</span>
-            </div>
-
-            {/* Controles */}
-            <div className="flex items-center justify-center gap-2">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={previousTrack}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-all hover:bg-gray-200 hover:shadow-md"
-              >
-                ⏮️
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={togglePlayPause}
-                className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${currentTrack.color} text-2xl text-white shadow-lg transition-all hover:shadow-xl`}
-                animate={{
-                  boxShadow: isPlaying
-                    ? [
-                        '0 4px 20px rgba(236, 72, 153, 0.4)',
-                        '0 4px 30px rgba(236, 72, 153, 0.6)',
-                        '0 4px 20px rgba(236, 72, 153, 0.4)',
-                      ]
-                    : '0 4px 20px rgba(236, 72, 153, 0.3)',
-                }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                {isPlaying ? '⏸️' : '▶️'}
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={nextTrack}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-all hover:bg-gray-200 hover:shadow-md"
-              >
-                ⏭️
-              </motion.button>
-            </div>
-
-            {/* Ondas de sonido animadas (si está reproduciendo) */}
-            {isPlaying && (
-              <div className="absolute right-4 top-4 flex gap-0.5">
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className={`w-0.5 rounded-full bg-gradient-to-t ${currentTrack.color}`}
-                    animate={{
-                      height: ['8px', '16px', '8px'],
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      repeat: Infinity,
-                      delay: i * 0.15,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Tooltip con el recuerdo */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="mt-2 text-center text-xs font-medium italic text-pink-700 drop-shadow-sm"
-            >
-              {currentTrack.memory}
-            </motion.div>
+          <div className="hidden min-w-0 flex-1 items-center gap-3 md:flex">
+            <span className="w-11 text-right text-sm tabular-nums text-rule">
+              {formatTime(progress)}
+            </span>
+            <RuleSlider
+              value={progress}
+              max={duration}
+              onChange={seekTo}
+              step={5}
+              label="Posición de la canción"
+              valueText={elapsed}
+              className="flex-1"
+            />
+            <span className="w-11 text-sm tabular-nums text-rule">
+              {formatTime(duration)}
+            </span>
           </div>
-        </motion.div>
 
-        {/* Corazón pulsante flotante */}
-        <motion.div
-          className="absolute -right-2 -top-2 text-2xl"
-          animate={{
-            scale: isPlaying ? [1, 1.3, 1] : 1,
-            rotate: isPlaying ? [0, 10, -10, 0] : 0,
-          }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        >
-          💗
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+          <div className="hidden items-center gap-2 lg:flex">
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={volume > 0 ? 'Silenciar' : 'Activar sonido'}
+              className={iconButton}
+            >
+              {volume > 0 ? (
+                <IconVolume className="h-5 w-5" />
+              ) : (
+                <IconVolumeMute className="h-5 w-5" />
+              )}
+            </button>
+            <RuleSlider
+              value={volume}
+              max={1}
+              onChange={setVolume}
+              step={0.05}
+              label="Volumen"
+              valueText={`${Math.round(volume * 100)}%`}
+              className="w-24"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

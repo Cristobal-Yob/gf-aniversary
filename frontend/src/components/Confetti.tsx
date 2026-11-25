@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 interface ConfettiProps {
@@ -8,110 +8,126 @@ interface ConfettiProps {
   intensity?: 'low' | 'medium' | 'high'
 }
 
-export default function Confetti({ duration = 5000, intensity = 'high' }: ConfettiProps) {
+type Shape = 'rect' | 'strip' | 'triangle'
+
+interface Piece {
+  id: number
+  left: number
+  drift: number
+  spin: number
+  tilt: number
+  size: number
+  fall: number
+  delay: number
+  color: string
+  shape: Shape
+}
+
+// Solo la paleta del almanaque
+const COLORS = ['bg-calipso', 'bg-marker', 'bg-ink', 'bg-paper']
+const SHAPES: Shape[] = ['rect', 'strip', 'triangle']
+
+function makePieces(count: number): Piece[] {
+  return Array.from({ length: count }, (_, id) => ({
+    id,
+    left: Math.random() * 100,
+    drift: (Math.random() - 0.5) * 260,
+    spin: Math.random() * 720 - 360,
+    tilt: Math.random() * 360,
+    size: Math.random() * 0.6 + 0.7,
+    fall: Math.random() * 3 + 4,
+    delay: Math.random() * 2,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+  }))
+}
+
+function PaperPiece({ shape, color }: Pick<Piece, 'shape' | 'color'>) {
+  // El papel blanco lleva filo de tinta para verse sobre el fondo claro
+  const edge = color === 'bg-paper' ? 'border border-ink' : ''
+
+  if (shape === 'triangle') {
+    return (
+      <span
+        className={`block h-3 w-3 md:h-4 md:w-4 ${color}`}
+        style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }}
+      />
+    )
+  }
+  if (shape === 'strip') {
+    return <span className={`block h-1.5 w-4 md:h-2 md:w-5 ${color} ${edge}`} />
+  }
+  return <span className={`block h-3 w-2 md:h-4 md:w-2.5 ${color} ${edge}`} />
+}
+
+/** Papel picado que cae una vez; con movimiento reducido solo aparece y se desvanece */
+export default function Confetti({
+  duration = 5000,
+  intensity = 'high',
+}: ConfettiProps) {
+  const reduceMotion = useReducedMotion()
   const [isVisible, setIsVisible] = useState(true)
-  const [mounted, setMounted] = useState(false)
+  const [pieces, setPieces] = useState<Piece[]>([])
 
   useEffect(() => {
-    setMounted(true)
+    const count = intensity === 'high' ? 60 : intensity === 'medium' ? 40 : 20
+    // Aleatorio solo en el navegador, para no romper la hidratación
+    setPieces(makePieces(count))
+  }, [intensity])
+
+  useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => setIsVisible(false), duration)
       return () => clearTimeout(timer)
     }
   }, [duration])
 
-  if (!mounted || !isVisible) return null
-
-  const particleCount = intensity === 'high' ? 60 : intensity === 'medium' ? 40 : 20
-
-  const colors = [
-    '#ff6b9d', // rosa
-    '#ffd93d', // amarillo
-    '#6bcb77', // verde
-    '#4d96ff', // azul
-    '#ff6b6b', // rojo
-    '#c44dff', // morado
-    '#ff9f43', // naranja
-    '#00d2d3', // cyan
-  ]
-
-  const shapes = ['circle', 'square', 'triangle', 'heart']
-
-  const getShape = (shape: string, color: string) => {
-    switch (shape) {
-      case 'circle':
-        return (
-          <div
-            className="h-3 w-3 rounded-full md:h-4 md:w-4"
-            style={{ backgroundColor: color }}
-          />
-        )
-      case 'square':
-        return (
-          <div
-            className="h-3 w-3 md:h-4 md:w-4"
-            style={{ backgroundColor: color }}
-          />
-        )
-      case 'triangle':
-        return (
-          <div
-            className="h-0 w-0 border-b-[12px] border-l-[6px] border-r-[6px] border-l-transparent border-r-transparent md:border-b-[16px] md:border-l-[8px] md:border-r-[8px]"
-            style={{ borderBottomColor: color }}
-          />
-        )
-      case 'heart':
-        return <span className="text-sm md:text-base" style={{ color }}>❤️</span>
-      default:
-        return (
-          <div
-            className="h-3 w-3 rounded-full md:h-4 md:w-4"
-            style={{ backgroundColor: color }}
-          />
-        )
-    }
-  }
+  if (!isVisible || pieces.length === 0) return null
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
-      {[...Array(particleCount)].map((_, i) => {
-        const color = colors[Math.floor(Math.random() * colors.length)]
-        const shape = shapes[Math.floor(Math.random() * shapes.length)]
-        const startX = Math.random() * 100
-        const endX = startX + (Math.random() - 0.5) * 40
-        const rotations = Math.random() * 720 - 360
-
-        return (
-          <motion.div
-            key={i}
-            className="absolute"
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-[100] overflow-hidden"
+    >
+      {pieces.map(piece =>
+        reduceMotion ? (
+          <motion.span
+            key={piece.id}
+            className="absolute block"
             style={{
-              left: `${startX}%`,
-              top: '-5%',
+              left: `${piece.left}%`,
+              top: `${(piece.id * 37) % 90}%`,
+              transform: `rotate(${piece.tilt}deg)`,
             }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 3, delay: piece.delay * 0.3 }}
+          >
+            <PaperPiece shape={piece.shape} color={piece.color} />
+          </motion.span>
+        ) : (
+          <motion.span
+            key={piece.id}
+            className="absolute block"
+            style={{ left: `${piece.left}%`, top: '-5%' }}
             initial={{
-              y: 0,
-              x: 0,
-              rotate: 0,
               opacity: 1,
-              scale: Math.random() * 0.5 + 0.5,
+              transform: `translate3d(0px, 0vh, 0px) rotate(${piece.tilt}deg) scale(${piece.size})`,
             }}
             animate={{
-              y: '120vh',
-              x: `${(endX - startX) * 10}px`,
-              rotate: rotations,
               opacity: [1, 1, 0.8, 0],
+              transform: `translate3d(${piece.drift}px, 115vh, 0px) rotate(${piece.tilt + piece.spin}deg) scale(${piece.size})`,
             }}
             transition={{
-              duration: Math.random() * 3 + 4,
-              delay: Math.random() * 2,
+              duration: piece.fall,
+              delay: piece.delay,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
           >
-            {getShape(shape, color)}
-          </motion.div>
+            <PaperPiece shape={piece.shape} color={piece.color} />
+          </motion.span>
         )
-      })}
+      )}
     </div>
   )
 }

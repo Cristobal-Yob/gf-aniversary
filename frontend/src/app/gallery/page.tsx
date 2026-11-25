@@ -1,598 +1,294 @@
 'use client'
 
+import Link from 'next/link'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
-import Link from 'next/link'
 import Navbar from '@/components/Navbar'
-import PhotoLightbox from '@/components/PhotoLightbox'
 import LoveStory from '@/components/LoveStory'
-import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import PhotoLightbox from '@/components/PhotoLightbox'
+import CategorySection from '@/components/gallery/CategorySection'
+import DrawOnView from '@/components/ui/DrawOnView'
+import { IconArrowRight, IconLock, IconPlay } from '@/components/icons'
+import {
+  BindingRings,
+  MarkHeart,
+  MarkUnderline,
+  TornEdge,
+} from '@/components/illustrations'
+import { photoCategories, photos, type Photo } from '@/content/photos'
+import { EASE_OUT } from '@/lib/site'
+
+/** Hoja de calendario con la que abre cada página */
+function SheetHeader({
+  left,
+  right,
+  title,
+  children,
+}: {
+  left: ReactNode
+  right: ReactNode
+  title: ReactNode
+  children?: ReactNode
+}) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
+      <BindingRings className="h-8 w-full text-ink md:h-10" />
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-2 md:px-8 md:pb-24">
+        <div className="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
+          <span>{left}</span>
+          <span className="tabular-nums">{right}</span>
+        </div>
+        <motion.h1
+          initial={
+            reduceMotion
+              ? { opacity: 0 }
+              : { opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' }
+          }
+          animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
+          transition={{ duration: 0.9, ease: EASE_OUT }}
+          className="pt-8 font-display text-[clamp(3.5rem,13vw,10.5rem)] font-black uppercase leading-[0.85] md:pt-12"
+        >
+          {title}
+        </motion.h1>
+        {children}
+      </div>
+      <TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-calipso md:h-6" />
+    </section>
+  )
+}
 
 export default function GalleryPage() {
-  const { isAuthenticated } = useAuth()
-  const { playlist, playTrack, currentTrack, audioRef } = useMusicPlayer()
-  const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
-  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const { isAuthenticated, isLoading } = useAuth()
+  const { playlist, playTrack } = useMusicPlayer()
+  const reduceMotion = useReducedMotion()
   const [hasStarted, setHasStarted] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [liftedSrc, setLiftedSrc] = useState<string | null>(null)
+  const [year, setYear] = useState<number | null>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
+
+  // La fecha se calcula en el navegador: la página se prerenderiza al compilar
+  useEffect(() => setYear(new Date().getFullYear()), [])
 
   // Función para iniciar la experiencia con música
   const startExperience = () => {
     const upSong = playlist.find(track => track.title === 'Married Life (UP)')
     if (upSong) {
       playTrack(upSong)
-      // Forzar reproducción después del clic del usuario
-      setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current.play().catch(err => console.log('Play error:', err))
-        }
-      }, 50)
     }
     setHasStarted(true)
   }
 
-  // Mostrar pantalla de inicio si no ha empezado
-  if (isAuthenticated && !hasStarted) {
+  // Secciones visibles: todas las categorías, o solo la elegida
+  const sections = useMemo(
+    () =>
+      photoCategories
+        .filter(category => category.id !== 'all')
+        .filter(category => activeCategory === 'all' || category.id === activeCategory)
+        .map(category => ({
+          category,
+          photos: photos.filter(photo => photo.category === category.id),
+        }))
+        .filter(section => section.photos.length > 0),
+    [activeCategory]
+  )
+  // El visor recorre las fotos en el mismo orden en que aparecen en la página
+  const visiblePhotos = useMemo(
+    () => sections.flatMap(section => section.photos),
+    [sections]
+  )
+
+  const openPhoto = (photo: Photo) => {
+    setLiftedSrc(photo.src)
+    setOpenIndex(visiblePhotos.findIndex(item => item.src === photo.src))
+  }
+  const closePhoto = useCallback(() => setOpenIndex(null), [])
+
+  const selectCategory = (id: string) => {
+    setActiveCategory(id)
+    const top = galleryRef.current?.getBoundingClientRect().top
+    if (top !== undefined && top < 0) {
+      galleryRef.current?.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    }
+  }
+
+  const showing = openIndex !== null ? visiblePhotos[openIndex] : null
+  // Solo la foto que se levantó de su copia deja el hueco en la hoja
+  const lifted = showing && showing.src === liftedSrc ? liftedSrc : null
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-orange-50">
+      <>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center px-6">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md text-center"
-          >
-            <div className="mb-6 text-8xl">💕</div>
-            <h1 className="mb-4 text-4xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-              Nuestros Recuerdos
-            </h1>
-            <p className="mb-8 text-gray-600 text-lg">
-              Prepárate para revivir nuestros momentos más especiales con música 🎵
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={startExperience}
-              className="inline-block rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-8 py-4 font-medium text-white text-lg shadow-lg hover:shadow-xl transition-all"
-            >
-              Comenzar experiencia ✨
-            </motion.button>
-          </motion.div>
-        </div>
-      </div>
+        <main className="min-h-screen bg-calipso" />
+      </>
     )
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50">
+      <>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center px-6">
-          <div className="w-full max-w-md text-center">
-            <div className="mb-6 text-6xl">🔒</div>
-            <h1 className="mb-4 text-3xl font-bold text-gray-800">
-              Área Privada
-            </h1>
-            <p className="mb-8 text-gray-600">
+        <main className="pb-28">
+          <SheetHeader
+            left={`${photos.length} recuerdos capturados`}
+            right={<IconLock className="h-6 w-6 md:h-7 md:w-7" />}
+            title="Área Privada"
+          >
+            <p className="mt-6 max-w-2xl text-lg text-calipso-shade md:text-xl">
               Necesitas iniciar sesión para ver nuestra galería de recuerdos
             </p>
             <Link
               href="/auth"
-              className="inline-block rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700"
+              className="btn-almanac group mt-10 border-ink bg-ink text-paper hover:bg-paper hover:text-ink"
             >
-              Iniciar Sesión 💖
+              Iniciar Sesión
+              <IconArrowRight className="h-5 w-5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
             </Link>
-          </div>
-        </div>
-      </div>
+          </SheetHeader>
+        </main>
+      </>
     )
   }
 
-  // Filtrar fotos por categoría
-  const filteredPhotos =
-    activeCategory === 'all'
-      ? photos
-      : photos.filter(photo => photo.category === activeCategory)
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
-      {/* Partículas flotantes */}
-
+    <>
       <Navbar />
 
-      <div className="container relative z-20 mx-auto px-4 py-16 md:px-6 md:py-20">
-        {/* Header romántico */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-12 text-center"
-        >
-          <motion.div
-            animate={{
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-            className="mb-4 text-7xl"
+      <AnimatePresence mode="wait" initial={false}>
+        {!hasStarted ? (
+          // Portada: se arranca como una hoja de calendario al comenzar
+          <motion.main
+            key="intro"
+            exit={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, transform: 'translateY(-70%) rotate(-7deg)' }
+            }
+            transition={{ duration: 0.6, ease: [0.77, 0, 0.175, 1] }}
+            style={{ transformOrigin: 'top left' }}
+            className="min-h-[calc(100svh-58px)] bg-calipso md:min-h-[calc(100svh-66px)]"
           >
-            💖
-          </motion.div>
-
-          <h1 className="mb-4 font-script text-5xl font-bold md:text-7xl">
-            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
-              Nuestros Recuerdos
-            </span>{' '}
-            <span className="text-secondary-700">más Lindos</span>
-          </h1>
-
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-secondary-600 md:text-xl">
-            Cada foto cuenta una historia de amor 📸✨
-          </p>
-
-          {/* Contador de recuerdos */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-            className="inline-block rounded-full border border-white/50 bg-white/60 px-6 py-3 shadow-lg backdrop-blur-md"
-          >
-            <span className="font-semibold text-primary-800">
-              {photos.length} recuerdos capturados 💕
-            </span>
-          </motion.div>
-        </motion.div>
-
-        {/* Historia de amor */}
-        <LoveStory />
-
-        {/* Filtros/Categorías */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="mb-8 flex flex-wrap justify-center gap-3"
-        >
-          {categories.map((category, index) => (
-            <motion.button
-              key={category.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 + index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(category.id)}
-              className={`rounded-full px-6 py-2.5 font-medium transition-all ${
-                activeCategory === category.id
-                  ? 'bg-primary-900 text-white shadow-lg shadow-primary-900/20'
-                  : 'border border-white/50 bg-white/60 text-secondary-700 backdrop-blur-sm hover:bg-white hover:shadow-md'
-              }`}
+            <SheetHeader
+              left={`${photos.length} recuerdos capturados`}
+              right={year ?? ' '}
+              title="Nuestros Recuerdos"
             >
-              <span className="mr-2">{category.icon}</span>
-              {category.label}
-            </motion.button>
-          ))}
-        </motion.div>
-
-        {/* Grid de fotos tipo Masonry */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
+              <p className="mt-6 max-w-2xl text-lg text-calipso-shade md:text-xl">
+                Prepárate para revivir nuestros momentos más especiales con
+                música
+              </p>
+              <button
+                type="button"
+                onClick={startExperience}
+                className="btn-almanac mt-10 border-ink bg-ink text-paper hover:bg-paper hover:text-ink"
+              >
+                <IconPlay className="h-5 w-5" />
+                Comenzar experiencia
+              </button>
+            </SheetHeader>
+          </motion.main>
+        ) : (
+          <motion.main
+            key="gallery"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="columns-1 gap-4 space-y-4 md:columns-2 lg:columns-3 xl:columns-4"
+            transition={{ duration: 0.5, ease: EASE_OUT }}
+            className="overflow-x-clip"
           >
-            {filteredPhotos.map((photo, index) => (
-              <motion.div
-                key={photo.src}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.05,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="break-inside-avoid"
+            <SheetHeader
+              left={`${photos.length} recuerdos capturados`}
+              right={year ?? ' '}
+              title={
+                <>
+                  Nuestros Recuerdos{' '}
+                  <span className="box-decoration-clone bg-marker px-[0.12em] text-ink">más Lindos</span>
+                </>
+              }
+            >
+              <p className="relative mt-6 inline-block max-w-2xl text-lg text-calipso-shade md:text-xl">
+                Cada foto cuenta una historia de amor
+                <DrawOnView delay={900} className="absolute -bottom-2 left-0 block h-2.5 w-full">
+                  <MarkUnderline className="h-full w-full" />
+                </DrawOnView>
+              </p>
+            </SheetHeader>
+
+            <LoveStory />
+
+            <div ref={galleryRef} className="scroll-mt-[58px] md:scroll-mt-[66px]">
+              {/* Pestañas de categorías */}
+              <nav
+                aria-label="Categorías de fotos"
+                className="sticky top-[58px] z-30 border-y-2 border-ink bg-paper md:top-[66px]"
               >
-                <motion.div
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white/80 p-3 shadow-lg backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary-900/20"
-                  onClick={() => setSelectedPhoto(photo)}
-                >
-                  {/* Efecto Polaroid */}
-                  <div className="relative overflow-hidden rounded-xl">
-                    <div
-                      className={`relative ${
-                        photo.aspectRatio || 'aspect-square'
-                      }`}
-                    >
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
+                <ul className="mx-auto flex max-w-7xl no-scrollbar overflow-x-auto md:px-8">
+                  {photoCategories.map(category => {
+                    const active = activeCategory === category.id
+                    return (
+                      <li key={category.id} className="shrink-0 border-r border-rule last:border-r-0">
+                        <button
+                          type="button"
+                          onClick={() => selectCategory(category.id)}
+                          aria-pressed={active}
+                          className={`block whitespace-nowrap px-4 py-3 font-display text-lg font-bold uppercase tracking-wide transition-colors duration-150 md:px-5 md:text-xl ${
+                            active ? 'bg-marker text-ink' : 'text-ink hover:bg-ink hover:text-paper'
+                          }`}
+                        >
+                          {category.label}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </nav>
 
-                      {/* Overlay al hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              {sections.map((section, sectionIndex) => (
+                <CategorySection
+                  key={section.category.id}
+                  category={section.category}
+                  photos={section.photos}
+                  priorityCount={sectionIndex === 0 ? 2 : 0}
+                  liftedSrc={lifted}
+                  onOpen={openPhoto}
+                />
+              ))}
+            </div>
 
-                      {/* Texto al hover */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        className="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                      >
-                        <p className="mb-1 font-semibold">{photo.title}</p>
-                        {/* date removed per user request */}
-                      </motion.div>
+            {/* Última hoja */}
+            <footer className="bg-ink px-4 pb-28 pt-16 text-paper [--accent:theme(colors.marker)] md:px-8 md:pb-32 md:pt-24">
+              <div className="mx-auto max-w-7xl">
+                <DrawOnView className="block h-16 w-16 md:h-20 md:w-20">
+                  <MarkHeart className="h-full w-full" />
+                </DrawOnView>
+                <h2 className="mt-6 font-display text-[clamp(3rem,9vw,6.5rem)] font-black uppercase leading-[0.9]">
+                  Gracias por compartir{' '}
+                  <span className="text-marker">este camino</span> conmigo
+                </h2>
+                <p className="mt-6 max-w-2xl text-lg text-rule md:text-xl">
+                  Cada foto es un tesoro, cada momento contigo es mágico
+                </p>
+              </div>
+            </footer>
+          </motion.main>
+        )}
+      </AnimatePresence>
 
-                      {/* Ícono de corazón flotante */}
-                      <motion.div
-                        className="absolute right-3 top-3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                        whileHover={{ scale: 1.2, rotate: 15 }}
-                      >
-                        <div className="rounded-full bg-white/90 p-2 text-2xl text-primary-600 backdrop-blur-sm">
-                          💗
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
-
-                  {/* Caption estilo polaroid */}
-                  <div className="mt-3 text-center">
-                    <p className="font-handwriting text-sm text-secondary-600">
-                      {photo.caption || photo.title}
-                    </p>
-                  </div>
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Mensaje final romántico */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-16 text-center"
-        >
-          <motion.div
-            animate={{
-              rotate: [0, 5, -5, 0],
-              scale: [1, 1.05, 1],
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-            className="mb-4 text-6xl"
-          >
-            💝
-          </motion.div>
-          <h2 className="mb-3 font-script text-4xl font-bold text-primary-900 md:text-5xl">
-            Gracias por compartir{' '}
-            <span className="bg-gradient-to-r from-primary-900 to-accent-600 bg-clip-text text-transparent">
-              este camino
-            </span>{' '}
-            conmigo
-          </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
-            Cada foto es un tesoro, cada momento contigo es mágico ✨
-          </p>
-        </motion.div>
-      </div>
-
-      {/* Lightbox para vista ampliada */}
       <PhotoLightbox
-        photo={selectedPhoto}
-        onClose={() => setSelectedPhoto(null)}
+        photos={visiblePhotos}
+        index={openIndex}
+        liftedSrc={liftedSrc}
+        onIndexChange={setOpenIndex}
+        onClose={closePhoto}
       />
-    </div>
+    </>
   )
 }
-
-// Categorías para filtrar
-const categories = [
-  { id: 'all', label: 'Todas', icon: '💖' },
-  { id: 'nieve', label: 'En la Nieve', icon: '☃️' },
-  { id: 'templo', label: 'Templo', icon: '⛩️' },
-  { id: 'ny', label: 'Nueva York', icon: '🗽' },
-  { id: 'comida', label: 'Comidas', icon: '🍽️' },
-  { id: 'celebraciones', label: 'Celebraciones', icon: '🎉' },
-  { id: 'animales', label: 'Con Animalitos', icon: '🐾' },
-  { id: 'diversión', label: 'Diversión', icon: '😄' },
-]
-
-// Fotos con categorías y metadata - TODAS LAS FOTOS
-const photos = [
-  // Nueva York
-  {
-    src: '/photos/fotos/felizes en ny.jpeg',
-    alt: 'Felices en Nueva York',
-    title: 'Felices en NY',
-    caption: ' en ny 🗽 tu carita muy linda',
-    description: 'Esta foto captura tu belleza en todo su esplendor con tu hermosa sonrisa',
-    category: 'ny',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/sorprendidos ny.jpeg',
-    alt: 'Sorprendidos en NY',
-    title: 'Sorpresa en NY',
-    caption: 'Ese momento cuando... 😮💕',
-    description: 'je je esta foto me da risa te amu',
-    category: 'ny',
-    aspectRatio: 'aspect-square',
-  },
-
-  // Nieve
-  {
-    src: '/photos/fotos/snow kiss.jpeg',
-    alt: 'Beso en la nieve',
-    title: 'Beso bajo la nieve',
-    caption: 'Un momento mágico ❄️💋',
-    description: 'me encanta salir contigo a todos lados',
-    category: 'nieve',
-    aspectRatio: 'aspect-[4/5]',
-  },
-  {
-    src: '/photos/fotos/snow hearth.jpeg',
-    alt: 'Corazón de nieve',
-    title: 'Corazón Nevado',
-    caption: 'Amor en el frío ⛄💗',
-    description: 'Creando recuerdos en la nieve',
-    category: 'nieve',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/snow faces.jpeg',
-    alt: 'Caras felices en la nieve',
-    title: 'Sonrisas Nevadas',
-    caption: 'Felicidad pura ☃️😊',
-    description: 'je je de verdad veo todas las fotos y estas mu hermosa c:',
-    category: 'nieve',
-    aspectRatio: 'aspect-[3/4]',
-  },
-
-  // Templo
-  {
-    src: '/photos/fotos/hearth templo.jpeg',
-    alt: 'Corazón en el templo',
-    title: 'Corazón en el Templo',
-    caption: 'Amor en bahai ⛩️💖',
-    description: 'ya es costumbre el viaje en el templo es mu wen panorama',
-    category: 'templo',
-    aspectRatio: 'aspect-[4/5]',
-  },
-  {
-    src: '/photos/fotos/mirandonos templo.jpeg',
-    alt: 'Mirándonos en el templo',
-    title: 'Miradas Eternas',
-    caption: 'miradas que dicen mucho 👀💕',
-    description: 'Perdidos en nuestros ojos',
-    category: 'templo',
-    aspectRatio: 'aspect-[4/5]',
-  },
-
-  // Comidas
-  {
-    src: '/photos/fotos/Corazon de josefa comiendo.jpeg',
-    alt: 'Josefa comiendo',
-    title: 'Mi Amor Comiendo',
-    caption: 'Felicidad en cada bocado 😋💕',
-    description: 'me encanta conocer diferentes lugares de comida contigo',
-    category: 'comida',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/yo en la comida.jpeg',
-    alt: 'Yo en la comida',
-    title: 'Disfrutando Juntos',
-    caption: 'Momentos deliciosos 🍴',
-    description: 'Compartiendo una comida especial',
-    category: 'comida',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/tu en la comida.jpeg',
-    alt: 'Tú en la comida',
-    title: 'Mi Princesa',
-    caption: 'Radiante como siempre ✨',
-    description: 'Hermosa en cada momento',
-    category: 'comida',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/siendo feliz comiendo en el 18 .jpeg',
-    alt: 'Feliz comiendo en el 18',
-    title: 'Fiestas Patrias',
-    caption: 'Celebrando con sabor 🇨🇱🌭',
-    description: 'Disfrutando las Fiestas Patrias juntos',
-    category: 'comida',
-    aspectRatio: 'aspect-square',
-  },
-
-  // Celebraciones y Fiestas Patrias
-  {
-    src: '/photos/fotos/yo y la josefa tomando en el 18.jpeg',
-    alt: 'Tomando en el 18',
-    title: 'Brindando por Nosotros',
-    caption: 'Salud! 🍻🇨🇱',
-    description: 'Celebrando las Fiestas Patrias',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/yo la josefa ordenados y formales.jpeg',
-    alt: 'Ordenados y formales',
-    title: 'Elegantes',
-    caption: 'Cuando me acompañas a los momentos importantes 👔👗',
-    description: 'Luciendo espectaculares',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/disfrazados yo de pallazo y ella tamb ien.jpeg',
-    alt: 'Disfrazados de payasos',
-    title: 'Payasos Enamorados',
-    caption: 'Locura total 🤡',
-    description: 'disfrazardos',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-square',
-  },
-  {
-    src: '/photos/fotos/esto es halloween en fantasilandia con jac .jpeg',
-    alt: 'Fantasilandia',
-    title: 'fantasilandia',
-    caption: 'Esto es Halloween! 🎃👻',
-    description: 'mu weno subirnos a el barco pirata contigo',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/halloween.jpeg',
-    alt: 'Halloween - Catrina y Calavera Mexicana',
-    title: 'Noche de Brujas',
-    caption: ' Catrina y Calavera Mexicana 💀👑',
-    description: 'Celebrando Halloween con estilo mexicano',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-square',
-  },
-
-  // Con Animalitos
-  {
-    src: '/photos/fotos/josefa con la blue berrie perrita amor .jpeg',
-    alt: 'Josefa con Blue Berry',
-    title: 'Con Blue Berry',
-    caption: 'Amor de perrito 🐕💙',
-    description: 'Nuestra hija peluda',
-    category: 'animales',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/siendo feliz haciendole carinio a un caballo 18 .jpeg',
-    alt: 'Acariciando un caballo',
-    title: 'Amor por los Caballos',
-    caption: 'Momento tierno con el caballo 🐴💕',
-    description: 'Tu conexión especial con los animalitos',
-    category: 'animales',
-    aspectRatio: 'aspect-square',
-  },
-  {
-    src: '/photos/fotos/con el senior de buin zoo.jpeg',
-    alt: 'Con el señor en Buin Zoo',
-    title: 'Visita al Zoo',
-    caption: 'con señor buin zoo 🦁',
-    description: 'jue weno ese dia',
-    category: 'animales',
-    aspectRatio: 'aspect-[3/4]',
-  },
-
-  // Pixar/Disney
-  {
-    src: '/photos/fotos/pixar up los dos con el abuelito.jpeg',
-    alt: 'En Pixar Up con el abuelito',
-    title: 'Aventura UP',
-    caption: 'Volando alto juntos 🎈🏠',
-    description: 'a llegar a abuelitos',
-    category: 'diversión',
-    aspectRatio: 'aspect-[4/3]',
-  },
-  {
-    src: '/photos/fotos/jose feliz con russel up pixar.jpeg',
-    alt: 'Josefa feliz con Russell',
-    title: 'Con Russell',
-    caption: 'Felicidad pura 😊🎈',
-    description: 'Tu sonrisa lo dice todo',
-    category: 'diversión',
-    aspectRatio: 'aspect-square',
-  },
-  {
-    src: '/photos/fotos/tu triste en pixar .jpeg',
-    alt: 'Triste en Pixar',
-    title: 'Momento Dramático',
-    caption: 'nooo sose triste 🎭',
-    description: 'Incluso triste te ves hermosa',
-    category: 'diversión',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/yo enojado en pixar.jpeg',
-    alt: 'Yo enojado en Pixar',
-    title: 'Cara de Enojado',
-    caption: 'Mi mejor actuación 😤',
-    description: 'Que yo soy enojon',
-    category: 'diversión',
-    aspectRatio: 'aspect-[3/4]',
-  },
-
-  // Momentos especiales
-  {
-    src: '/photos/fotos/beso en cenco corazon.jpeg',
-    alt: 'Beso en Cenco',
-    title: 'Beso de Corazón',
-    caption: 'Amor en cada rincón 💋💕',
-    description: 'Robándote besos donde sea',
-    category: 'diversión',
-    aspectRatio: 'aspect-square',
-  },
-  {
-    src: '/photos/fotos/haciendo cara chistosas en esperando por el boba.jpeg',
-    alt: 'Caras chistosas esperando el boba',
-    title: 'Espera Divertida',
-    caption: 'Mientras esperamos el boba 🧋😝',
-    description: 'Haciendo el tonto je je',
-    category: 'diversión',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/siendo feliz y brillando .jpeg',
-    alt: 'Siendo feliz y brillando',
-    title: 'Radiante',
-    caption: 'Tu brillo natural ✨😊',
-    description: 'Iluminando mi vida',
-    category: 'diversión',
-    aspectRatio: 'aspect-[3/4]',
-  },
-
-  // Photos requested by user
-  {
-    src: '/photos/fotos/anillos de carino en w.png',
-    alt: 'Anillito de cariño',
-    title: 'Nuestro Anillito',
-    caption:
-      'nuestro primer anillito que representa nuestro amor 💍',
-    description: 'Recuerdo especial',
-    category: 'celebraciones',
-    aspectRatio: 'aspect-[3/4]',
-  },
-  {
-    src: '/photos/fotos/cuando me da hambe.png',
-    alt: 'Cuando me da hambre (broma)',
-    title: 'Cuando me da Hambe',
-    caption:
-      'hace hambre" 😋😂',
-    description: 'yo te como',
-    category: 'diversión',
-    aspectRatio: 'aspect-square',
-  },
-  {
-    src: '/photos/fotos/en la pandemia.png',
-    alt: 'Recuerdo de la pandemia',
-    title: 'Recuerdo de la Pandemia',
-    caption: 'fue re loco pero lo pasamos juntos',
-    description: 'Un recuerdo de la pandemita',
-    category: 'diversión',
-    aspectRatio: 'aspect-[4/5]',
-  },
-]

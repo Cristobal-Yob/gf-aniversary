@@ -19,7 +19,7 @@ export default function PhotoPrint({
   priority = false,
 }: PhotoPrintProps) {
   return (
-    <figure className="bg-paper p-1.5 shadow-[0_22px_44px_-14px_rgba(6,10,60,0.6)] sm:p-2">
+    <figure className="bg-paper p-1.5 shadow-[0_22px_44px_-14px_rgba(15,17,21,0.5)] sm:p-2">
       <div className="relative aspect-[4/5] overflow-hidden bg-rule">
         <Image
           src={src}

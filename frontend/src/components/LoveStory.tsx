@@ -1,472 +1,322 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Image from 'next/image'
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
+import { useRef, useState } from 'react'
+import PhotoPrint from '@/components/ui/PhotoPrint'
+import DrawOnView from '@/components/ui/DrawOnView'
+import { MarkUnderline } from '@/components/illustrations'
+import { useMediaQuery } from '@/components/gallery/shared'
+import { storyCards, type StoryCard } from '@/content/story'
+import { EASE_OUT } from '@/lib/site'
 
-interface StoryCard {
-  title: string
-  description: string
-  photos: {
-    src: string
-    alt: string
-  }[]
+// Dónde cae cada copia según cuántas fotos tiene el capítulo
+const LAYOUTS: Record<number, { position: string; rotate: number; depth: number }[]> = {
+  1: [{ position: 'left-[14%] top-[6%] w-[72%]', rotate: -3, depth: 60 }],
+  2: [
+    { position: 'left-0 top-0 w-[58%]', rotate: -4, depth: 40 },
+    { position: 'bottom-0 right-0 w-[58%]', rotate: 3.5, depth: 140 },
+  ],
+  3: [
+    { position: 'left-0 top-[8%] w-[52%]', rotate: -5, depth: 30 },
+    { position: 'right-0 top-0 w-[49%]', rotate: 4, depth: 110 },
+    { position: 'bottom-0 left-[24%] w-[50%]', rotate: -1.5, depth: 190 },
+  ],
 }
 
-const storyCards: StoryCard[] = [
-  {
-    title: 'Si te veo triste... 😢',
-    description:
-      'Estaré ahí enojado, listo para protegerte y defender tu sonrisa de cualquier cosa que te haga daño 💪😤',
-    photos: [
-      {
-        src: '/photos/fotos/tu triste en pixar .jpeg',
-        alt: 'Tú triste',
-      },
-      {
-        src: '/photos/fotos/yo enojado en pixar.jpeg',
-        alt: 'Yo enojado defendiéndote',
-      },
-    ],
-  },
-  {
-    title: 'Me encanta cuando estás feliz 😊',
-    description:
-      'Tu felicidad es mi felicidad. Verte sonreír y brillar ilumina mi mundo entero ✨💕',
-    photos: [
-      {
-        src: '/photos/fotos/siendo feliz comiendo en el 18 .jpeg',
-        alt: 'Feliz comiendo',
-      },
-      {
-        src: '/photos/fotos/Corazon de josefa comiendo.jpeg',
-        alt: 'Mi corazón feliz',
-      },
-      {
-        src: '/photos/fotos/siendo feliz y brillando .jpeg',
-        alt: 'Brillando de felicidad',
-      },
-    ],
-  },
-  {
-    title: 'Gracias por acompañarme en todo momento 👔👗',
-    description:
-      'Te amo gracias por acompanarme en cada evento en esta vida y por ser mi compañera perfecta para cada ocasión',
-    photos: [
-      {
-        src: '/photos/fotos/yo la josefa ordenados y formales.jpeg',
-        alt: 'Elegantes y formales',
-      },
-    ],
-  },
-  {
-    title: 'Comamos juntos siempre 🍽️',
-    description:
-      'Cada comida contigo es especial. Compartir estos momentos es uno de mis momentos favoritos cuando te veo con tu bailecito si esta rico',
-    photos: [
-      {
-        src: '/photos/fotos/yo en la comida.jpeg',
-        alt: 'Yo disfrutando',
-      },
-      {
-        src: '/photos/fotos/tu en la comida.jpeg',
-        alt: 'Tú hermosa',
-      },
-    ],
-  },
-  {
-    title: 'Celebremos juntos cada festividad 🎉',
-    description:
-      'Halloween, Navidad, y cada celebración especial. Quiero estar a tu lado en cada momento',
-    photos: [
-      {
-        src: '/photos/fotos/disfrazados yo de pallazo y ella tamb ien.jpeg',
-        alt: 'Disfrazados juntos',
-      },
-      {
-        src: '/photos/fotos/esto es halloween en fantasilandia con jac .jpeg',
-        alt: 'Halloween en Fantasilandia',
-      },
-    ],
-  },
-]
+const layoutFor = (count: number) => LAYOUTS[Math.min(Math.max(count, 1), 3)]
 
-export default function LoveStory() {
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+
+/** Una copia que cae sobre la hoja según el avance del scroll */
+function FallingPrint({
+  progress,
+  start,
+  end,
+  rotate,
+  depth,
+  position,
+  photo,
+}: {
+  progress: MotionValue<number>
+  start: number
+  end: number
+  rotate: number
+  depth: number
+  position: string
+  photo: { src: string; alt: string }
+}) {
+  const transform = useTransform(progress, value => {
+    const t = easeOut(Math.min(Math.max((value - start) / (end - start), 0), 1))
+    // Después de caer, cada copia se desplaza a su propia velocidad (paralaje)
+    const parallax = Math.max(value - end, 0) * -depth
+    const drop = (1 - t) * -115
+    return `translateY(calc(${drop}vh + ${parallax}px)) rotate(${rotate + (1 - t) * 14}deg)`
+  })
+  const opacity = useTransform(progress, [start, start + 0.02], [0, 1])
+
   return (
-    <div className="mb-16">
-      {/* Título de la historia */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-12 text-center"
-      >
-        <motion.div
-          animate={{ rotate: [0, 5, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="mb-4 text-6xl"
-        >
-          📖
-        </motion.div>
-        <h2 className="font-cursive mb-3 text-3xl font-bold md:text-5xl">
-          <span className="bg-gradient-to-r from-pink-600 via-rose-500 to-orange-600 bg-clip-text text-transparent">
-            Nuestra Historia
-          </span>{' '}
-          <span className="text-gray-800">de Amor</span>
-        </h2>
-        <p className="mx-auto max-w-2xl text-lg text-gray-600">
-          Cada momento contigo cuenta una historia única 💕
-        </p>
-      </motion.div>
+    <motion.div style={{ transform, opacity }} className={`absolute ${position}`}>
+      <PhotoPrint
+        src={photo.src}
+        alt={photo.alt}
+        caption={photo.alt}
+        sizes="(min-width: 1024px) 300px, 40vw"
+      />
+    </motion.div>
+  )
+}
 
-      {/* Cards de la historia */}
-      <div className="space-y-12">
-        {storyCards.map((card, cardIndex) => (
-          <motion.div
-            key={cardIndex}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{
-              duration: 0.8,
-              delay: cardIndex * 0.2,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className={`flex flex-col gap-6 md:flex-row md:items-center ${
-              cardIndex % 2 === 1 ? 'md:flex-row-reverse' : ''
-            }`}
-          >
-            {/* Texto */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="flex-1 rounded-3xl bg-white/90 p-8 shadow-xl backdrop-blur-sm md:p-10"
+/** Capítulo como hoja fija: el título se compone y las fotos caen una tras otra */
+function StickyChapter({ card }: { card: StoryCard }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end end'],
+  })
+  const layout = layoutFor(card.photos.length)
+  const span = 0.62 / card.photos.length
+
+  return (
+    <div
+      ref={ref}
+      style={{ height: `${150 + card.photos.length * 60}vh` }}
+      className="relative"
+    >
+      <div className="sticky top-[66px] flex h-[calc(100svh-66px)] items-center overflow-hidden border-t-2 border-ink bg-paper">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-8 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <motion.h3
+              initial={{ opacity: 0, clipPath: 'inset(0% 0% 100% 0%)' }}
+              whileInView={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
+              viewport={{ once: true, margin: '0px 0px -20% 0px' }}
+              transition={{ duration: 0.9, ease: EASE_OUT }}
+              className="font-display text-[clamp(3.5rem,7vw,7rem)] font-black uppercase leading-[0.88]"
             >
-              <motion.h3
-                className="font-cursive mb-4 text-2xl font-bold text-gray-800 md:text-3xl"
-                initial={{ opacity: 0, x: cardIndex % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-              >
-                {card.title}
-              </motion.h3>
-              <motion.p
-                className="text-lg leading-relaxed text-gray-600 md:text-xl"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5 }}
-              >
-                {card.description}
-              </motion.p>
-            </motion.div>
-
-            {/* Fotos */}
-            <div className="flex-1">
-              <div
-                className={`grid gap-4 ${
-                  card.photos.length === 1
-                    ? 'grid-cols-1'
-                    : card.photos.length === 2
-                    ? 'grid-cols-2'
-                    : 'grid-cols-2 md:grid-cols-3'
-                }`}
-              >
-                {card.photos.map((photo, photoIndex) => (
-                  <motion.div
-                    key={photoIndex}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 0.6,
-                      delay: 0.4 + photoIndex * 0.1,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    whileHover={{
-                      scale: 1.05,
-                      rotate: photoIndex % 2 === 0 ? 2 : -2,
-                    }}
-                    className={`group relative overflow-hidden rounded-2xl bg-white p-3 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/30 ${
-                      card.photos.length === 1 ? 'col-span-1' : ''
-                    }`}
-                  >
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-xl">
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
-                        sizes="(max-width: 768px) 50vw, 300px"
-                      />
-
-                      {/* Overlay sutil */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    </div>
-
-                    {/* Decoración tipo polaroid */}
-                    <motion.div
-                      className="absolute -inset-2 -z-10 rounded-3xl bg-gradient-to-r from-pink-400/20 via-rose-400/20 to-orange-400/20 blur-xl"
-                      animate={{
-                        opacity: [0.3, 0.6, 0.3],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                        delay: photoIndex * 0.5,
-                      }}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Sección especial: De jóvenes a viejitos - Inspirada en UP */}
-      <motion.div
-        initial={{ opacity: 0, y: 80 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-150px' }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-20"
-      >
-        <div className="rounded-3xl bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50 p-8 shadow-2xl backdrop-blur-sm md:p-12">
-          {/* Título emotivo */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="mb-10 text-center"
-          >
-            <motion.div
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, 0, -5, 0],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="mb-4 text-5xl"
+              {card.title}
+            </motion.h3>
+            <motion.p
+              initial={{ opacity: 0, transform: 'translateY(12px) rotate(-2deg)' }}
+              whileInView={{ opacity: 1, transform: 'translateY(0px) rotate(-1deg)' }}
+              viewport={{ once: true, margin: '0px 0px -20% 0px' }}
+              transition={{ duration: 0.7, delay: 0.35, ease: EASE_OUT }}
+              className="mt-8 max-w-xl font-hand text-3xl leading-snug text-calipso-deep lg:text-4xl"
             >
-              🎈
-            </motion.div>
-            <h3 className="font-cursive mb-4 text-3xl font-bold text-gray-800 md:text-4xl">
-              <span className="bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                Nuestra Aventura
-              </span>{' '}
-              <span className="text-gray-800">juntos para siempre</span>
-            </h3>
-            <p className="mx-auto max-w-3xl text-lg leading-relaxed text-gray-700 md:text-xl">
-              Quiero que nuestra historia sea una
-              aventura que dure toda la vida. Desde este momento hasta que
-              seamos viejitos juntos, compartiendo risas, recuerdos y todo el
-              amor del mundo 💕
-            </p>
-          </motion.div>
-
-          {/* Tarjeta especial con transición hover: Jóvenes → Viejitos */}
-          <div className="relative mx-auto max-w-2xl">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="group relative"
-            >
-              <div className="overflow-hidden rounded-3xl bg-white p-6 shadow-2xl transition-all duration-700 hover:shadow-purple-500/60 md:p-8">
-                {/* Contenedor de imágenes con transición */}
-                <div className="relative aspect-[16/10] overflow-hidden rounded-2xl">
-                  {/* Imagen de jóvenes (visible por defecto) */}
-                  <Image
-                    src="/photos/fotos/pixar up los dos con el abuelito.jpeg"
-                    alt="Nosotros jóvenes juntos"
-                    fill
-                    className="object-contain object-center transition-all duration-1000 ease-in-out group-hover:scale-105 group-hover:opacity-0"
-                    sizes="(max-width: 768px) 90vw, 600px"
-                    priority
-                  />
-
-                  {/* Imagen de viejitos (aparece en hover) */}
-                  <Image
-                    src="/photos/fotos/up pero viejitos.jpg"
-                    alt="Nosotros viejitos juntos"
-                    fill
-                    className="object-contain object-center opacity-0 transition-all duration-1000 ease-in-out group-hover:scale-105 group-hover:opacity-100"
-                    sizes="(max-width: 768px) 90vw, 600px"
-                  />
-
-                  {/* Overlay gradiente que cambia de color */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-transparent opacity-100 transition-all duration-1000 group-hover:from-purple-900/40 group-hover:opacity-100" />
-
-                  {/* Indicador sutil para hacer hover */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 1.2 }}
-                    className="absolute right-4 top-4 z-10 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 shadow-lg backdrop-blur-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-purple-100/90"
-                  >
-                    <span className="text-sm font-medium text-gray-700 transition-colors group-hover:text-purple-700">
-                      Pasa el cursor
-                    </span>
-                    <motion.span
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-lg"
-                    >
-                      ✨
-                    </motion.span>
-                  </motion.div>
-                </div>
-
-                {/* Etiqueta dinámica que cambia con hover */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.8 }}
-                  className="mt-6 text-center"
-                >
-                  <p className="font-cursive text-2xl font-bold transition-all duration-700 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 group-hover:bg-clip-text group-hover:text-transparent md:text-3xl">
-                    <span className="group-hover:hidden">Ahora 💖</span>
-                    <span className="hidden group-hover:inline">
-                      Para siempre 💜
-                    </span>
-                  </p>
-                  <p className="mt-1 text-sm text-gray-600 transition-all duration-700 md:text-base">
-                    <span className="group-hover:hidden">
-                      Jóvenes y enamorados
-                    </span>
-                    <span className="hidden group-hover:inline">
-                      Viejitos y enamorados
-                    </span>
-                  </p>
-                </motion.div>
-              </div>
-
-              {/* Glow animado que cambia de color */}
-              <motion.div
-                className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-r from-orange-400/40 via-pink-400/40 to-purple-400/40 blur-2xl transition-all duration-1000 group-hover:from-purple-400/60 group-hover:via-pink-400/60 group-hover:to-orange-400/60"
-                animate={{
-                  opacity: [0.4, 0.8, 0.4],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-            </motion.div>
-
-            {/* Partículas flotantes decorativas */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="pointer-events-none absolute inset-0 overflow-hidden"
-            >
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-2xl"
-                  initial={{
-                    x: `${20 + i * 15}%`,
-                    y: '100%',
-                    opacity: 0,
-                  }}
-                  animate={{
-                    y: ['-20%', '-100%'],
-                    opacity: [0, 0.6, 0],
-                    rotate: [0, 360],
-                  }}
-                  transition={{
-                    duration: 6 + i,
-                    repeat: Infinity,
-                    delay: i * 0.8,
-                    ease: 'linear',
-                  }}
-                >
-                  {i % 3 === 0 ? '🎈' : i % 3 === 1 ? '💕' : '✨'}
-                </motion.div>
-              ))}
-            </motion.div>
+              {card.description}
+            </motion.p>
           </div>
 
-          {/* Mensaje final emotivo */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="mt-10 text-center"
-          >
-            <motion.p
-              className="font-cursive mx-auto max-w-2xl text-2xl leading-relaxed text-gray-800 md:text-3xl"
-              animate={{
-                textShadow: [
-                  '0 0 10px rgba(236, 72, 153, 0)',
-                  '0 0 20px rgba(236, 72, 153, 0.3)',
-                  '0 0 10px rgba(236, 72, 153, 0)',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              “Contigo, cualquier lugar se vuelve mi próxima aventura favorita.” 💫
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{
-                delay: 1.3,
-                duration: 0.6,
-                type: 'spring',
-                bounce: 0.5,
-              }}
-              className="mt-6 text-6xl"
-            >
-              🏠💑👴👵💕
-            </motion.div>
-          </motion.div>
+          <div className="lg:col-span-6">
+            <div className="relative mx-auto aspect-[10/11] h-[min(64svh,600px)] max-w-full">
+              {card.photos.map((photo, index) => (
+                <FallingPrint
+                  key={photo.src}
+                  progress={scrollYProgress}
+                  start={0.12 + index * span}
+                  end={0.12 + index * span + span * 0.8}
+                  photo={photo}
+                  {...layout[index]}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </motion.div>
-
-      {/* Separador decorativo */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="mt-16 flex items-center justify-center"
-      >
-        <div className="flex items-center gap-4">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="text-3xl"
-          >
-            💝
-          </motion.div>
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-pink-400 to-transparent" />
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="text-4xl"
-          >
-            💖
-          </motion.div>
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-pink-400 to-transparent" />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="text-3xl"
-          >
-            💝
-          </motion.div>
-        </div>
-      </motion.div>
+      </div>
     </div>
+  )
+}
+
+/** Capítulo apilado: teléfonos y movimiento reducido */
+function StackedChapter({ card }: { card: StoryCard }) {
+  const reduceMotion = useReducedMotion()
+  const layout = layoutFor(card.photos.length)
+  const reveal = {
+    initial: reduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, transform: 'translateY(14px)' },
+    whileInView: { opacity: 1, transform: 'translateY(0px)' },
+    viewport: { once: true, margin: '0px 0px -10% 0px' },
+  }
+
+  return (
+    <div className="border-t-2 border-ink px-4 py-14 md:px-8 md:py-20">
+      <div className="mx-auto max-w-7xl">
+        <motion.h3
+          {...reveal}
+          transition={{ duration: 0.7, ease: EASE_OUT }}
+          className="font-display text-[clamp(2.75rem,12vw,6rem)] font-black uppercase leading-[0.9]"
+        >
+          {card.title}
+        </motion.h3>
+        <motion.p
+          {...reveal}
+          transition={{ duration: 0.7, delay: 0.15, ease: EASE_OUT }}
+          className="mt-5 max-w-2xl font-hand text-3xl leading-snug text-calipso-deep"
+        >
+          {card.description}
+        </motion.p>
+
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3">
+          {card.photos.map((photo, index) => (
+            <motion.div
+              key={photo.src}
+              initial={
+                reduceMotion
+                  ? { opacity: 0 }
+                  : {
+                      opacity: 0,
+                      transform: `translateY(-32px) rotate(${layout[index].rotate + 8}deg)`,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                transform: `translateY(0px) rotate(${reduceMotion ? 0 : layout[index].rotate}deg)`,
+              }}
+              viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+              transition={{ duration: 0.8, delay: index * 0.12, ease: EASE_OUT }}
+              className={card.photos.length === 1 ? 'col-span-2 max-w-md md:col-span-1' : ''}
+            >
+              <PhotoPrint
+                src={photo.src}
+                alt={photo.alt}
+                caption={photo.alt}
+                sizes="(min-width: 768px) 30vw, 46vw"
+              />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** "Ahora" y "Para siempre": la misma foto, jóvenes y viejitos */
+function Adventure() {
+  const reduceMotion = useReducedMotion()
+  const [forever, setForever] = useState(false)
+  const canHover = useMediaQuery('(hover: hover)')
+
+  return (
+    <section className="relative bg-calipso px-4 py-16 text-ink [--accent:theme(colors.marker)] md:px-8 md:py-24">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-14">
+        <div className="lg:col-span-5">
+          <h3 className="font-display text-[clamp(3rem,10vw,6.5rem)] font-black uppercase leading-[0.88]">
+            Nuestra Aventura <span className="box-decoration-clone bg-marker px-[0.12em] text-ink">juntos para siempre</span>
+          </h3>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-calipso-shade md:text-xl">
+            Quiero que nuestra historia sea una aventura que dure toda la vida.
+            Desde este momento hasta que seamos viejitos juntos, compartiendo
+            risas, recuerdos y todo el amor del mundo
+          </p>
+          <p className="relative mt-10 inline-block font-hand text-3xl leading-snug text-ink md:text-4xl">
+            &ldquo;Contigo, cualquier lugar se vuelve mi próxima aventura
+            favorita.&rdquo;
+            <DrawOnView delay={400} className="absolute -bottom-2 left-0 block h-3 w-2/3">
+              <MarkUnderline className="h-full w-full" />
+            </DrawOnView>
+          </p>
+        </div>
+
+        <div className="lg:col-span-7">
+          <button
+            type="button"
+            onClick={() => setForever(value => !value)}
+            onMouseEnter={canHover ? () => setForever(true) : undefined}
+            onMouseLeave={canHover ? () => setForever(false) : undefined}
+            aria-pressed={forever}
+            aria-label="Ver la foto de viejitos"
+            className="block w-full -rotate-1 bg-paper p-2 text-left text-ink shadow-[0_22px_44px_-14px_rgba(15,17,21,0.5)] sm:p-3"
+          >
+            <div className="relative aspect-[16/10] overflow-hidden bg-rule">
+              <Image
+                src="/photos/fotos/pixar up los dos con el abuelito.jpeg"
+                alt="Nosotros jóvenes juntos"
+                fill
+                sizes="(min-width: 1024px) 700px, 92vw"
+                className="object-cover"
+              />
+              <motion.div
+                initial={false}
+                animate={{
+                  clipPath: forever ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 0% 100%)',
+                  opacity: reduceMotion ? (forever ? 1 : 0) : 1,
+                }}
+                transition={{ duration: reduceMotion ? 0.2 : 0.7, ease: [0.77, 0, 0.175, 1] }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src="/photos/fotos/up pero viejitos.jpg"
+                  alt="Nosotros viejitos juntos"
+                  fill
+                  sizes="(min-width: 1024px) 700px, 92vw"
+                  className="object-cover"
+                />
+              </motion.div>
+              <span className="absolute bottom-0 right-0 bg-ink px-3 py-1.5 font-display text-sm font-semibold uppercase tracking-wide text-paper">
+                Pasa el cursor
+              </span>
+            </div>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-1 pb-1 pt-3">
+              <span className="font-display text-3xl font-black uppercase leading-none md:text-4xl">
+                {forever ? 'Para siempre' : 'Ahora'}
+              </span>
+              <span className="font-hand text-2xl text-calipso-deep">
+                {forever ? 'Viejitos y enamorados' : 'Jóvenes y enamorados'}
+              </span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/** "Nuestra historia de amor": la secuencia que abre la galería */
+export default function LoveStory() {
+  const reduceMotion = useReducedMotion()
+  // La hoja fija necesita pantalla: en teléfonos y con movimiento reducido se apila
+  const roomy = useMediaQuery('(min-width: 1024px) and (min-height: 640px)')
+  const sticky = roomy && !reduceMotion
+
+  return (
+    <section aria-labelledby="historia-de-amor">
+      <div className="px-4 pb-12 pt-24 md:px-8 md:pb-16 md:pt-32">
+        <div className="mx-auto max-w-7xl">
+          <motion.h2
+            id="historia-de-amor"
+            initial={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' }
+            }
+            whileInView={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
+            viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+            transition={{ duration: 0.9, ease: EASE_OUT }}
+            className="font-display text-[clamp(3rem,11vw,7.5rem)] font-black uppercase leading-[0.9]"
+          >
+            Nuestra Historia de Amor
+          </motion.h2>
+          <p className="mt-3 max-w-xl text-lg text-dim md:text-xl">
+            Cada momento contigo cuenta una historia única
+          </p>
+        </div>
+      </div>
+
+      {storyCards.map(card =>
+        sticky ? (
+          <StickyChapter key={card.title} card={card} />
+        ) : (
+          <StackedChapter key={card.title} card={card} />
+        )
+      )}
+
+      <Adventure />
+    </section>
   )
 }

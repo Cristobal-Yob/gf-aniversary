@@ -44,12 +44,12 @@ export const metadata: Metadata = {
  * THESIS: the relationship is counted, not described. Every screen is a page of
  *   a tear-off calendar running since 25 Nov 2017. Refuses the pink-hearts
  *   romantic landing.
- * OWN-WORLD: cobalt field, cool paper, ink, marker yellow circling dates by
+ * OWN-WORLD: calipso field, cool paper, ink, marker yellow circling dates by
  *   hand; giant condensed numerals, ruled grids, ring binding, torn edges,
  *   photos as dated prints. No gradients, no emoji, square corners.
  * STORY: she sees how many days it has been, recognises their photos and
  *   dates, and walks into the story, the gallery and the music.
- * FIRST VIEWPORT: cobalt calendar page; binding rings on top, day count as the
+ * FIRST VIEWPORT: calipso calendar page; binding rings on top, day count as the
  *   dominant numeral circled in marker, names and actions below it, three
  *   photo prints dropped on the page.
  * FORM: wall calendar / almanac, candidate 5 of 7.

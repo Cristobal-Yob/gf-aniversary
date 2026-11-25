@@ -1,9 +1,14 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
+import { IconArrowRight, IconChat } from '@/components/icons'
+import PrivateSheet from '@/components/secondary/PrivateSheet'
+import SheetHeader from '@/components/secondary/SheetHeader'
+import { useReveal } from '@/components/secondary/motion'
+import { EASE_OUT } from '@/lib/site'
 
 type Message = {
   role: 'user' | 'assistant'
@@ -16,6 +21,15 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const reveal = useReveal()
+  const logRef = useRef<HTMLDivElement>(null)
+
+  // Mantener visible el último mensaje
+  useEffect(() => {
+    const log = logRef.current
+    if (log) log.scrollTop = log.scrollHeight
+  }, [messages, isLoading])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,7 +53,7 @@ export default function ChatPage() {
       const aiResponse: Message = {
         role: 'assistant',
         content:
-          '¡Qué lindo mensaje! 💕 Pronto estaré conectada con una IA real para responder mejor.',
+          '¡Qué lindo mensaje! Pronto estaré conectada con una IA real para responder mejor.',
         timestamp: new Date().toLocaleTimeString('es-ES', {
           hour: '2-digit',
           minute: '2-digit',
@@ -56,154 +70,176 @@ export default function ChatPage() {
 
   if (!isAuthenticated) {
     return (
-    <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
-        <Navbar />
-        <div className="flex min-h-screen items-center justify-center px-6">
-          <div className="w-full max-w-md text-center">
-            <div className="mb-6 text-6xl">🔒</div>
-            <h1 className="mb-4 text-3xl font-bold text-gray-800">
-              Área Privada
-            </h1>
-            <p className="mb-8 text-gray-600">
-              Necesitas iniciar sesión para chatear con nuestra IA
-            </p>
-            <Link
-              href="/auth"
-              className="inline-block rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800"
-            >
-              Iniciar Sesión 💖
-            </Link>
-          </div>
-        </div>
-      </div>
+      <PrivateSheet
+        title="Área Privada"
+        message="Necesitas iniciar sesión para chatear con nuestra IA"
+      />
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-cream via-secondary-50 to-primary-50">
-      <Navbar />
-      <div className="container mx-auto max-w-4xl px-6 py-8">
-        <div className="mb-8 text-center">
-          <div className="mb-4 text-6xl">💬</div>
-          <h1 className="mb-4 text-4xl font-bold md:text-6xl">
-            <span className="bg-gradient-to-r from-primary-900 via-primary-700 to-accent-600 bg-clip-text text-transparent">
-              Chat con IA
-            </span>
-          </h1>
-          <p className="text-xl text-secondary-600">
-            Habla sobre nuestros recuerdos y momentos especiales
-          </p>
-        </div>
+  const rowMotion = (fromRight: boolean) => ({
+    initial: reduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          transform: `translateX(${fromRight ? 16 : -16}px)`,
+        },
+    animate: reduceMotion
+      ? { opacity: 1 }
+      : { opacity: 1, transform: 'translateX(0px)' },
+    transition: { duration: 0.45, ease: EASE_OUT },
+  })
 
-        {/* Chat Container */}
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg">
-          {/* Messages */}
-          <div className="h-[500px] space-y-4 overflow-y-auto p-6">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                <div
-                  className={`max-w-[70%] rounded-lg p-4 ${
-                    message.role === 'user'
-                      ? 'bg-primary-900 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  <p className="mb-1">{message.content}</p>
-                  <p
-                    className={`text-xs ${
-                      message.role === 'user'
-                        ? 'text-primary-100'
-                        : 'text-gray-500'
+  return (
+    <>
+      <Navbar />
+
+      <main>
+        <SheetHeader label="Chat" title="Chat con IA">
+          <p>Habla sobre nuestros recuerdos y momentos especiales</p>
+        </SheetHeader>
+
+        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28">
+          <motion.div
+            {...reveal()}
+            className="mx-auto max-w-4xl border-2 border-ink"
+          >
+            {/* Mensajes */}
+            <div
+              ref={logRef}
+              role="log"
+              aria-live="polite"
+              className="h-[min(500px,60svh)] overflow-y-auto"
+            >
+              {messages.map((message, index) => {
+                const isUser = message.role === 'user'
+                return (
+                  <motion.div
+                    key={index}
+                    {...rowMotion(isUser)}
+                    className={`flex border-b border-rule px-4 py-4 md:px-6 ${
+                      isUser ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    {message.timestamp}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="rounded-lg bg-gray-100 p-4 text-gray-800">
-                  <div className="flex space-x-2">
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400"></div>
                     <div
-                      className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                      style={{ animationDelay: '0.2s' }}
-                    ></div>
-                    <div
-                      className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                      style={{ animationDelay: '0.4s' }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+                      className={`max-w-[85%] px-4 py-3 md:max-w-[70%] ${
+                        isUser
+                          ? 'bg-calipso text-ink'
+                          : 'border-2 border-ink bg-paper text-ink'
+                      }`}
+                    >
+                      <p className="break-words">{message.content}</p>
+                      <p
+                        className={`mt-1 font-display text-sm font-semibold uppercase tracking-wide tabular-nums ${
+                          isUser ? 'text-calipso-shade' : 'text-dim'
+                        }`}
+                      >
+                        {message.timestamp}
+                      </p>
+                    </div>
+                  </motion.div>
+                )
+              })}
 
-          {/* Suggested Questions */}
-          <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-            <p className="mb-2 text-sm text-gray-600">Preguntas sugeridas:</p>
-            <div className="flex flex-wrap gap-2">
-              {suggestedQuestions.map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestedQuestion(question)}
-                  className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm transition-colors hover:border-primary-600 hover:text-primary-900"
-                >
-                  {question}
-                </button>
-              ))}
+              <AnimatePresence>
+                {isLoading && (
+                  <motion.div
+                    key="typing"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex justify-start px-4 py-4 md:px-6"
+                  >
+                    <div
+                      role="status"
+                      aria-label="Escribiendo"
+                      className="flex gap-2 border-2 border-ink bg-paper px-4 py-4"
+                    >
+                      {[0, 1, 2].map(i => (
+                        <span
+                          key={i}
+                          className="h-2 w-2 bg-ink motion-safe:animate-pulse"
+                          style={{ animationDelay: `${i * 0.2}s` }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </div>
 
-          {/* Input Form */}
-          <form
-            onSubmit={handleSendMessage}
-            className="border-t border-gray-200 p-6"
-          >
-            <div className="flex space-x-4">
+            {/* Preguntas sugeridas */}
+            <div className="border-t-2 border-ink px-4 py-4 md:px-6">
+              <p className="mb-3 font-display text-lg font-semibold uppercase tracking-wide">
+                Preguntas sugeridas:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedQuestions.map(question => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => handleSuggestedQuestion(question)}
+                    className="border-2 border-ink px-3 py-1.5 text-left text-sm transition-colors duration-200 hover:bg-marker"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Formulario */}
+            <form
+              onSubmit={handleSendMessage}
+              className="flex flex-col gap-3 border-t-2 border-ink p-4 sm:flex-row md:p-6"
+            >
+              <label htmlFor="chat-message" className="sr-only">
+                Escribe tu mensaje...
+              </label>
               <input
+                id="chat-message"
                 type="text"
                 value={inputMessage}
                 onChange={e => setInputMessage(e.target.value)}
                 placeholder="Escribe tu mensaje..."
-                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-600"
+                className="w-full flex-1 border-2 border-ink bg-paper px-4 py-3.5 text-base placeholder:text-dim focus:border-calipso-deep focus:outline-none focus:ring-0"
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !inputMessage.trim()}
-                className="rounded-full bg-primary-900 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-primary-300"
+                className="btn-almanac group border-ink bg-ink text-paper hover:border-calipso hover:bg-calipso hover:text-ink disabled:cursor-not-allowed disabled:border-rule disabled:bg-rule disabled:text-dim"
               >
-                Enviar 💌
+                Enviar
+                <IconArrowRight className="h-5 w-5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
               </button>
-            </div>
-          </form>
-        </div>
+            </form>
+          </motion.div>
 
-        {/* OpenAI Integration Info */}
-        <div className="mt-8 rounded-xl border border-gray-100 bg-white p-8 text-center shadow-lg">
-          <div className="mb-4 text-4xl">🤖</div>
-          <h2 className="mb-4 text-2xl font-bold text-gray-800">
-            Próximamente: Integración con OpenAI
-          </h2>
-          <p className="mb-6 text-gray-600">
-            Pronto esta IA estará conectada a GPT-4 para respuestas más
-            inteligentes
-          </p>
-          <div className="rounded-lg bg-green-50 p-4">
-            <p className="text-sm text-green-700">
-              🤖 OpenAI GPT-4 integration coming soon...
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          {/* Aviso de integración con OpenAI */}
+          <motion.aside
+            {...reveal(0.1)}
+            className="mx-auto mt-14 grid max-w-4xl gap-4 border-y-2 border-ink py-6 sm:grid-cols-[auto_1fr] sm:gap-6"
+          >
+            <IconChat className="h-10 w-10 text-calipso-deep" />
+            <div>
+              <h2 className="font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-4xl">
+                Próximamente: Integración con OpenAI
+              </h2>
+              <p className="mt-3 text-base text-dim md:text-lg">
+                Pronto esta IA estará conectada a GPT-4 para respuestas más
+                inteligentes
+              </p>
+              <p className="mt-4 border-t border-rule pt-3 font-display text-base font-semibold uppercase tracking-wide">
+                OpenAI GPT-4 integration coming soon...
+              </p>
+            </div>
+          </motion.aside>
+        </section>
+      </main>
+
+      <div className="h-28 bg-ink" aria-hidden />
+    </>
   )
 }
 
@@ -211,7 +247,7 @@ const initialMessages: Message[] = [
   {
     role: 'assistant',
     content:
-      '¡Hola! 💕 Soy tu asistente de IA. Puedo ayudarte a recordar momentos especiales de Cristóbal y Josefa. ¿Qué te gustaría saber?',
+      '¡Hola! Soy tu asistente de IA. Puedo ayudarte a recordar momentos especiales de Cristóbal y Josefa. ¿Qué te gustaría saber?',
     timestamp: '10:00',
   },
 ]

@@ -109,7 +109,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth"
-                className="hidden items-center bg-ink px-6 font-display text-lg font-semibold uppercase tracking-wide text-paper transition-colors duration-150 hover:bg-cobalt md:flex"
+                className="hidden items-center bg-ink px-6 font-display text-lg font-semibold uppercase tracking-wide text-paper transition-colors duration-150 hover:bg-calipso hover:text-ink md:flex"
               >
                 Iniciar Sesión
               </Link>
