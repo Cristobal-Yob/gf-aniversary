@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const validUser = 'josefa'
-      const validHash = '-1309015506' // hash de la contraseña
+      const validHash = '-1811123449' // hash de la contraseña
 
       if (
         username.toLowerCase() === validUser &&
