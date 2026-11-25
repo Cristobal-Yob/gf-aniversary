@@ -19,6 +19,7 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - S10. User: "muy bueno lo unico evita el morado como base inicial ojala colorimetria asociada al celeste(calipso o cosas del estilo) y puede que algunas cosas moradas pero no nos representaa tanto".
 - S11 (optional, not started). User: "si quieres incorporar chat con ia pidele a codex los secretos y cosas para crear backend langraph y alguna ia con historia de nosotros".
 - S12. User (2026-11-25): login password changed; "come to me no es romantic el creador es goo goo dolls"; "dejar como todo lo de 3287 dias juntos aparezcan como que llevamos mas dias juntos que y agregar diferentes casuisticas interesantes"; "me gustaria un icono mas bonito"; "enlos meses agrega los meses faltantes 26 diciembre viviendo juntos noviembre 27 islandia y algo como despues de eso un infinito juntos"; "se ve como que recuerdos lo tapa"; "en pc al menos nunca encajan bien al scrolear las secciones"; three graduation photos; review of photo descriptions.
+- S13. User (2026-11-25): "busca mas casos ademas para agregar como ejemplos de que es menor a 3287" and "mostrarlo en horas minutos y segundos"; music "disco 2" from the folder `musica 2` with "la imagen adjuntada que es de homero y marge escuchando temazos"; concert and pumpkin photos; artists confirmed by the user and checked on the web.
 
 ## Tasks
 
@@ -36,6 +37,7 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - [x] T12 (S12) inline. Password hash, artist fix, day comparisons, future months with infinity, Codex logo and favicon, three photos, local review page for photo texts (not tracked).
 - [x] T13 (S12) delegated to the four page sessions. Fit pass: shared `h-view` utilities, sections measured at 1900x830 and 1440x760.
 - [ ] T14 (S12) waiting on the user: photo titles, captions and descriptions to be corrected from the review page.
+- [x] T15 (S13) inline + `w-music`. 24 day comparisons with live units; Disco 2 with nine tracks; three more photos and the `conciertos` category.
 
 ## Log
 
