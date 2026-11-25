@@ -29,7 +29,7 @@ export const discs: Disc[] = [
     id: 2,
     title: 'Disco 2',
     subtitle: 'Temazos para el auto',
-    note: 'No tan románticas, pero son las que cantamos en el auto',
+    note: 'Ya no tan románticas, pero temazos que escuchamos en el auto y cantamos muy motivados skjskj. Me encantan esos momentos',
     image: {
       src: '/music/disco2/homero-marge.png',
       alt: 'Homero y Marge escuchando temazos y comiendo en el auto',
