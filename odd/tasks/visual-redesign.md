@@ -18,6 +18,7 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - S9. User: "cerrarlo todo dejarlo limpio y funcionando despues lo conectas con gcp cloudrun", "deberia estar arriba todo ok sin preguntarme nada mas".
 - S10. User: "muy bueno lo unico evita el morado como base inicial ojala colorimetria asociada al celeste(calipso o cosas del estilo) y puede que algunas cosas moradas pero no nos representaa tanto".
 - S11 (optional, not started). User: "si quieres incorporar chat con ia pidele a codex los secretos y cosas para crear backend langraph y alguna ia con historia de nosotros".
+- S12. User (2026-11-25): login password changed; "come to me no es romantic el creador es goo goo dolls"; "dejar como todo lo de 3287 dias juntos aparezcan como que llevamos mas dias juntos que y agregar diferentes casuisticas interesantes"; "me gustaria un icono mas bonito"; "enlos meses agrega los meses faltantes 26 diciembre viviendo juntos noviembre 27 islandia y algo como despues de eso un infinito juntos"; "se ve como que recuerdos lo tapa"; "en pc al menos nunca encajan bien al scrolear las secciones"; three graduation photos; review of photo descriptions.
 
 ## Tasks
 
@@ -32,6 +33,9 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - [x] T9 (S8) inline. 14 new photos; 10 Codex risograph illustrations (`public/illustrations/*.webp`) and 17 extra SVG components (`illustrations/extra.tsx`).
 - [x] T11 (S10) inline. Base colour moved from cobalt to calipso across tokens, pages and illustrations.
 - [x] T10 (S9) inline. `main` fast-forwarded to `c43e71d` and pushed; workflow run 45611158460 succeeded and created Cloud Run service `gf-aniversary` (revision `gf-aniversary-00001-ljs`) at https://gf-aniversary-gw5z6vdu4q-uc.a.run.app.
+- [x] T12 (S12) inline. Password hash, artist fix, day comparisons, future months with infinity, Codex logo and favicon, three photos, local review page for photo texts (not tracked).
+- [x] T13 (S12) delegated to the four page sessions. Fit pass: shared `h-view` utilities, sections measured at 1900x830 and 1440x760.
+- [ ] T14 (S12) waiting on the user: photo titles, captions and descriptions to be corrected from the review page.
 
 ## Log
 
@@ -41,3 +45,4 @@ Direction (decided by Fable; user said "muy bueno" on 2026-11-25 and asked only 
 - L4 (2026-11-25): The checkpoint in L2 is withdrawn by L3; rollout started with four parallel Opus 5.5 sessions on disjoint files. No Ed Sheeran file other than the three already in the playlist exists on this machine, and copyrighted audio is not downloaded, so "Bad Habits" is not added. Cloud Run service `gf-aniversary` does not exist yet in project `capable-droplet-446401-t5`; the image repository and the `GCP_SA_KEY` secret do, and the workflow has no recorded runs.
 - L5 (2026-11-25): T4-T11 verified by the parent: `tsc` and `next lint` clean, production build passes, standalone server returns 200 on all eight routes and 404 on a missing one, image optimization returns WebP, a scripted contrast audit finds no text under 3.2:1 on any route, and pages were viewed at 1280px and 375px. Not verified: reduced-motion behaviour in a browser, touch swipe in the lightbox, and animations frame by frame (the Browser pane throttles hidden pages).
 - L6 (2026-11-25): Live check over HTTP: eight routes return 200 and a missing one 404, optimized photos and illustrations return WebP, audio returns 206, the served CSS carries the calipso token and the home has no birthday copy. S11 (AI chat backend) is not started: it needs the owner to approve enabling a model API and its cost on their GCP project.
+- L7 (2026-11-25): Fit measured by the parent at 1900x830: home hero 692, login 698, about opening 698, music now-playing 698, gallery sticky chapters 698 and short categories 490 against a visible area of 698 (643 under the tab bar). Gallery interior could only be measured with the tab fronted, because the Browser pane stops requestAnimationFrame in background tabs.
