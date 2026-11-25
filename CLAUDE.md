@@ -31,6 +31,12 @@ Claude Code preview: `.claude/launch.json` config `frontend`.
 - `frontend/public/` — photos (`photos/fotos`, `photos/nuevas`), `illustrations/`, `music/`, `games/`
 - `odd/tasks/` — task documents for larger pieces of work
 
+## Hosting
+
+- Public address: https://cristobal-y-josefa.web.app (Firebase Hosting site `cristobal-y-josefa` in project `capable-droplet-446401-t5`).
+- Firebase Hosting only forwards every request to the Cloud Run service `gf-aniversary` (`us-central1`); see `firebase.json`. It needs redeploying only if that rule changes: `npx firebase-tools deploy --only hosting`.
+- The Cloud Run addresses keep working: `https://gf-aniversary-981460085209.us-central1.run.app`.
+
 ## Rules
 
 - Pushing to `main` deploys to production (Cloud Run via `.github/workflows/ci-cd.yml`). Work on a branch; never push to `main` without explicit approval.

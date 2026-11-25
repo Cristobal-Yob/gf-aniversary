@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "site": "cristobal-y-josefa",
+    "public": "firebase-public",
+    "ignore": ["README.txt"],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "gf-aniversary",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

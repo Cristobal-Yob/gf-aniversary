@@ -9,6 +9,7 @@
 !tsconfig.json
 !next.config.js
 !.eslintrc.json
+!firebase.json
 !.claude/launch.json
 
 # Dependencies
