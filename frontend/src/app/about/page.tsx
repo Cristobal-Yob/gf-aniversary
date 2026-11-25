@@ -64,25 +64,56 @@ interface SheetHeaderProps {
   title: string
   subtitle: string
   children?: React.ReactNode
+  /** Desde lg, el título a la izquierda y el contenido a la derecha */
+  split?: boolean
 }
 
 /** Hoja de calendario que abre la página */
-function SheetHeader({ left, right, title, subtitle, children }: SheetHeaderProps) {
+function SheetHeader({
+  left,
+  right,
+  title,
+  subtitle,
+  children,
+  split = false,
+}: SheetHeaderProps) {
   return (
-    <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
-      <BindingRings className="h-8 w-full text-ink md:h-10" />
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-2 md:px-8 md:pb-24">
+    <section
+      className={`relative bg-calipso text-ink [--accent:theme(colors.marker)] ${
+        split ? 'lg:flex lg:min-h-view lg:flex-col' : ''
+      }`}
+    >
+      <BindingRings className="h-8 w-full shrink-0 text-ink md:h-10" />
+      <div
+        className={`mx-auto w-full max-w-7xl px-4 pb-16 pt-2 md:px-8 md:pb-24 ${
+          split ? 'lg:flex lg:flex-1 lg:flex-col lg:pb-[clamp(1.5rem,5vh,3rem)]' : ''
+        }`}
+      >
         <div className="flex items-baseline justify-between border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
           <span>{left}</span>
           <span className="tabular-nums">{right}</span>
         </div>
-        <h1 className="mt-8 font-display text-[clamp(3.25rem,13vw,10rem)] font-black uppercase leading-[0.9] md:mt-12">
-          {title}
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-calipso-shade md:text-xl">
-          {subtitle}
-        </p>
-        {children}
+        <div
+          className={
+            split
+              ? 'lg:grid lg:flex-1 lg:grid-cols-12 lg:items-end lg:gap-10 lg:pt-[clamp(1rem,4vh,2.5rem)]'
+              : ''
+          }
+        >
+          <div className={split ? 'lg:col-span-5 lg:self-start' : ''}>
+            <h1
+              className={`mt-8 font-display text-[clamp(3.25rem,13vw,10rem)] font-black uppercase leading-[0.9] md:mt-12 ${
+                split ? 'lg:mt-0 lg:text-[clamp(4rem,min(7.5vw,14vh),9rem)]' : ''
+              }`}
+            >
+              {title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg text-calipso-shade md:text-xl">
+              {subtitle}
+            </p>
+          </div>
+          <div className={split ? 'lg:col-span-7' : ''}>{children}</div>
+        </div>
       </div>
       <TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-calipso md:h-6" />
     </section>
@@ -152,33 +183,34 @@ export default function AboutPage() {
           right="25 · 11 · 2017"
           title="Nuestra Historia"
           subtitle="El viaje de nosotros a través de los años"
+          split
         >
           <TimeTogether today={today} />
         </SheetHeader>
 
-        <section className="pb-24 pt-24 md:pb-32 md:pt-32">
+        <section className="overflow-x-clip pb-24 pt-24 md:pb-32 md:pt-32">
           <Timeline entries={timeline} />
         </section>
       </main>
 
       {/* Última hoja: cifras y carta */}
-      <footer className="bg-ink px-4 pb-28 pt-16 text-paper [--accent:theme(colors.marker)] md:px-8 md:pb-32 md:pt-24">
+      <footer className="bg-ink px-4 pb-28 pt-16 text-paper [--accent:theme(colors.marker)] md:px-8 md:pb-32 md:pt-24 lg:pt-[clamp(2rem,6vh,4rem)]">
         <div className="mx-auto max-w-7xl">
           <dl className="grid border-y-2 border-paper sm:grid-cols-3">
             {stats.map(({ value, label }, index) => (
               <div
                 key={label}
-                className={`flex items-end justify-between gap-4 py-6 sm:block sm:px-6 ${
+                className={`flex items-end justify-between gap-4 py-6 sm:block sm:px-6 lg:py-[clamp(1rem,3vh,1.5rem)] ${
                   index > 0 ? 'border-t border-rule sm:border-l sm:border-t-0' : ''
                 }`}
               >
                 <dt className="order-2 font-display text-lg font-semibold uppercase tracking-wide text-rule sm:mt-3 md:text-xl">
                   {label}
                 </dt>
-                <dd className="order-1 font-display text-6xl font-black leading-none tabular-nums md:text-8xl">
+                <dd className="order-1 font-display text-6xl font-black leading-none tabular-nums md:text-8xl lg:text-[clamp(4rem,min(6vw,11vh),6rem)]">
                   {value ?? (
                     <IconInfinity
-                      className="h-14 w-20 md:h-20 md:w-28"
+                      className="h-14 w-20 md:h-20 md:w-28 lg:h-[min(5rem,11vh)]"
                       aria-label="Infinito"
                       role="img"
                     />
@@ -188,12 +220,12 @@ export default function AboutPage() {
             ))}
           </dl>
 
-          <article className="mt-20 md:mt-28 md:grid md:grid-cols-12 md:gap-8">
-            <div className="md:col-span-4">
-              <DrawOnView className="block h-14 w-14 md:h-20 md:w-20">
+          <article className="mt-20 md:mt-28 md:grid md:grid-cols-12 md:gap-8 lg:mt-[clamp(2rem,6vh,4rem)]">
+            <div className="md:col-span-4 lg:sticky lg:top-[calc(var(--nav-h)+2rem)] lg:self-start">
+              <DrawOnView className="block h-14 w-14 md:h-20 md:w-20 lg:h-[min(5rem,9vh)] lg:w-[min(5rem,9vh)]">
                 <MarkHeart className="h-full w-full" />
               </DrawOnView>
-              <h2 className="mt-6 font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
+              <h2 className="mt-6 font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl lg:mt-4 lg:text-[clamp(3rem,min(5.5vw,9vh),4.5rem)]">
                 Para Ti, Mi Amor
               </h2>
             </div>

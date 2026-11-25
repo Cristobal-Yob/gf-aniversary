@@ -29,7 +29,7 @@ export default function ProtectedRoute({
     return (
       <div
         role="status"
-        className="flex min-h-screen flex-col bg-calipso text-ink"
+        className="flex min-h-view flex-col bg-calipso text-ink"
       >
         <BindingRings className="h-8 w-full text-ink md:h-10" />
         <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4">

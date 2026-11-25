@@ -45,7 +45,7 @@ export default function TimeTogether({ today }: TimeTogetherProps) {
   ]
 
   return (
-    <div className="pt-12 md:pt-16">
+    <div className="pt-12 md:pt-16 lg:pt-0">
       <h2 className="font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-5xl">
         Tiempo Juntos
       </h2>
@@ -53,7 +53,7 @@ export default function TimeTogether({ today }: TimeTogetherProps) {
         Desde el 25 de Noviembre de 2017
       </p>
 
-      <div className="relative mt-8 inline-block">
+      <div className="relative mt-8 inline-block lg:mt-[clamp(1rem,3vh,2rem)]">
         <motion.p
           initial={
             reduceMotion
@@ -64,7 +64,7 @@ export default function TimeTogether({ today }: TimeTogetherProps) {
             today ? { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' } : undefined
           }
           transition={{ duration: 0.9, ease: EASE_OUT }}
-          className="font-display text-[clamp(5.5rem,27vw,17rem)] font-black leading-[0.82] tabular-nums"
+          className="font-display text-[clamp(5.5rem,27vw,17rem)] font-black leading-[0.82] tabular-nums lg:text-[clamp(6rem,min(12vw,21vh),15rem)]"
         >
           {today ? formatCount(daysTogether(today)) : '0.000'}
         </motion.p>
@@ -76,27 +76,27 @@ export default function TimeTogether({ today }: TimeTogetherProps) {
           <MarkCircle className="h-full w-full" />
         </DrawOnView>
       </div>
-      <p className="mt-4 font-display text-2xl font-semibold uppercase tracking-wide md:text-4xl">
+      <p className="mt-4 font-display text-2xl font-semibold uppercase tracking-wide md:text-4xl lg:mt-2 lg:text-[clamp(1.5rem,4vh,2.25rem)]">
         días juntos
       </p>
 
-      <dl className="mt-10 grid grid-cols-3 border-y-2 border-ink">
+      <dl className="mt-10 grid grid-cols-3 border-y-2 border-ink lg:mt-[clamp(1rem,3vh,2rem)]">
         {cells.map(({ label, value }, index) => (
           <div
             key={label}
-            className={`px-3 py-4 md:px-6 md:py-6 ${index > 0 ? 'border-l border-calipso-shade' : ''}`}
+            className={`px-3 py-4 md:px-6 md:py-6 lg:py-[clamp(0.5rem,1.5vh,1rem)] ${index > 0 ? 'border-l border-calipso-shade' : ''}`}
           >
             <dt className="font-display text-base font-semibold uppercase tracking-wide text-calipso-shade md:text-xl">
               {label}
             </dt>
-            <dd className="font-display text-5xl font-black leading-none tabular-nums md:text-7xl">
+            <dd className="font-display text-5xl font-black leading-none tabular-nums md:text-7xl lg:text-[clamp(2.5rem,7vh,4.5rem)]">
               {value ?? '0'}
             </dd>
           </div>
         ))}
       </dl>
 
-      <p className="mt-6 text-lg font-semibold md:text-xl">
+      <p className="mt-6 text-lg font-semibold md:text-xl lg:mt-[clamp(0.75rem,2vh,1.5rem)]">
         Cada segundo contigo es un regalo
       </p>
     </div>

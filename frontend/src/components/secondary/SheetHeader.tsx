@@ -39,7 +39,7 @@ export default function SheetHeader({ label, title, children }: SheetHeaderProps
     <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
       <BindingRings className="h-8 w-full text-ink md:h-10" />
 
-      <div className="mx-auto max-w-7xl px-4 pb-14 pt-2 md:px-8 md:pb-20">
+      <div className="mx-auto max-w-7xl px-4 pb-14 pt-2 md:px-8 md:pb-20 lg:pb-12">
         <div className="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
           <span>{label}</span>
           <span className="tabular-nums">
@@ -55,7 +55,7 @@ export default function SheetHeader({ label, title, children }: SheetHeaderProps
           }
           animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
           transition={{ duration: 0.9, ease: EASE_OUT }}
-          className="mt-8 break-words font-display text-[clamp(3rem,13vw,9rem)] font-black uppercase leading-[0.9] md:mt-12"
+          className="mt-8 break-words pb-[0.18em] font-display text-[clamp(3rem,13vw,9rem)] font-black uppercase leading-[0.9] md:mt-12 lg:mt-6 lg:text-[clamp(3rem,min(9vw,14vh),9rem)]"
         >
           {title}
         </motion.h1>
@@ -73,7 +73,7 @@ export default function SheetHeader({ label, title, children }: SheetHeaderProps
                 : { opacity: 1, transform: 'translateY(0px)' }
             }
             transition={{ duration: 0.7, delay: 0.25, ease: EASE_OUT }}
-            className="mt-5 max-w-2xl text-lg text-calipso-shade md:text-xl"
+            className="mt-5 max-w-2xl text-lg lg:mt-3 text-calipso-shade md:text-xl"
           >
             {children}
           </motion.div>

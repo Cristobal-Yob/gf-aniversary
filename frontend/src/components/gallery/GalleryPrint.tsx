@@ -52,7 +52,7 @@ export default function GalleryPrint({
         delay: (index % 4) * 0.09,
         ease: EASE_OUT,
       }}
-      className="mb-8 break-inside-avoid md:mb-12"
+      className="mb-8 break-inside-avoid md:mb-12 lg:mb-8"
     >
       <button
         type="button"
@@ -70,7 +70,7 @@ export default function GalleryPrint({
               src={photo.src}
               alt={photo.alt}
               fill
-              sizes="(min-width: 1280px) 280px, (min-width: 768px) 30vw, 46vw"
+              sizes="(min-width: 1280px) 240px, (min-width: 1024px) 20vw, (min-width: 768px) 30vw, 46vw"
               priority={priority}
               className="object-cover"
             />

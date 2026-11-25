@@ -37,7 +37,7 @@ function SheetHeader({
   return (
     <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
       <BindingRings className="h-8 w-full text-ink md:h-10" />
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-2 md:px-8 md:pb-24">
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-2 md:px-8 md:pb-24 lg:pb-[6vh]">
         <div className="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
           <span>{left}</span>
           <span className="tabular-nums">{right}</span>
@@ -50,7 +50,7 @@ function SheetHeader({
           }
           animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
           transition={{ duration: 0.9, ease: EASE_OUT }}
-          className="pt-8 font-display text-[clamp(3.5rem,13vw,10.5rem)] font-black uppercase leading-[0.85] md:pt-12"
+          className="pt-8 font-display text-[clamp(3.5rem,min(13vw,19vh),10.5rem)] font-black uppercase leading-[0.85] md:pt-12"
         >
           {title}
         </motion.h1>
@@ -175,7 +175,7 @@ export default function GalleryPage() {
             }
             transition={{ duration: 0.6, ease: [0.77, 0, 0.175, 1] }}
             style={{ transformOrigin: 'top left' }}
-            className="min-h-[calc(100svh-58px)] bg-calipso md:min-h-[calc(100svh-66px)]"
+            className="min-h-view bg-calipso"
           >
             <SheetHeader
               left={`${photos.length} recuerdos capturados`}
@@ -210,7 +210,7 @@ export default function GalleryPage() {
               title={
                 <>
                   Nuestros Recuerdos{' '}
-                  <span className="box-decoration-clone bg-marker px-[0.12em] text-ink">más Lindos</span>
+                  <span className="underline decoration-marker decoration-[0.13em] underline-offset-[0.07em] [text-decoration-skip-ink:none]">más Lindos</span>
                 </>
               }
             >
@@ -224,11 +224,11 @@ export default function GalleryPage() {
 
             <LoveStory />
 
-            <div ref={galleryRef} className="scroll-mt-[58px] md:scroll-mt-[66px]">
+            <div ref={galleryRef} className="scroll-mt-nav">
               {/* Pestañas de categorías */}
               <nav
                 aria-label="Categorías de fotos"
-                className="sticky top-[58px] z-30 border-y-2 border-ink bg-paper md:top-[66px]"
+                className="sticky top-nav z-30 border-y-2 border-ink bg-paper"
               >
                 <ul className="mx-auto flex max-w-7xl no-scrollbar overflow-x-auto md:px-8">
                   {photoCategories.map(category => {

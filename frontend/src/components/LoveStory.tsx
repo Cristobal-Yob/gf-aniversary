@@ -20,13 +20,13 @@ import { EASE_OUT } from '@/lib/site'
 const LAYOUTS: Record<number, { position: string; rotate: number; depth: number }[]> = {
   1: [{ position: 'left-[14%] top-[6%] w-[72%]', rotate: -3, depth: 60 }],
   2: [
-    { position: 'left-0 top-0 w-[58%]', rotate: -4, depth: 40 },
-    { position: 'bottom-0 right-0 w-[58%]', rotate: 3.5, depth: 140 },
+    { position: 'left-0 top-[4%] w-[58%]', rotate: -4, depth: 40 },
+    { position: 'bottom-[2%] right-0 w-[58%]', rotate: 3.5, depth: 140 },
   ],
   3: [
-    { position: 'left-0 top-[8%] w-[52%]', rotate: -5, depth: 30 },
-    { position: 'right-0 top-0 w-[49%]', rotate: 4, depth: 110 },
-    { position: 'bottom-0 left-[24%] w-[50%]', rotate: -1.5, depth: 190 },
+    { position: 'left-0 top-[10%] w-[52%]', rotate: -5, depth: 30 },
+    { position: 'right-0 top-[5%] w-[49%]', rotate: 4, depth: 60 },
+    { position: 'bottom-[2%] left-[24%] w-[50%]', rotate: -1.5, depth: 190 },
   ],
 }
 
@@ -89,15 +89,15 @@ function StickyChapter({ card }: { card: StoryCard }) {
       style={{ height: `${150 + card.photos.length * 60}vh` }}
       className="relative"
     >
-      <div className="sticky top-[66px] flex h-[calc(100svh-66px)] items-center overflow-hidden border-t-2 border-ink bg-paper">
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-8 lg:grid-cols-12">
+      <div className="sticky top-nav flex h-view items-center overflow-hidden border-t-2 border-ink bg-paper">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-8 py-6 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <motion.h3
               initial={{ opacity: 0, clipPath: 'inset(0% 0% 100% 0%)' }}
               whileInView={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
               viewport={{ once: true, margin: '0px 0px -20% 0px' }}
               transition={{ duration: 0.9, ease: EASE_OUT }}
-              className="font-display text-[clamp(3.5rem,7vw,7rem)] font-black uppercase leading-[0.88]"
+              className="font-display text-[clamp(3rem,min(6vw,10vh),7rem)] font-black uppercase leading-[0.88]"
             >
               {card.title}
             </motion.h3>
@@ -106,14 +106,15 @@ function StickyChapter({ card }: { card: StoryCard }) {
               whileInView={{ opacity: 1, transform: 'translateY(0px) rotate(-1deg)' }}
               viewport={{ once: true, margin: '0px 0px -20% 0px' }}
               transition={{ duration: 0.7, delay: 0.35, ease: EASE_OUT }}
-              className="mt-8 max-w-xl font-hand text-3xl leading-snug text-calipso-deep lg:text-4xl"
+              className="mt-[3vh] max-w-xl font-hand text-[clamp(1.5rem,min(2.4vw,4.4vh),2.25rem)] leading-snug text-calipso-deep"
             >
               {card.description}
             </motion.p>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="relative mx-auto aspect-[10/11] h-[min(64svh,600px)] max-w-full">
+            {/* Alto según la zona visible, con margen para la inclinación y la sombra */}
+            <div className="relative mx-auto aspect-[10/11] h-[min(calc((100svh_-_var(--nav-h)_-_var(--player-h))_*_0.82),600px)] max-w-full">
               {card.photos.map((photo, index) => (
                 <FallingPrint
                   key={photo.src}
@@ -203,18 +204,18 @@ function Adventure() {
   const canHover = useMediaQuery('(hover: hover)')
 
   return (
-    <section className="relative bg-calipso px-4 py-16 text-ink [--accent:theme(colors.marker)] md:px-8 md:py-24">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-14">
+    <section className="relative bg-calipso px-4 py-16 text-ink [--accent:theme(colors.marker)] md:px-8 md:py-24 lg:flex lg:min-h-view lg:items-center lg:py-[4vh]">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-5">
-          <h3 className="font-display text-[clamp(3rem,10vw,6.5rem)] font-black uppercase leading-[0.88]">
-            Nuestra Aventura <span className="box-decoration-clone bg-marker px-[0.12em] text-ink">juntos para siempre</span>
+          <h3 className="font-display text-[clamp(3rem,min(10vw,9vh),6.5rem)] font-black uppercase leading-[0.88]">
+            Nuestra Aventura <span className="underline decoration-marker decoration-[0.13em] underline-offset-[0.07em] [text-decoration-skip-ink:none]">juntos para siempre</span>
           </h3>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-calipso-shade md:text-xl">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-calipso-shade md:text-xl lg:mt-[2.5vh]">
             Quiero que nuestra historia sea una aventura que dure toda la vida.
             Desde este momento hasta que seamos viejitos juntos, compartiendo
             risas, recuerdos y todo el amor del mundo
           </p>
-          <p className="relative mt-10 inline-block font-hand text-3xl leading-snug text-ink md:text-4xl">
+          <p className="relative mt-10 inline-block font-hand text-3xl leading-snug text-ink md:text-4xl lg:mt-[4vh]">
             &ldquo;Contigo, cualquier lugar se vuelve mi próxima aventura
             favorita.&rdquo;
             <DrawOnView delay={400} className="absolute -bottom-2 left-0 block h-3 w-2/3">
@@ -231,7 +232,7 @@ function Adventure() {
             onMouseLeave={canHover ? () => setForever(false) : undefined}
             aria-pressed={forever}
             aria-label="Ver la foto de viejitos"
-            className="block w-full -rotate-1 bg-paper p-2 text-left text-ink shadow-[0_22px_44px_-14px_rgba(15,17,21,0.5)] sm:p-3"
+            className="mx-auto block w-full -rotate-1 bg-paper p-2 lg:max-w-[calc((100svh_-_var(--nav-h)_-_var(--player-h)_-_9rem)_*_1.6)] text-left text-ink shadow-[0_22px_44px_-14px_rgba(15,17,21,0.5)] sm:p-3"
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-rule">
               <Image

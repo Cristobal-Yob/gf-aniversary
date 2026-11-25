@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Alto del menú fijo y del reproductor: el contenido se acomoda entre ambos */
+:root {
+  --nav-h: 58px;
+  --player-h: 66px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nav-h: 66px;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -52,6 +64,27 @@
 }
 
 @layer utilities {
+  /* Zona visible entre el menú y el reproductor */
+  .h-view {
+    height: calc(100svh - var(--nav-h) - var(--player-h));
+  }
+
+  .min-h-view {
+    min-height: calc(100svh - var(--nav-h) - var(--player-h));
+  }
+
+  .max-h-view {
+    max-height: calc(100svh - var(--nav-h) - var(--player-h));
+  }
+
+  .top-nav {
+    top: var(--nav-h);
+  }
+
+  .scroll-mt-nav {
+    scroll-margin-top: var(--nav-h);
+  }
+
   .text-balance {
     text-wrap: balance;
   }

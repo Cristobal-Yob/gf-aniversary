@@ -26,7 +26,7 @@ The site is a tear-off wall calendar that has been counting since 25 November 20
 | `rule` | `#D5D8D2` | Hairlines on paper, secondary text on ink |
 | `dim` | `#575C66` | Secondary text on paper |
 
-Text on `marker` and on `calipso` is always `ink`. Text on `ink` is `paper`. Yellow is never used for text on calipso; emphasise a word there with a marker highlight (`box-decoration-clone bg-marker px-[0.12em] text-ink`).
+Text on `marker` and on `calipso` is always `ink`. Text on `ink` is `paper`. Yellow is never used for text on calipso; emphasise a word there with a marker underline (`underline decoration-marker decoration-[0.13em] underline-offset-[0.07em] [text-decoration-skip-ink:none]`).
 
 ## Type
 
@@ -43,6 +43,17 @@ Text on `marker` and on `calipso` is always `ink`. Text on `ink` is `paper`. Yel
 - Each inner page opens with a calendar-sheet header: a full-bleed `bg-calipso text-ink` section starting with `<BindingRings className="h-8 w-full text-ink md:h-10" />`, then a ruled row (`border-b-2 border-ink`) with small display labels left and right, then the page `h1` in giant display type, and `<TornEdge className="absolute inset-x-0 top-full z-10 -mt-px h-4 w-full text-calipso md:h-6" />` as its bottom edge (the section must be `relative`).
 - Rules are structure: `border-ink` at 2px between major rows, `border-rule` at 1px for minor ones.
 - Corners are square. Depth appears only on photo prints.
+
+## Fit
+
+The sticky nav (`--nav-h`: 58px, 66px from `md`) and the fixed player bar (`--player-h`: 66px) frame everything. The visible area between them is what a section has to fit.
+
+- Utilities: `h-view`, `min-h-view`, `max-h-view` (visible area height), `top-nav` (stick under the nav), `scroll-mt-nav`.
+- From `lg` up, the opening view of every section fits the visible area: its heading and its main content are seen together and nothing essential sits under the player bar. Check at 1900x830 and 1440x760.
+- Sticky scenes are `h-view` at `top-nav`, never `100svh` minus a hard-coded number.
+- Whatever drives a section's height is sized with the viewport height in mind: `clamp()` with `min(…vw, …vh)`, `max-h-[…vh]` on media, smaller vertical padding on `lg`.
+- A section longer than the view (a long list, many photos) pins its heading at the side on desktop instead of pushing the content below the fold.
+- Never wrap a highlighted background around words in a display heading: with tight leading it covers the line above. Use the marker underline.
 
 ## Components that exist
 

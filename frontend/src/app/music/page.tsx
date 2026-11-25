@@ -83,7 +83,7 @@ function ParallaxIllustration() {
   )
 
   return (
-    <div ref={ref} aria-hidden className="w-28 shrink-0 sm:w-44 md:w-64">
+    <div ref={ref} aria-hidden className="w-28 shrink-0 sm:w-44 md:w-64 lg:mt-8 lg:w-[min(16rem,30vh)]">
       <motion.div style={{ transform }}>
         <Image
           src="/illustrations/musica.webp"
@@ -165,8 +165,8 @@ export default function MusicPage() {
         </SheetHeader>
 
         {/* Sonando ahora */}
-        <section className="px-4 pb-16 pt-24 md:px-8 md:pb-24 md:pt-32">
-          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-12 lg:gap-16">
+        <section className="px-4 pb-16 pt-24 md:px-8 md:pb-24 md:pt-32 lg:flex lg:min-h-view lg:items-center lg:py-10">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <motion.div
               initial={
                 reduceMotion
@@ -179,7 +179,7 @@ export default function MusicPage() {
               }}
               viewport={{ once: true, margin: '0px 0px -10% 0px' }}
               transition={{ duration: 0.8, ease: EASE_OUT }}
-              className="mx-auto w-full max-w-[520px] lg:col-span-6"
+              className="mx-auto w-full max-w-[520px] lg:col-span-6 lg:max-w-[min(520px,calc(100svh_-_var(--nav-h)_-_var(--player-h)_-_10rem))]"
             >
               <Turntable audio={audio} isPlaying={isPlaying} />
             </motion.div>
@@ -201,13 +201,13 @@ export default function MusicPage() {
                   }
                   transition={{ duration: 0.4, ease: EASE_OUT }}
                 >
-                  <h2 className="break-words font-display text-[clamp(2.75rem,9vw,6rem)] font-black uppercase leading-[0.9]">
+                  <h2 className="break-words font-display text-[clamp(2.75rem,9vw,6rem)] font-black uppercase leading-[0.9] lg:text-[clamp(2.5rem,min(6vw,9vh),5.5rem)]">
                     {currentTrack?.title}
                   </h2>
                   <p className="mt-3 text-lg text-dim md:text-xl">
                     {currentTrack?.artist}
                   </p>
-                  <p className="relative mt-8 inline-block max-w-2xl font-hand text-3xl leading-snug text-calipso-deep [--accent:theme(colors.marker)] md:text-5xl">
+                  <p className="relative mt-8 inline-block max-w-2xl font-hand text-3xl leading-snug text-calipso-deep [--accent:theme(colors.marker)] md:text-5xl lg:mt-5 lg:text-[clamp(1.75rem,min(3vw,5.5vh),3rem)]">
                     {currentTrack?.memory}
                     <DrawOnView
                       delay={250}
@@ -219,7 +219,7 @@ export default function MusicPage() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="mt-10 flex flex-wrap items-center gap-3">
+              <div className="mt-10 flex flex-wrap items-center gap-3 lg:mt-8">
                 <button
                   type="button"
                   onClick={previousTrack}
@@ -255,10 +255,10 @@ export default function MusicPage() {
 
         {/* La lista */}
         <section className="relative px-4 pb-20 md:px-8 md:pb-28">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6">
+          <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-12 lg:gap-12">
+            <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6 lg:sticky lg:top-nav lg:col-span-4 lg:max-h-view lg:flex-col lg:items-start lg:justify-start lg:self-start lg:border-b-0 lg:pb-8 lg:pt-10">
               <div>
-                <h2 className="font-display text-[clamp(3rem,10vw,7rem)] font-black uppercase leading-[0.9]">
+                <h2 className="font-display text-[clamp(3rem,10vw,7rem)] font-black uppercase leading-[0.9] lg:text-[clamp(3rem,min(4.6vw,10vh),5.5rem)]">
                   Nuestra Playlist del Corazón
                 </h2>
                 <p className="mt-3 text-lg text-dim md:text-xl">
@@ -268,7 +268,7 @@ export default function MusicPage() {
               <ParallaxIllustration />
             </div>
 
-            <ol>
+            <ol className="lg:col-span-8 lg:mt-10 lg:border-t-2 lg:border-ink">
               {playlist.map((track, index) => {
                 const active = track.id === currentTrack?.id
                 return (

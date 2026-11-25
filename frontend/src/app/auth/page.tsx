@@ -88,10 +88,10 @@ export default function AuthPage() {
       <Navbar />
 
       <main>
-        <section className="relative overflow-hidden bg-calipso text-ink [--accent:theme(colors.marker)]">
+        <section className="relative overflow-hidden bg-calipso text-ink [--accent:theme(colors.marker)] lg:flex lg:h-view lg:flex-col">
           <BindingRings className="h-8 w-full text-ink md:h-10" />
 
-          <div className="mx-auto grid min-h-[calc(100svh-6rem)] max-w-7xl items-center gap-12 px-4 pb-28 pt-8 md:px-8 lg:grid-cols-12 lg:gap-8 lg:pt-12">
+          <div className="mx-auto grid min-h-[calc(100svh-6rem)] w-full max-w-7xl items-center gap-12 px-4 pb-28 pt-8 md:px-8 lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-8 lg:py-6">
             <div className="lg:col-span-7">
               <motion.h1
                 initial={
@@ -101,7 +101,7 @@ export default function AuthPage() {
                 }
                 animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
                 transition={{ duration: 0.9, ease: EASE_OUT }}
-                className="font-display text-[clamp(3rem,12vw,7rem)] font-black uppercase leading-[0.9] break-words"
+                className="font-display text-[clamp(3rem,12vw,7rem)] font-black lg:text-[clamp(3rem,min(8vw,16vh),7rem)] uppercase leading-[0.9] break-words"
               >
                 ¡Feliz Aniversario!
               </motion.h1>
@@ -122,7 +122,7 @@ export default function AuthPage() {
 
               <motion.p
                 {...enter(0.4)}
-                className="mt-10 flex items-center gap-2 text-base text-calipso-shade md:text-lg"
+                className="mt-10 flex items-center gap-2 lg:mt-8 text-base text-calipso-shade md:text-lg"
               >
                 <IconHeart className="h-5 w-5 text-marker" />
                 Hecho con amor para ti
@@ -162,7 +162,7 @@ export default function AuthPage() {
                     className="w-full max-w-md bg-paper text-ink shadow-[0_22px_44px_-14px_rgba(15,17,21,0.5)]"
                   >
                     <BindingRings className="h-8 w-full bg-ink text-paper" />
-                    <div className="p-6 md:p-8">
+                    <div className="p-6 md:p-8 lg:p-6">
                       <div className="flex items-center justify-between border-b-2 border-ink pb-4">
                         <IconLock className="h-10 w-10 md:h-12 md:w-12" />
                         <span className="font-display text-lg font-semibold uppercase tracking-wide text-dim">
@@ -170,7 +170,7 @@ export default function AuthPage() {
                         </span>
                       </div>
 
-                      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                      <form onSubmit={handleSubmit} className="mt-6 space-y-5 lg:mt-5 lg:space-y-4">
                         <div>
                           <label htmlFor="username" className={labelClass}>
                             Usuario

@@ -38,7 +38,7 @@ export default function Timeline({ entries }: TimelineProps) {
       {/* Año actual, fijo al costado */}
       <div className="hidden lg:col-span-2 lg:block">
         <div
-          className="sticky top-28 overflow-hidden border-y-2 border-ink py-2"
+          className="sticky top-[calc(var(--nav-h)+2rem)] overflow-hidden border-y-2 border-ink py-2"
           aria-hidden
         >
           <AnimatePresence mode="popLayout" initial={false}>

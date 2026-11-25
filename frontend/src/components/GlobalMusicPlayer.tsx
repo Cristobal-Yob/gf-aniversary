@@ -85,7 +85,7 @@ export default function GlobalMusicPlayer() {
                 : { opacity: 0, transform: 'translateY(24px)' }
             }
             transition={{ duration: 0.22, ease: EASE_OUT }}
-            className="max-h-[min(70vh,560px)] overflow-y-auto border-t-2 border-paper bg-ink"
+            className="max-h-view overflow-y-auto overscroll-contain border-t-2 border-paper bg-ink"
           >
             <div className="mx-auto max-w-7xl px-4 pb-4 pt-6 md:px-8">
               <p className="font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-5xl">

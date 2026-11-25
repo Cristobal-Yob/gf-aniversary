@@ -83,8 +83,8 @@ export default function TimelineSheet({ entry, index, onActive }: TimelineSheetP
           <TornEdge className="absolute inset-x-0 top-full -mt-px h-3 w-full text-ink md:h-4" />
         </header>
 
-        <div className="px-4 pb-6 pt-8 md:px-6 md:pb-8 md:pt-10">
-          <p className="font-display text-[clamp(4.5rem,18vw,8rem)] font-black leading-[0.82] tabular-nums text-calipso-deep">
+        <div className="px-4 pb-6 pt-8 md:px-6 md:pb-8 md:pt-10 lg:pt-[clamp(1.5rem,4vh,2.5rem)] lg:pb-[clamp(1.25rem,3vh,2rem)]">
+          <p className="font-display text-[clamp(4.5rem,18vw,8rem)] font-black leading-[0.82] tabular-nums text-calipso-deep lg:text-[clamp(4rem,min(8vw,14vh),8rem)]">
             {day ?? year}
           </p>
           <h3 className="mt-4 font-display text-3xl font-extrabold uppercase leading-[0.9] md:text-4xl">
@@ -95,7 +95,7 @@ export default function TimelineSheet({ entry, index, onActive }: TimelineSheetP
           </p>
 
           {isRings && (
-            <div className="relative mt-6 border-t border-rule pt-6">
+            <div className="relative mt-6 border-t border-rule pt-6 lg:mt-4 lg:pt-4">
               <RingsPair className="absolute right-0 top-4 z-10 h-12 w-20 text-calipso-deep md:h-16 md:w-28" />
               <Image
                 src="/illustrations/anillos.webp"
@@ -103,7 +103,7 @@ export default function TimelineSheet({ entry, index, onActive }: TimelineSheetP
                 width={1024}
                 height={1024}
                 sizes="(min-width: 768px) 320px, 70vw"
-                className="mx-auto h-auto w-full max-w-[320px]"
+                className="mx-auto h-auto w-full max-w-[320px] lg:max-h-[20vh] lg:w-auto"
               />
             </div>
           )}

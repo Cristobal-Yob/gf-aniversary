@@ -57,7 +57,7 @@ export default function GamesPage() {
     const height = game.height || 600
 
     return (
-      <div className="flex min-h-screen w-full flex-col bg-ink pb-24 text-paper">
+      <div className="flex h-[calc(100svh-var(--player-h))] w-full flex-col bg-ink text-paper">
         <div className="flex items-center gap-4 border-b-2 border-paper px-4 py-3 md:px-8">
           <button
             onClick={() => setSelectedGame(null)}
@@ -72,7 +72,7 @@ export default function GamesPage() {
           </h2>
         </div>
 
-        <div className="flex flex-1 items-center justify-center p-4">
+        <div className="flex min-h-0 flex-1 items-center justify-center p-4">
           {!ruffleLoaded ? (
             <div role="status" className="text-center">
               <IconGamepad className="mx-auto mb-4 h-14 w-14 text-marker motion-safe:animate-pulse" />
@@ -83,7 +83,11 @@ export default function GamesPage() {
           ) : game.swfPath ? (
             <div
               className="w-full border-2 border-paper"
-              style={{ maxWidth: width, aspectRatio: `${width} / ${height}` }}
+              style={{
+                aspectRatio: `${width} / ${height}`,
+                // Cabe por ancho o por alto, lo que se acabe primero
+                maxWidth: `min(${width}px, calc((100svh - var(--player-h) - 6rem) * ${width / height}))`,
+              }}
             >
               <object
                 type="application/x-shockwave-flash"
@@ -99,7 +103,7 @@ export default function GamesPage() {
           ) : (
             <iframe
               src={game.url}
-              className="h-[calc(100svh-10rem)] w-full border-2 border-paper bg-paper"
+              className="h-full w-full border-2 border-paper bg-paper"
               allowFullScreen
               title={game.title}
             />
@@ -119,7 +123,7 @@ export default function GamesPage() {
           <p>Juegos clásicos para disfrutar juntos</p>
         </SheetHeader>
 
-        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28">
+        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28 lg:pt-10">
           <ul className="mx-auto max-w-7xl border-t-2 border-ink">
             {games.map((game, index) => (
               <motion.li

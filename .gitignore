@@ -87,3 +87,6 @@ secrets/
 .codegraph/
 .impeccable/
 *.tsbuildinfo
+
+# Página local para revisar textos de fotos (no se publica)
+frontend/public/revision-fotos.html

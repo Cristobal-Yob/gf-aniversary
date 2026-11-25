@@ -99,17 +99,17 @@ export default function ChatPage() {
           <p>Habla sobre nuestros recuerdos y momentos especiales</p>
         </SheetHeader>
 
-        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28">
+        <section className="px-4 pb-20 pt-20 md:px-8 md:pb-28 md:pt-28 lg:pt-14">
           <motion.div
             {...reveal()}
-            className="mx-auto max-w-4xl border-2 border-ink"
+            className="mx-auto max-w-4xl scroll-mt-nav border-2 border-ink lg:flex lg:h-view lg:flex-col"
           >
             {/* Mensajes */}
             <div
               ref={logRef}
               role="log"
               aria-live="polite"
-              className="h-[min(500px,60svh)] overflow-y-auto"
+              className="h-[min(500px,60svh)] overflow-y-auto lg:h-auto lg:min-h-0 lg:flex-1"
             >
               {messages.map((message, index) => {
                 const isUser = message.role === 'user'

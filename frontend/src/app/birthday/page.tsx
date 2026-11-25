@@ -124,7 +124,7 @@ export default function BirthdayPage() {
         </SheetHeader>
 
         {/* Tarjeta de cumpleaños interactiva */}
-        <section className="px-4 pb-16 pt-20 md:px-8 md:pb-24 md:pt-28">
+        <section className="px-4 pb-16 pt-20 md:px-8 md:pb-24 md:pt-28 lg:pb-12 lg:pt-14">
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-12 lg:gap-12">
             <motion.div {...reveal()} className="lg:col-span-5">
               <h2 className="font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
@@ -177,7 +177,7 @@ export default function BirthdayPage() {
                           toggleCard()
                         }
                       }}
-                      className="relative h-[480px] w-full cursor-pointer md:h-[520px]"
+                      className="relative h-[480px] w-full cursor-pointer md:h-[520px] lg:h-[min(520px,calc(100svh-var(--nav-h)-var(--player-h)-7rem))]"
                     >
                       {/* Tarjeta cerrada */}
                       <motion.div
@@ -255,10 +255,10 @@ export default function BirthdayPage() {
         </section>
 
         {/* Vela interactiva */}
-        <section className="px-4 pb-20 md:px-8 md:pb-28">
+        <section className="px-4 pb-20 md:px-8 md:pb-28 lg:pb-0">
           <motion.div
             {...reveal()}
-            className="mx-auto grid max-w-7xl items-center gap-10 border-t-2 border-ink pt-12 lg:grid-cols-12 lg:gap-12 lg:pt-16"
+            className="mx-auto grid max-w-7xl items-center gap-10 border-t-2 border-ink pt-12 lg:min-h-view lg:grid-cols-12 lg:gap-12 lg:py-8"
           >
             <div className="lg:col-span-6">
               <h2 className="font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
