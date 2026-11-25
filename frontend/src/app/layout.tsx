@@ -35,6 +35,11 @@ export const metadata: Metadata = {
     'Celebrando 9 años de amor, recuerdos y momentos especiales juntos',
 }
 
+// Las páginas no se guardan en caché: Firebase Hosting está delante de Cloud Run
+// y, si guardara el HTML, tras cada despliegue seguiría pidiendo archivos que ya
+// no existen. Los archivos de /_next/static sí se cachean (llevan hash).
+export const dynamic = 'force-dynamic'
+
 /*
  * DIRECTION CONTRACT (seed a41eef71)
  * THESIS: the relationship is counted, not described. Every screen is a page of
