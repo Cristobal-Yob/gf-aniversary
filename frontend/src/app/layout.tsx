@@ -33,10 +33,6 @@ export const metadata: Metadata = {
   title: 'Cristóbal y Josefa - Aniversario Número 9',
   description:
     'Celebrando 9 años de amor, recuerdos y momentos especiales juntos',
-  icons: {
-    icon: '/photos/icon/J&C.png',
-    apple: '/photos/icon/J&C.png',
-  },
 }
 
 /*

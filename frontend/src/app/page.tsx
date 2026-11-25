@@ -12,7 +12,10 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
 import LoadingScreen from '@/components/LoadingScreen'
+import DayFactTicker from '@/components/home/DayFactTicker'
 import MonthGrid from '@/components/home/MonthGrid'
+import MonthLegend from '@/components/home/MonthLegend'
+import MoreDaysThan from '@/components/home/MoreDaysThan'
 import DrawOnView from '@/components/ui/DrawOnView'
 import PhotoPrint from '@/components/ui/PhotoPrint'
 import {
@@ -30,7 +33,6 @@ import {
   StampNine,
   TornEdge,
 } from '@/components/illustrations'
-import { milestones } from '@/content/milestones'
 import {
   COUPLE,
   EASE_OUT,
@@ -107,6 +109,7 @@ export default function HomePage() {
 
   const ready = !isLoading
   const years = today ? yearsTogether(today) : 9
+  const days = today ? daysTogether(today) : null
   const storyHref = isAuthenticated ? '/about' : '/auth'
   const isSecondOfDecember =
     today !== null && today.getMonth() === 11 && today.getDate() === 2
@@ -157,7 +160,7 @@ export default function HomePage() {
         <section className="relative bg-calipso text-ink [--accent:theme(colors.marker)]">
           <BindingRings className="h-8 w-full text-ink md:h-10" />
 
-          <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 md:px-8 md:pb-28">
+          <div className="mx-auto max-w-7xl px-4 pb-20 pt-2 md:px-8 md:pb-28 lg:pb-10">
             <div className="flex items-baseline justify-between border-b-2 border-ink pb-2 font-display text-lg font-semibold uppercase tracking-wide md:text-2xl">
               <span>
                 {today
@@ -167,8 +170,9 @@ export default function HomePage() {
               <span>{today ? today.getFullYear() : ' '}</span>
             </div>
 
-            <div className="grid items-center gap-10 pt-8 lg:grid-cols-12 lg:gap-8 lg:pt-12">
-              <div className="lg:col-span-7">
+            {/* En pantallas grandes la hoja completa entra en una vista: contador y fotos arriba, nombres y acciones abajo */}
+            <div className="grid gap-10 pt-8 lg:grid-cols-12 lg:items-center lg:gap-x-8 lg:gap-y-4 lg:pt-4">
+              <div className="lg:col-span-7 lg:row-start-1">
                 <div className="relative inline-block">
                   <motion.p
                     initial={
@@ -182,9 +186,9 @@ export default function HomePage() {
                         : undefined
                     }
                     transition={{ duration: 0.9, ease: EASE_OUT }}
-                    className="font-display text-[clamp(6.5rem,31vw,19rem)] font-black leading-[0.82] tabular-nums"
+                    className="font-display text-[clamp(6.5rem,min(31vw,26vh),19rem)] font-black leading-[0.82] tabular-nums"
                   >
-                    {today ? formatCount(daysTogether(today)) : '0.000'}
+                    {days !== null ? formatCount(days) : '0.000'}
                   </motion.p>
                   <DrawOnView
                     play={ready}
@@ -205,9 +209,15 @@ export default function HomePage() {
                   </span>
                 </motion.p>
 
+                <motion.div {...enter(0.25)}>
+                  <DayFactTicker days={days} play={ready} />
+                </motion.div>
+              </div>
+
+              <div className="lg:col-span-7 lg:row-start-2">
                 <motion.h1
                   {...enter(0.3)}
-                  className="mt-8 font-display text-5xl font-extrabold uppercase leading-[0.95] md:text-7xl"
+                  className="font-display text-5xl font-extrabold uppercase leading-[0.95] md:text-7xl lg:text-6xl"
                 >
                   {COUPLE.first} <span className="text-calipso-shade">&amp;</span>{' '}
                   {COUPLE.second}
@@ -222,10 +232,10 @@ export default function HomePage() {
                   </p>
                 </motion.div>
 
-                <motion.div
-                  {...enter(0.9, -8, -3)}
-                  className="mt-8 inline-block"
-                >
+              </div>
+
+              <div className="lg:col-span-5 lg:col-start-8 lg:row-start-2">
+                <motion.div {...enter(0.9, -8, -3)} className="inline-block">
                   <p className="relative font-hand text-4xl leading-none text-ink md:text-5xl">
                     ¡Feliz Aniversario Mi Amor!
                     <DrawOnView
@@ -240,7 +250,7 @@ export default function HomePage() {
 
                 <motion.div
                   {...enter(0.55)}
-                  className="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+                  className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:mt-7"
                 >
                   <Link
                     href={storyHref}
@@ -267,8 +277,8 @@ export default function HomePage() {
                 </motion.div>
               </div>
 
-              <div className="lg:col-span-5">
-                <div className="relative mx-auto aspect-[10/11] w-full max-w-[520px]">
+              <div className="lg:col-span-5 lg:col-start-8 lg:row-start-1">
+                <div className="relative mx-auto aspect-[10/11] w-full max-w-[520px] lg:ml-auto lg:mr-0 lg:h-[min(46vh,30rem)] lg:w-auto lg:max-w-none">
                   {prints.map((print, index) => (
                     <motion.div
                       key={print.src}
@@ -350,6 +360,8 @@ export default function HomePage() {
           </div>
         </section>
 
+        <MoreDaysThan days={days} />
+
         {/* Los meses, uno por uno */}
         <section className="px-4 pb-20 md:px-8 md:pb-28">
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-12 lg:gap-12">
@@ -361,28 +373,7 @@ export default function HomePage() {
               <h2 className="font-display text-5xl font-black uppercase leading-[0.9] md:text-7xl">
                 Cada cuadro es un mes
               </h2>
-              <ul className="mt-8 border-t border-rule">
-                {milestones.map(milestone => (
-                  <li
-                    key={milestone.title}
-                    className="flex items-center gap-4 border-b border-rule py-3"
-                  >
-                    <span className="h-4 w-4 shrink-0 bg-marker ring-2 ring-inset ring-ink" />
-                    <span className="flex-1 font-display text-xl font-semibold uppercase leading-tight md:text-2xl">
-                      {milestone.title}
-                    </span>
-                    <span className="text-right text-sm text-dim">
-                      {milestone.dateLabel}
-                    </span>
-                  </li>
-                ))}
-                <li className="flex items-center gap-4 py-3">
-                  <span className="h-4 w-4 shrink-0 bg-calipso" />
-                  <span className="flex-1 font-display text-xl font-semibold uppercase leading-tight md:text-2xl">
-                    Hoy
-                  </span>
-                </li>
-              </ul>
+              <MonthLegend today={today} />
               <Link
                 href={storyHref}
                 className="btn-almanac group mt-8 border-ink hover:bg-ink hover:text-paper"

@@ -2,31 +2,34 @@
 
 import { useInView } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { milestones } from '@/content/milestones'
+import { IconInfinity } from '@/components/icons'
+import { afterAll, milestones, monthIndex } from '@/content/milestones'
 import { RELATIONSHIP_START } from '@/lib/site'
 
 const MONTH_INITIALS = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
+const STEP_MS = 7
 
-type CellState = 'empty' | 'lived' | 'milestone' | 'today'
+type CellState = 'empty' | 'lived' | 'milestone' | 'today' | 'upcoming'
 
 function buildCells(now: Date) {
   const startYear = RELATIONSHIP_START.getFullYear()
+  const lastYear = Math.max(now.getFullYear(), ...milestones.map(m => m.year))
   const years = Array.from(
-    { length: now.getFullYear() - startYear + 1 },
+    { length: lastYear - startYear + 1 },
     (_, i) => startYear + i
   )
-  const startIndex = startYear * 12 + RELATIONSHIP_START.getMonth()
-  const nowIndex = now.getFullYear() * 12 + now.getMonth()
+  const startIndex = monthIndex(startYear, RELATIONSHIP_START.getMonth())
+  const nowIndex = monthIndex(now.getFullYear(), now.getMonth())
 
   const cells = years.flatMap(year =>
     MONTH_INITIALS.map((_, month) => {
-      const index = year * 12 + month
+      const index = monthIndex(year, month)
       const milestone = milestones.find(
         m => m.year === year && m.month === month
       )
       let state: CellState = 'empty'
       if (index === nowIndex) state = 'today'
-      else if (milestone) state = 'milestone'
+      else if (milestone) state = index > nowIndex ? 'upcoming' : 'milestone'
       else if (index >= startIndex && index < nowIndex) state = 'lived'
       return { year, month, state, title: milestone?.title }
     })
@@ -39,9 +42,13 @@ const CELL_STYLE: Record<CellState, string> = {
   lived: 'bg-ink',
   milestone: 'bg-marker ring-2 ring-inset ring-ink',
   today: 'bg-calipso',
+  upcoming: 'border-2 border-dashed border-ink bg-marker/40',
 }
 
-/** Cada cuadro es un mes: los años en columnas, de enero a diciembre hacia abajo */
+/**
+ * Cada cuadro es un mes: los años en columnas, de enero a diciembre hacia
+ * abajo. Llega hasta el último plan con fecha y cierra con el infinito.
+ */
 export default function MonthGrid() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '0px 0px -15% 0px' })
@@ -49,7 +56,9 @@ export default function MonthGrid() {
 
   useEffect(() => setNow(new Date()), [])
 
-  const { years, cells } = buildCells(now ?? new Date(2026, 10, 25))
+  // Hasta conocer la fecha del navegador no hay meses vividos que pintar
+  const { years, cells } = buildCells(now ?? RELATIONSHIP_START)
+  const shown = inView && now !== null
 
   return (
     <div ref={ref} className="flex gap-2 sm:gap-3">
@@ -67,10 +76,10 @@ export default function MonthGrid() {
 
       <div
         role="img"
-        aria-label={`Calendario de ${years.length} años: cada cuadro es un mes juntos desde noviembre de 2017`}
+        aria-label={`Calendario de ${years.length} años: cada cuadro es un mes desde noviembre de 2017, con los planes que vienen y, después, ${afterAll.title.toLowerCase()}`}
         className="grid flex-1 grid-flow-col grid-rows-[auto_repeat(12,minmax(0,1fr))] gap-[3px] sm:gap-1"
         style={{
-          gridTemplateColumns: `repeat(${years.length}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${years.length}, minmax(0, 1fr)) minmax(0, 1.5fr)`,
         }}
       >
         {years.map((year, column) => [
@@ -88,13 +97,30 @@ export default function MonthGrid() {
                 title={cell.title}
                 className={`aspect-square transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
                   CELL_STYLE[cell.state]
-                } ${inView ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
+                } ${shown ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
                 style={{
-                  transitionDelay: `${(column * 12 + cell.month) * 7}ms`,
+                  transitionDelay: `${(column * 12 + cell.month) * STEP_MS}ms`,
                 }}
               />
             )),
         ])}
+
+        {/* Después del último plan: el infinito */}
+        <span className="h-5 sm:h-6" />
+        <span
+          title={afterAll.title}
+          className={`flex items-center justify-center bg-calipso text-ink transition-[opacity,clip-path] duration-700 ease-out motion-reduce:transition-none ${
+            shown
+              ? 'opacity-100 [clip-path:inset(0%_0%_0%_0%)]'
+              : 'opacity-0 [clip-path:inset(0%_0%_100%_0%)]'
+          }`}
+          style={{
+            gridRow: 'span 12',
+            transitionDelay: `${years.length * 12 * STEP_MS}ms`,
+          }}
+        >
+          <IconInfinity className="h-6 w-6 rotate-90 sm:h-9 sm:w-9" />
+        </span>
       </div>
     </div>
   )

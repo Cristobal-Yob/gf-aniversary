@@ -12,7 +12,7 @@ export const playlist: Track[] = [
   {
     id: "1",
     title: "Come to Me",
-    artist: "Romantic",
+    artist: "Goo Goo Dolls",
     memory: "Siento que esta cancion me llego mucho gracias gracias por todo",
     src: "/music/Come to Me.mp3",
     duration: "4:15"

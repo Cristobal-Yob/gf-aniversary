@@ -440,5 +440,32 @@ export const photos: Photo[] = [
     description: "",
     category: "comida",
     aspectRatio: "aspect-[4/3]"
+  },
+  {
+    src: "/photos/nuevas/foto-15.jpg",
+    alt: "Selfie de los dos vestidos de traje el día de la titulación",
+    title: "Team ingeniero abogadita",
+    caption: "Team ingeniero abogadita",
+    description: "",
+    category: "celebraciones",
+    aspectRatio: "aspect-[3/4]"
+  },
+  {
+    src: "/photos/nuevas/foto-16.jpg",
+    alt: "Josefa celebrando con champaña frente a tribunales",
+    title: "Brindis de abogada",
+    caption: "Perdón mami por mojarte el pelito",
+    description: "",
+    category: "celebraciones",
+    aspectRatio: "aspect-[3/4]"
+  },
+  {
+    src: "/photos/nuevas/foto-17.jpg",
+    alt: "Los dos frente a un mural de colores",
+    title: "Celebrando tus logros",
+    caption: "Otro logro para celebrar",
+    description: "",
+    category: "celebraciones",
+    aspectRatio: "aspect-[3/4]"
   }
 ]

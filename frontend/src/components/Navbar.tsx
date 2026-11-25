@@ -14,7 +14,7 @@ import {
   IconMenu,
   IconMusicNote,
 } from '@/components/icons'
-import { MonogramJC } from '@/components/illustrations'
+import { LogoMark } from '@/components/illustrations/logo'
 import { EASE_OUT } from '@/lib/site'
 
 interface NavLink {
@@ -66,7 +66,7 @@ export default function Navbar() {
             className="flex items-center gap-3"
             onClick={closeMenu}
           >
-            <MonogramJC className="h-9 w-9 md:h-10 md:w-10" />
+            <LogoMark className="h-10 w-10 md:h-12 md:w-12" />
             <span className="hidden font-display text-xl font-extrabold uppercase tracking-wide sm:block">
               Cristóbal &amp; Josefa
             </span>
